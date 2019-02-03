@@ -1,0 +1,76 @@
+{
+  "events": [
+    {
+      "ts": "2019-01-14T13:42:56.332Z",
+      "url": "https://www.flowerbx.com/vases/windsor-vase-collection/small-curve-windsor-vase?bAb=j0D4CWpg3bZ1HpK77i5Cjr1547466554-lk0tkfxP",
+      "event": "recommendation",
+      "other": {
+        "name": "Small Curve Windsor Vase",
+        "price": "2500",
+        "currency": "GBP"
+      },
+      "tabId": "9e8gx",
+      "productId": "VASE001-WINDSOR-SM",
+      "shortCode": "lk0tkfxP",
+      "referrerId": "j0D4CWpg3bZ1HpK77i5Cjr1547466554"
+    },
+    {
+      "ts": "2019-01-14T13:48:54.569Z",
+      "url": "https://www.flowerbx.com/checkout/onepage/success/",
+      "event": "purchase",
+      "other": {
+        "line_items": [
+          {
+            "id": "41552",
+            "sku": "VASE001-WINDSOR-SM",
+            "url": "https://www.flowerbx.com/small-curve-windsor-vase",
+            "grams": "1.0000",
+            "price": "20.8300",
+            "title": "Small Curve Windsor Vase",
+            "vendor": null,
+            "product": {
+              "id": "VASE001-WINDSOR-SM",
+              "tags": null,
+              "image": "https://dy1yydbfzm05w.cloudfront.net/media/catalog/product/0/1/01-vase-windsor-small-size1-1000px.jpg",
+              "title": "Small Curve Windsor Vase",
+              "handle": null,
+              "images": null,
+              "vendor": null,
+              "options": null,
+              "variants": null,
+              "body_html": null,
+              "created_at": {
+                "date": "2019-01-14 13:48:50",
+                "timezone": null,
+                "timezone_type": null
+              },
+              "updated_at": {
+                "date": "2019-01-14 13:48:50",
+                "timezone": null,
+                "timezone_type": null
+              },
+              "product_type": "simple",
+              "published_at": null,
+              "published_scope": null,
+              "template_suffix": null
+            },
+            "taxable": 1,
+            "variant": null,
+            "quantity": "1",
+            "gift_card": null,
+            "tax_lines": null,
+            "line_price": null,
+            "properties": null,
+            "variant_id": null,
+            "fulfillment": null,
+            "applied_discounts": "0.0000",
+            "requires_shipping": null
+          }
+        ]
+      },
+      "tabId": "7ka85",
+      "purchaseId": 402933
+    }
+  ],
+  "userAgent": "Mozilla/5.0 (X11; CrOS x86_64 11021.81.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36"
+}

@@ -1,0 +1,29 @@
+{
+  "name": "Coreplus",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Lorvent"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "resources/assets/vendors",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Buttons": "~2.0",
+    "bootstrap-calendar": "^0.2.5",
+    "jquery-advanced-news-ticker": "https://github.com/risq/jquery-advanced-news-ticker.git"
+  },
+  "resolutions": {
+    "bootstrap": "~3.3.6",
+    "jquery": "~1.12.4",
+    "jquery-ui": "~1.12.1"
+  }
+}
