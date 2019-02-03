@@ -1,2 +1,2 @@
-# prohoti
+# prohori
 Security operation assignment tracker
