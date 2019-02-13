@@ -225,7 +225,7 @@ class TableMigrationController extends BaseController
          */
         $source_rows = \DB::table('accounts_old')->get();
         foreach ($source_rows as $key=>$row) {
-            if($row->email == 'admin@letsbab.com'){
+            if($row->email == 'admin@prohori.com'){
                 continue;
             }
             echo "Migrating: {$row->id}";

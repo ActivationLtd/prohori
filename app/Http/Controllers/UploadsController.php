@@ -173,18 +173,26 @@ class UploadsController extends ModulebaseController
                     //$aws_path = Storage::disk('s3')->put($aws_file_path, file_get_contents($file), 'public');
 
                     $upload_success = false;
-                    if (env('APP_ENV') != 'local') {
-                        $aws_path = Storage::disk('s3')->putFile(env('APP_ENV'), $file, 'public');
-                        if ($aws_path) {
-                            $upload_success = true;
-                            $aws_url = Storage::disk('s3')->url($aws_path);
-                            $element->path = $aws_url;
-                        }
+                    /**
+                     * AWS/Local
+                     */
+                    // if (env('APP_ENV') !== 'local') {
+                    //     $aws_path = Storage::disk('s3')->putFile(env('APP_ENV'), $file, 'public');
+                    //     if ($aws_path) {
+                    //         $upload_success = true;
+                    //         $aws_url = Storage::disk('s3')->url($aws_path);
+                    //         $element->path = $aws_url;
+                    //     }
+                    //
+                    // } else {
+                    //     if ($upload_success = $file->move(public_path() . $path, $unique_name)) {
+                    //         $element->path = $path . $unique_name; //save the full path including file to easy retrieve
+                    //     }
+                    // }
+                    /*************/
 
-                    } else {
-                        if ($upload_success = $file->move(public_path() . $path, $unique_name)) {
-                            $element->path = $path . $unique_name; //save the full path including file to easy retrieve
-                        }
+                    if ($upload_success = $file->move(public_path() . $path, $unique_name)) {
+                        $element->path = $path . $unique_name; //save the full path including file to easy retrieve
                     }
 
                     if ($upload_success) {

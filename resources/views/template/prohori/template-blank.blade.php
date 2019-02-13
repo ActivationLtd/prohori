@@ -12,7 +12,7 @@
         {{-- head section --}}
     @show
 </head>
-<body class=" lb-bg">
+<body class=" prohori-bg">
 <div class="row">
     @section('content')
 

@@ -117,7 +117,7 @@
                 <td style="width: 20%" class="no-border"><b>Product price</b></td>
                 <td style="width: 20%" class="no-border"><b>Recommender</b></td>
                 <td style="width: 20%" class="no-border"><b>Charity</b></td>
-                <td style="width: 20%" class="no-border"><b>Letsbab</b></td>
+                <td style="width: 20%" class="no-border"><b>prohori</b></td>
             </tr>
             <tr>
                 <td>Partner - {{$purchase->product_currency}}</td>
@@ -141,7 +141,7 @@
                 <td> -</td>
             </tr>
             <tr>
-                <td>LetsBab - {{$purchase->lb_currency}}</td>
+                <td>prohori - {{$purchase->lb_currency}}</td>
                 <td>{{symbol($purchase->lb_currency)}} {{money($purchase->product_price_in_lb_currency)}}</td>
                 <td>{{symbol($purchase->lb_currency)}} {{money($purchase->user_commission_in_lb_currency)}}</td>
                 <td>{{symbol($purchase->lb_currency)}} {{money($purchase->charity_donation_in_lb_currency)}}</td>

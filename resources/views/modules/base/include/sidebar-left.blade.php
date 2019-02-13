@@ -1,6 +1,6 @@
 <ul class="sidebar-menu">
     @if(user())
-        <li><a href="{{route("home")}}"><i class="fa fa-desktop"></i> Dashboard</a></li>
+        <li><a href="{{route("home")}}"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>
         @if(user()->isSuperUser())
             {{--<li class="header">MENU</li>--}}
             <?php
@@ -41,7 +41,7 @@
                     <li><a href="{{route("{$module->name}.index")}}"><i
                                     class="{{$module->icon_css}}"></i> {{$module->title}}</a></li>
                 @endforeach
-                <li><a href="https://letsbab.com/integrations"><i class="fa fa-code"></i>Integration</a></li>
+                <li><a href="https://prohori.com/integrations"><i class="fa fa-code"></i>Integration</a></li>
             @endif
         @endif
     @endif

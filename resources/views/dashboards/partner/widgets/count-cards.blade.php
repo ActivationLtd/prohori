@@ -12,7 +12,7 @@ $purchase_price = \App\Purchase::remember(cacheTime('long'))->where('partner_id'
         <h5>Statistics</h5>
     </div>
     <div class="col-lg-4 col-xs-6">
-        <div class="small-box lb-bg">
+        <div class="small-box prohori-bg">
             <div class="inner">
                 <h3>{{$recommendation_count}}</h3>
                 <p>Recommended</p>
@@ -25,7 +25,7 @@ $purchase_price = \App\Purchase::remember(cacheTime('long'))->where('partner_id'
         </div>
     </div>
     <div class="col-lg-4 col-xs-6">
-        <div class="small-box lb-bg">
+        <div class="small-box prohori-bg">
             <div class="inner">
                 {{--<h3>53<sup style="font-size: 20px">%</sup></h3>--}}
                 <h3>{{$purchase_count}}</h3>
@@ -39,7 +39,7 @@ $purchase_price = \App\Purchase::remember(cacheTime('long'))->where('partner_id'
         </div>
     </div>
     <div class="col-lg-4 col-xs-6">
-        <div class="small-box bg-red lb-bg">
+        <div class="small-box bg-red prohori-bg">
             <div class="inner">
                 <h3>{{symbol($partner->currency)}} {{money($purchase_price)}}</h3>
                 <p>Sale amount</p>

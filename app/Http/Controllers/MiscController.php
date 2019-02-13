@@ -18,7 +18,7 @@ class MiscController extends Controller
     // Test route for development
     public function showLinkExpiredUI()
     {
-        return View::make('template.letsbab.link-expired');
+        return View::make('template.prohori.link-expired');
     }
 
     public function test()

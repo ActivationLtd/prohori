@@ -49,7 +49,7 @@ $var = [
 <?php
 $var = [
     'name' => 'is_acknowledged',
-    'label' => 'I am a UK taxpayer.Please treat all donations I may make or have made to each of the Uk charty parteners on the LetsBab app (click here for the list of charities.),including but not limited to Women for Women international,Legacy of War Foundation and End Youth Homelessness and any additional charities or which I may donate to which subsequently become UK charity partners on the LetsBab app, as Gift Aid donations until further notice.',
+    'label' => 'I am a UK taxpayer.Please treat all donations I may make or have made to each of the Uk charty parteners on the prohori app (click here for the list of charities.),including but not limited to Women for Women international,Legacy of War Foundation and End Youth Homelessness and any additional charities or which I may donate to which subsequently become UK charity partners on the prohori app, as Gift Aid donations until further notice.',
     'container_class' => 'col-sm-12',
     'table' => 'aiddeclarations',
 ];
@@ -62,8 +62,8 @@ $var = [
 <div class="clearfix"></div>
 @include('form.input-checkbox',['var'=>$var])
 Please let us know if you want to cancel this Declaration,change your home address or no longer pay sufficient tax
-by emailing <a href="mailto:letshelp@letsbab.com">letshelp@letsbab.com</a>
-by emailing <a href="mailto:letshelp@letsbab.com">letshelp@letsbab.com</a>
+by emailing <a href="mailto:letshelp@prohori.com">letshelp@prohori.com</a>
+by emailing <a href="mailto:letshelp@prohori.com">letshelp@prohori.com</a>
 
 If you pay income Tax at the higher or additional rate and want to receive the additional tax relief due to you, you
 must include all your Gift Aid donations on your Self-Assessment tax return or ask HM Revenue and Customs to adjust

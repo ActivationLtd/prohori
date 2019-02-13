@@ -13,18 +13,15 @@
 <body class="hold-transition skin-blue-light sidebar-mini fixed">
 <!-- Site wrapper -->
 <div id="root" class="wrapper">
-    <header class="main-header lb-bg">
+    <header class="main-header prohori-bg">
         <!-- Logo -->
         <a href="{{route('home')}}" class="logo">
-            <span class="lb-font">{{setting('app-name')}}</span>
+            <!-- mini logo for sidebar mini 50x50 pixels -->
 
-
-            {{--<!-- mini logo for sidebar mini 50x50 pixels -->--}}
-            {{--<img style="height: 60%" src="{{asset("letsbab/images/logo.png")}}" alt="{{setting('app-name')}}"--}}
-            {{--title="{{setting('app-name')}}"/>--}}
-            {{--<span class="logo-mini">{{setting('app-name')}}</span>--}}
-            {{--<!-- logo for regular state and mobile devices -->--}}
-            {{--<span class="logo-lg">{{setting('app-name')}}</span>--}}
+            <span class="logo-mini"><img style="height: 60%" src="{{asset("prohori/images/logo.png")}}" alt="{{setting('app-name')}}"
+                                         title="{{setting('app-name')}}"/></span>
+            <!-- logo for regular state and mobile devices -->
+            <span class="logo-lg">Prohori</span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">

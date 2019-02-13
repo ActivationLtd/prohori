@@ -5,7 +5,7 @@ namespace App;
 use App\Observers\UserObserver;
 use App\Traits\IsoModule;
 use App\Traits\IsoUserPermission;
-use App\Traits\LbUserTrait;
+use App\Traits\ProhoriUserTrait;
 use Hash;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -207,7 +207,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use Notifiable;
     use IsoModule;
     use IsoUserPermission;
-    use LbUserTrait;
+    use ProhoriUserTrait;
 
     // use Rememberable;
 
@@ -630,7 +630,9 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function avatar()
     {
-        return $this->uploads->where('type', 'Avatar')->first();
+        if ($this->uploads()->exists())
+            return $this->uploads->where('type', 'Avatar')->first();
+        return null;
     }
 
     /**

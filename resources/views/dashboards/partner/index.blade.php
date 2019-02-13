@@ -7,7 +7,7 @@
 
 @section('title')
     Partner dashboard
-    <small>View all Letsbab activities</small>
+    <small>View all prohori activities</small>
 @endsection
 
 @section('content')

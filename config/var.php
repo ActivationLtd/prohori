@@ -2,7 +2,7 @@
 
 return [
 
-    'app-name' => 'LetsBab',
+    'app-name' => 'prohori',
     'tenant_field_identifier' => 'tenant_id',
 
     /*
@@ -12,7 +12,7 @@ return [
    | Example : /files/your-project-name/
    |
    */
-    'file-upload-root' => '/files/letsbab/',
+    'file-upload-root' => '/files/prohori/',
     /*
     |--------------------------------------------------------------------------
     | system tenant admin default email

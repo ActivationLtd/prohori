@@ -1,7 +1,7 @@
-@extends('emails.templates.letsbab-default')
+@extends('emails.templates.prohori-default')
 
 @section('email-content-header')
-Welcome to LetsBab
+Welcome to prohori
 @endsection
 
 @section('email-content')
@@ -9,13 +9,10 @@ Welcome to LetsBab
     Hi {{ isset($user->name) ? ucwords($user->name) : "" }},
     <br />
 	<br />
-	Thanks for downloading LetsBab. One more step... 
+	Thanks for downloading prohori. One more step...
 	<br />
 	<br />
 	Please verify your email address by <a href="{{$email_verification_url}}" target="_blank" style="color:#fff;">clicking the link</a>.
-	<br />
-	<br />
-	<span style="margin:0 0 25px 0;">Follow the 5 steps to get started.</span>
 </h2>
-<img src="https://s3.us-east-2.amazonaws.com/letsbab/cdn/images/mobiles.png" alt="" style="width:100%; border:none;">
+
 @endsection

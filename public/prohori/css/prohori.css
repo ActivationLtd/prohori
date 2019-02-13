@@ -64,8 +64,8 @@ body, html,
     background-color: transparent;
 }
 
-.lb-bg {
-    background-image: linear-gradient(to right, rgb(126, 87, 223) 0%, rgb(41, 162, 217) 100%);
+.prohori-bg {
+    background-image: linear-gradient(to right, rgb(0, 118, 217) 0%, rgb(0, 118, 217) 100%);
     color: #ffffff;
 }
 

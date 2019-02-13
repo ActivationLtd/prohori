@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-aqua lb-bg">
+        <div class="small-box bg-aqua prohori-bg">
             <div class="inner">
                 <h3>150</h3>
 
@@ -16,7 +16,7 @@
     <!-- ./col -->
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-green lb-bg">
+        <div class="small-box bg-green prohori-bg">
             <div class="inner">
                 <h3>53<sup style="font-size: 20px">%</sup></h3>
 
@@ -31,7 +31,7 @@
     <!-- ./col -->
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-yellow lb-bg">
+        <div class="small-box bg-yellow prohori-bg">
             <div class="inner">
                 <h3>44</h3>
 
