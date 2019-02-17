@@ -114,7 +114,7 @@ function userRegistrationWithVerificationNotification($user)
  *
  * @param $user \App\User
  */
-function partnerUserRegistrationEmailWithVerification($user)
+function sampleEmail($user)
 {
     // Data to be used on the email
     $email_verification_url = URL::temporarySignedRoute('verification.verify', Carbon::now()->addMinutes(60), ['id' => $user->getKey()]);

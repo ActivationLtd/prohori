@@ -18,31 +18,8 @@
             renderMenuTree(\App\Modulegroup::tree(), $current_module_name, $breadcrumbs);
             ?>
 
-            {{--<li class="header">LABELS</li>--}}
-            {{--<li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>--}}
-            {{--<li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>--}}
-            {{--<li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>--}}
-        @else
-            @if(user()->ofPartner())
-                <li><a href="{{route('partners.show', user()->partner_id)}}"><i class="fa fa-info-circle"></i> Brand
-                        settings</a></li>
-                <?php
-                $module_names = [
-                    'recommendurls',
-                    'purchases',
-                    //'users',
-                ];
-                ?>
+         @else
 
-                @foreach($module_names as $name)
-                    <?php
-                    /** @var \App\Module $module */
-                    $module = \App\Module::where('name', $name)->remember(cacheTime('long'))->first()?>
-                    <li><a href="{{route("{$module->name}.index")}}"><i
-                                    class="{{$module->icon_css}}"></i> {{$module->title}}</a></li>
-                @endforeach
-                <li><a href="https://prohori.com/integrations"><i class="fa fa-code"></i>Integration</a></li>
-            @endif
         @endif
     @endif
 </ul>

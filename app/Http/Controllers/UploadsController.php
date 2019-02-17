@@ -172,7 +172,7 @@ class UploadsController extends ModulebaseController
                     //$aws_path = '/test/' . $unique_name;
                     //$aws_path = Storage::disk('s3')->put($aws_file_path, file_get_contents($file), 'public');
 
-                    $upload_success = false;
+                    //$upload_success = false;
                     /**
                      * AWS/Local
                      */

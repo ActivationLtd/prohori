@@ -2,8 +2,8 @@
 
 namespace App;
 
-use App\Traits\IsoModule;
 use App\Observers\SuperheroObserver;
+use App\Traits\IsoModule;
 
 /**
  * Class Superhero
@@ -103,6 +103,18 @@ class Superhero extends Basemodule
         Superhero::observe(SuperheroObserver::class);
 
         /************************************************************/
+        // Execute codes during saving (both creating and updating)
+        /************************************************************/
+        // static::saving(function (Superhero $element) {
+        //     $valid = true;
+        //     /************************************************************/
+        //     // Your validation goes here
+        //     // if($valid) $valid = $element->isSomethingDoable(true)
+        //     /************************************************************/
+        //     return $valid;
+        // });
+
+        /************************************************************/
         // Following code block executes - when an element is in process
         // of creation for the first time but the creation has not
         // completed yet.
@@ -127,18 +139,6 @@ class Superhero extends Basemodule
         // is successfully updated
         /************************************************************/
         //static::updated(function (Superhero $element) {});
-
-        /************************************************************/
-        // Execute codes during saving (both creating and updating)
-        /************************************************************/
-        // static::saving(function (Superhero $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
 
         /************************************************************/
         // Execute codes after model is successfully saved
@@ -336,8 +336,8 @@ class Superhero extends Basemodule
     ############################################################################################
 
     # Default relationships already available in base Class 'Basemodule'
-    //public function updater() { return $this->belongsTo('User', 'updated_by'); }
-    //public function creator() { return $this->belongsTo('User', 'created_by'); }
+    //public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
+    //public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
 
     // Write new relationships below this line
 

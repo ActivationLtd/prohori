@@ -221,37 +221,27 @@ class User extends Authenticatable implements MustVerifyEmail
         'tenant_id',
         'name',
         'email',
-        // 'password',
+        //'password',
         'remember_token',
-        'email_confirmed',
-        'email_confirmed_at',
-        'email_confirmation_code',
+        'email_verification_code',
+        'email_verified_at',
         'access_token',
         'access_token_generated_at',
         'api_token',
         'api_token_generated_at',
+        'auth_token',
+        'session_secret',
         'tenant_editable',
         'permissions',
         'group_ids_csv',
         'group_titles_csv',
-        'is_active',
-        'created_by',
-        'updated_by',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'deleted_by',
-        'partner_id',
-        'partner_name',
-        'charity_id',
-        'charity_name',
         'name_initial',
         'first_name',
         'last_name',
         'full_name',
         'gender',
-        'avatar_url',
         'profile_pic_url',
+        'currency',
         'device_token',
         'address1',
         'address2',
@@ -262,38 +252,17 @@ class User extends Authenticatable implements MustVerifyEmail
         'zip_code',
         'phone',
         'mobile',
-        'notification_count',
         'first_login_at',
         'last_login_at',
-        'total_earnings',
-        'total_donations',
-        'recommendation_count',
-        'purchase_count',
-        'next_billing_at',
-        'share_code',
-        'paypal_email',
-        'payment_settings',
-        'account_holder_name',
-        'account_number',
-        'account_type',
-        'account_country',
-        'account_city',
-        'account_state',
-        'account_post_code',
-        'account_first_line',
-        'sort_code',
-        'abartn',
-        'iban',
-        'swift',
-        'auth_token',
-        'device_name',
-        'current_app_version',
-        'transferwise_account_id',
-        'session_secret',
-        'email_verified_at',
         'social_account_id',
         'social_account_type',
-        'gift_aid_checked',
+        'is_active',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'deleted_by',
     ];
 
     /**
@@ -324,26 +293,19 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function rules($element, $merge = [])
     {
         $rules = [
-            //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
-            //'name' => 'required|string|max:255',
+            // 'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
+            // 'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email' . (isset($element->id) ? ",$element->id" : ''),
-            'first_name' => 'required|between:0,128',
-            'last_name' => 'required|between:0,128',
+            // 'first_name' => 'required|between:0,128',
+            // 'last_name' => 'required|between:0,128',
             // 'group_id' => 'required',
-            'partner_id' => 'required_if:group_id,2',
-            'charity_id' => 'required_if:group_id,5',
-            'address1' => 'between:0,512',
-            'address2' => 'between:0,512',
-            'city' => 'between:0,64',
-            'county' => 'between:0,64',
-            'zip_code' => 'between:0,20',
-            'phone' => 'between:0,20',
-            'mobile' => 'between:0,20',
-            'country_id' => 'required',
-            'transferwise_account_id' => 'between:0,36',
-            'email_verified_at' => 'date_format:Y-m-d H:i:s',
-            // 'created_by' => 'integer|exists:users,id',
-            // 'updated_by' => 'integer|exists:users,id',
+            // 'address1' => 'between:0,512',
+            // 'address2' => 'between:0,512',
+            // 'city' => 'between:0,64',
+            // 'county' => 'between:0,64',
+            // 'zip_code' => 'between:0,20',
+            // 'phone' => 'between:0,20',
+            // 'mobile' => 'between:0,20',
         ];
 
         // While creation/registration of user password and password_confirm both should be available
@@ -486,49 +448,17 @@ class User extends Authenticatable implements MustVerifyEmail
                 $element->group_titles_csv = implode(',', $group_titles);
             }
 
-            //Partner(Brand) selection should show for ‘Brand *’ group
-            if ($valid && isset($element->partner_id) && !(in_array('2', explode(',', $element->group_ids_csv)) || in_array('3', explode(',', $element->group_ids_csv)) || in_array('4', explode(',', $element->group_ids_csv)))) {
-                $valid = setMessage("Partner(brand) is discarded.");
-                $element->partner_id = null;
-            }
-            //Charity selection should be only available for ‘Charity *’ group
-            if ($valid && isset($element->charity_id) && !(in_array('5', explode(',', $element->group_ids_csv)) || in_array('6', explode(',', $element->group_ids_csv)) || in_array('7', explode(',', $element->group_ids_csv)))) {
-                $valid = setMessage("Charity is discarded.");
-                $element->charity_id = null;
-            }
-
-            // if ($valid && $element->group_ids_csv != 2) {
-            //     $element->tenant_id = null;
-            // }
-
             // fill common fields, null-fill, trim blanks from Request
             if ($valid) {
-                if (!isset($element->share_code)) $element->share_code = randomString(22) . time();
-
                 if ($element->country()->exists()) {
                     $element->country_name = $element->country->name;
                     $element->currency = $element->country->currency();
                 }
 
-                // Fill partner fields
-                if ($element->partner()->exists()) {
-                    $partner = $element->partner;
-                    $element->partner_uuid = $partner->uuid;
-                    $element->partner_name = $partner->name;
-                }
-
-                if ($element->charity()->exists()) {
-                    $charity = $element->charity;
-                    $element->partner_uuid = $charity->uuid;
-                    $element->partner_name = $charity->name;
-                }
-
-                $element->email_confirmed = (!$element->email_confirmed) ? 0 : 1;
-                if ($element->email_confirmed && is_null($element->email_verified_at)) {
+                $element->is_active = $element->is_active ?? 0;
+                if ($element->is_active == 1 && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
                 }
-
-                $element->is_active = ($element->email_confirmed == 1) ? 1 : 0;
             }
 
             return $valid;
@@ -539,20 +469,6 @@ class User extends Authenticatable implements MustVerifyEmail
         /************************************************************/
         static::saved(function (User $element) {
             $element->updateGroups($element->group_ids_csv);
-
-            if ($element->avatar_url) {
-                $upload = new Upload;
-                $upload->module_id = $element->module()->id;
-                $upload->element_id = $element->id;
-                $upload->type = 'Avatar';
-                $upload->path = $element->avatar_url;
-                $element->uploads()->save($upload);
-            }
-            // Create a Userdetails if does not exists
-            // if (!count($element->userdetail)) {
-            //     Userdetail::create(['user_id' => $element->id, 'name' => $element->name]);
-            // }
-
         });
 
         /************************************************************/
@@ -709,14 +625,6 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Email notification sent to user when he logs in for the first time.
      */
-    public function sendPartnerUserRegistrationEmailWithVerification()
-    {
-        partnerUserRegistrationEmailWithVerification($this);
-    }
-
-    /**
-     * Email notification sent to user when he logs in for the first time.
-     */
     public function firstLoginNotification()
     {
         userFirstLoginNotification($this);
@@ -768,36 +676,6 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Checks if user belongs to a partner/brand
-     *
-     * @return bool
-     */
-    public function ofPartner()
-    {
-        return $this->inGroupIds(Group::partnerGroupIds());
-    }
-
-    /**
-     * Checks if user belongs to a charity
-     *
-     * @return bool
-     */
-    public function ofCharity()
-    {
-        return $this->inGroupIds(Group::charityGroupIds());
-    }
-
-    /**
-     * Checks if user is a recommender
-     *
-     * @return bool
-     */
-    public function isRecommender()
-    {
-        return $this->inGroupIds(Group::recommenderGroupIds());
-    }
-
-    /**
      * Checks if the $element is viewable by current or any user passed as parameter.
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
@@ -817,10 +695,6 @@ class User extends Authenticatable implements MustVerifyEmail
         // Allow super user
         if ($user->isSuperUser()) {
             return true;
-        }
-        // Allow partner users of same partner
-        if ($user->ofPartner()) {
-            return $user->partner->isViewable();
         }
         return false;
     }
@@ -936,15 +810,6 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function country() { return $this->belongsTo(Country::class); }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function partner() { return $this->belongsTo(Partner::class); }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function charity() { return $this->belongsTo(Charity::class); }
 
     // Write new relationships below this line
 

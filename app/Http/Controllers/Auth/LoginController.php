@@ -260,7 +260,6 @@ class LoginController extends Controller
                 $user = new User($request->all());
                 $user->password = randomString();
                 $user->first_login_at = now();
-                $user->email_confirmed = 1;
             }
 
             // Set auth token (bearer token)

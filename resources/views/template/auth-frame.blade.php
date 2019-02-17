@@ -16,7 +16,7 @@
 <div class="login-box shadow">
     <div class="login-logo">
         <a href="{{route('home')}}">
-            <h3>Prohori</h3>
+            <h3 style="padding: 20px;">Prohori</h3>
             <img style="width: 200px; padding-top: 10px;" src="{{asset("prohori/images/logo.png")}}"
                  alt="{{setting('app-name')}}" title="{{setting('app-name')}}"/>
 
