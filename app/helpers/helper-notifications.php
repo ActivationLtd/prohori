@@ -104,7 +104,7 @@ function userRegistrationWithVerificationNotification($user)
     // Trigger email send.
     Mail::send($template, $data, function ($mail) use ($user) {
         /** @var \Illuminate\Mail\Message $mail */
-        $mail->subject('LetsBab | Registration');
+        $mail->subject('prohori | Registration');
         $mail->to($user->email);
     });
 }
@@ -114,7 +114,7 @@ function userRegistrationWithVerificationNotification($user)
  *
  * @param $user \App\User
  */
-function partnerUserRegistrationEmailWithVerification($user)
+function sampleEmail($user)
 {
     // Data to be used on the email
     $email_verification_url = URL::temporarySignedRoute('verification.verify', Carbon::now()->addMinutes(60), ['id' => $user->getKey()]);
@@ -126,7 +126,7 @@ function partnerUserRegistrationEmailWithVerification($user)
     // Trigger email send.
     Mail::send('emails.registration-email-partner', $data, function ($mail) use ($user) {
         /** @var \Illuminate\Mail\Message $mail */
-        $mail->subject('LetsBab | Partner Registration');
+        $mail->subject('prohori | Partner Registration');
         $mail->to($user->email);
     });
 }
@@ -146,7 +146,7 @@ function userFirstLoginNotification($user)
     // Trigger email send.
     Mail::send('emails.first-login', $data, function ($mail) use ($user) {
         /** @var \Illuminate\Mail\Message $mail */
-        $mail->subject('LetsBab | Welcome');
+        $mail->subject('prohori | Welcome');
         $mail->to($user->email);
     });
 }
@@ -168,7 +168,7 @@ function resetPasswordNotification($user, $token)
     // Trigger email send.
     Mail::send('emails.reset-password', $data, function ($mail) use ($user) {
         /** @var \Illuminate\Mail\Message $mail */
-        $mail->subject('LetsBab | Reset password');
+        $mail->subject('prohori | Reset password');
         $mail->to($user->email);
     });
 }
@@ -190,7 +190,7 @@ function emailVerificationNotification($user)
     // Trigger email send.
     Mail::send('emails.verify-email', $data, function ($mail) use ($user) {
         /** @var \Illuminate\Mail\Message $mail */
-        $mail->subject('LetsBab | Verify email');
+        $mail->subject('prohori | Verify email');
         $mail->to($user->email);
     });
 }

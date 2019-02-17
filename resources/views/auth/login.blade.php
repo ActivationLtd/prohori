@@ -35,7 +35,7 @@
 
             <div class="form-group row mb-0">
                 <div class="col-md-12 offset-md-4">
-                    <button type="submit" class="btn btn-primary btn-block lb-bg">
+                    <button type="submit" class="btn btn-primary btn-block prohori-bg">
                         {{ __('Login') }}
                     </button>
                     <div class="col-md-12 text-center" style="margin: 15px 0">
@@ -46,8 +46,8 @@
                     <div class="clearfix"></div>
                     {{--<a href="{{ route('login') }}">{{ __('Login') }}</a>--}}
 
-                    <a class="btn btn-default btn-block" href="{{ route('register') }}">{{ __('Register as user') }}</a>
-                    <a class="btn btn-default btn-block" href="{{ route('register.partner') }}">{{ __('Register as Partner/Brand') }}</a>
+                    {{--<a class="btn btn-default btn-block" href="{{ route('register') }}">{{ __('Register as user') }}</a>--}}
+                    {{--<a class="btn btn-default btn-block" href="{{ route('register.partner') }}">{{ __('Register as Partner/Brand') }}</a>--}}
                 </div>
             </div>
         </form>

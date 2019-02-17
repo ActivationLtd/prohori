@@ -12,12 +12,14 @@
     @show
     @include('template.css')
 </head>
-<body class="hold-transition login-page lb-bg">
+<body class="hold-transition login-page prohori-bg" style="background-image: url({{asset("prohori/images/page-title-4.jpg")}})">
 <div class="login-box shadow">
     <div class="login-logo">
         <a href="{{route('home')}}">
-            <img style="width: 100px; padding-top: 20px;" src="{{asset("letsbab/images/logo.png")}}"
+            <h3 style="padding: 20px;">Prohori</h3>
+            <img style="width: 200px; padding-top: 10px;" src="{{asset("prohori/images/logo.png")}}"
                  alt="{{setting('app-name')}}" title="{{setting('app-name')}}"/>
+
         </a>
     </div>
     <div class="login-box-body">

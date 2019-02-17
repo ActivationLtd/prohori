@@ -270,35 +270,7 @@ class Group extends Basemodule
         return [1];
     }
 
-    /**
-     * Get group ids of partner related groups
-     *
-     * @return array
-     */
-    public static function partnerGroupIds()
-    {
-        return [2, 3, 4];
-    }
 
-    /**
-     * Get group ids of charity related groups
-     *
-     * @return array
-     */
-    public static function charityGroupIds()
-    {
-        return [5, 6, 7];
-    }
-
-    /**
-     * Get group ids of charity related groups
-     *
-     * @return array
-     */
-    public static function recommenderGroupIds()
-    {
-        return [8];
-    }
 
 
     ############################################################################################

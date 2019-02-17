@@ -1,4 +1,4 @@
-@extends('emails.templates.letsbab-default')
+@extends('emails.templates.prohori-default')
 
 @section('email-content-header')
     Default Registration email

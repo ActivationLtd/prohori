@@ -342,7 +342,7 @@ class Country extends Basemodule
     }
 
     /**
-     * Letsbab can use a default(overriden) currency by setting this field
+     * prohori can use a default(overriden) currency by setting this field
      *
      * @return mixed
      */

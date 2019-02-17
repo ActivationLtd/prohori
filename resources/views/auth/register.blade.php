@@ -23,7 +23,7 @@
         @include('form.select-model',['var'=>['name'=>'country_id','label'=>'Country', 'table'=>'countries', 'container_class'=>'col-sm-12 no-padding']])
         <div class="form-group row mb-0">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-primary btn-block lb-bg">{{ __('Register') }}</button>
+                <button type="submit" class="btn btn-primary btn-block prohori-bg">{{ __('Register') }}</button>
             </div>
         </div>
         {{ Form::close() }}

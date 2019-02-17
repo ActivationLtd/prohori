@@ -9,7 +9,7 @@ class RecommenderApiTest extends TestCase
 {
 
     protected $email = 'recommender@gmail.com';
-    protected $password = 'letsbab';
+    protected $password = 'prohori';
     protected $bearer_token;
     /** @var  $user User */
     protected $user;

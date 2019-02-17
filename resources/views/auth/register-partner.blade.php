@@ -20,7 +20,7 @@
         @include('form.input-text',['var'=>['name'=>'password_confirmation','type'=>'password','label'=>'Confirm password', 'container_class'=>'col-sm-12']])
         <div class="form-group row mb-0">
             <div class="col-md-12">
-                <button type="submit" class="btn btn-primary btn-block lb-bg">{{ __('Register New Brand') }}</button>
+                <button type="submit" class="btn btn-primary btn-block prohori-bg">{{ __('Register New Brand') }}</button>
             </div>
         </div>
         {{ Form::close() }}

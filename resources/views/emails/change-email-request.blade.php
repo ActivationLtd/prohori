@@ -1,4 +1,4 @@
-@extends('emails.templates.letsbab-default')
+@extends('emails.templates.prohori-default')
 
 @section('email-content-header')
 Email updated
@@ -15,9 +15,9 @@ Email updated
 	Please verify your email address by <a href="{{$email_verification_url}}" target="_blank" style="color:#fff;">clicking the link</a>.
 	<br />
 	<br />
-	If you did not make this change or you beleive an unauthorised person has accessed your account,please contact letshelp@letsbab.com.
+	If you did not make this change or you beleive an unauthorised person has accessed your account,please contact letshelp@prohori.com.
 	<br />
 	<br />
-	The LetsBab Team
+	The prohori Team
 </h2>
 @endsection
