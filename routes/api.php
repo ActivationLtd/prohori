@@ -92,6 +92,11 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
 
 //  Public APIs coming from different sources
 Route::group(['prefix' => 'public'], function () {
+
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization, X-CSRF-Token','X-Auth-Token");
+
     Route::post('catch', 'Api\PublicApiController@catch')->name('api.public.catch');
     Route::post('beacons', 'Api\PublicApiController@beaconsStore')->name('api.public.beacons-store');
     Route::post('apiresponses', 'Api\PublicApiController@apiresponsesStore')->name('api.public.apiresponses-store');

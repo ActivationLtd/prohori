@@ -27,18 +27,7 @@ class HomeController extends Controller
         if ($user->isSuperUser()) {
             return view("dashboards.admin.index");
         }
-        if ($user->ofPartner()) {
-            // If the brand is not valid redirect him
-            if($user->partner->validateModel()->fails()) {
-                setError('First fill up all the necessary information related to your brand');
-                return Redirect::route('partners.edit',$user->partner_id);
-            }
-            return view("dashboards.partner.index")->with('partner', $user->partner);
 
-        }
-        if ($user->ofCharity()) {
-            return view("dashboards.charity.index")->with('partner', $user->charity);
-        }
         return view("dashboards.default.index");
     }
 }

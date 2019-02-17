@@ -12,13 +12,42 @@
  * @var $uuid                  string '1709c091-8114-4ba4-8fd8-91f0ba0b63e8'
  */
 ?>
+{{-- ******************* Template Section list (From top to bottom ) ********************* --}}
+@section('head')
+    @parent
+@endsection
 
+@section('sidebar-left')
+    @parent
+@endsection
 
-{{-- Form starts: Form fields are placed here. These will be added inside the spyrframe default form container in
- app/views/spyr/modules/base/form.blade.php --}}
+@section('title')
+    @parent
+@endsection
+
+@section('breadcrumb')
+    @parent
+@show
+
+@section('content-top')
+    @parent
+@endsection
+
+<?php
+/**
+ * This is the main form that gets submitted to the controller.
+ * Form starts: Form fields are placed here. These will be added inside the spyrframe default form container in
+ * app/views/spyr/modules/base/form.blade.php
+ */
+?>
+{{-- ******************* Form starts ********************* --}}
 @include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
 @include('form.is_active')
-{{-- Form ends --}}
+{{-- ******************* Form ends *********************** --}}
+
+@section('content-bottom')
+    @parent
+@endsection
 
 {{-- JS starts: javascript codes go here.--}}
 @section('js')
@@ -27,7 +56,6 @@
         /*******************************************************************/
         // List of functions
         /*******************************************************************/
-
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
             $("input[name=name]").addClass('validate[required]');
@@ -86,4 +114,3 @@
         enableValidation('{{$module_name}}'); // Instantiate validation function
     </script>
 @endsection
-{{-- JS ends --}}

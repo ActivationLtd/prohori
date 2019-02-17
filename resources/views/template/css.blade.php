@@ -14,7 +14,7 @@ $script_paths = [
     'templates/admin-lte/plugins/iCheck/square/blue.css',
     'templates/admin-lte/plugins/datepicker/datepicker3.css',
     'templates/admin-lte/css/custom.css',
-    'letsbab/css/letsbab.css',
+    'prohori/css/prohori.css',
 ]
 ?>
 
