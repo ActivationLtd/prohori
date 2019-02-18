@@ -4,10 +4,10 @@
  * parent template \app\views\spyr\modules\groups\form.blade.php
  *
  * Variables used in this view file.
- * @var $module_name           string 'superheroes'
+ * @var $module_name           string 'upazilas'
  * @var $mod                   \App\Module
- * @var $superhero             \App\Superhero Object that is being edited
- * @var $element               string 'superhero'
+ * @var $upazila             \App\Upazila Object that is being edited
+ * @var $element               string 'upazila'
  * @var $element_editable      boolean
  * @var $uuid                  string '1709c091-8114-4ba4-8fd8-91f0ba0b63e8'
  */
@@ -66,7 +66,7 @@
             /*******************************************************************/
             // Creating :
             // this is a place holder to write  the javascript codes
-            // during creation of an element. As this stage $$element or $superhero(module
+            // during creation of an element. As this stage $$element or $upazila(module
             // name singular) is not set, also there is no id is created
             // Following the convention of spyrframe you are only allowed to call functions
             /*******************************************************************/
@@ -82,9 +82,9 @@
             // Updating :
             // this is a place holder to write  the javascript codes that will run
             // while updating an element that has been already created.
-            // during update the variable $$element or $superhero(module
+            // during update the variable $$element or $upazila(module
             // name singular) is set, and id like other attributes of the element can be
-            // accessed by calling $$element->id, also $superhero->id
+            // accessed by calling $$element->id, also $upazila->id
             // Following the convention of spyrframe you are only allowed to call functions
             /*******************************************************************/
 
