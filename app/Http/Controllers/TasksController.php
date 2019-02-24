@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-class SuperheroesController extends ModulebaseController
+class TasksController extends ModulebaseController
 {
 
     /*********************************************************************
