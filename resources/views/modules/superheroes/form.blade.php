@@ -27,7 +27,7 @@
 
 @section('breadcrumb')
     @parent
-@show
+@endsection
 
 @section('content-top')
     @parent

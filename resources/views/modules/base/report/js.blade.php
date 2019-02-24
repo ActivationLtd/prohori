@@ -5,7 +5,7 @@
 
 <script type="text/javascript">
     $("textarea[name=fields_csv], textarea[name=columns_to_show_csv]").select2({
-        tags: <?php echo(tagsForView(dbTable($module_name)))?>,
+        tags: <?php echo(tagsForView(dbTable($data_source)))?>,
         tokenSeparators: [',']
     });
     $("textarea[name=column_aliases_csv]").select2({
