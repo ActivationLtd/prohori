@@ -33,7 +33,12 @@ $var['params']['id'] = (isset($var['params']['id'])) ? $var['params']['id'] : $v
         {{ $errors->first($var['name'], '<span class="help-block">:message</span>') }}
     @else
 
-        <span class="{{$var['params']['class']}} readonly">{{$var['old_input']}} &nbsp;</span>
+            <?php $tmp_name = $var['name']?>
+            <span class="{{$var['params']['class']}} readonly">
+            @if(isset($$element))
+                    {{$$element->$tmp_name}}
+                @endif
+        </span>
     @endif
 </div>
 

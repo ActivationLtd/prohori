@@ -633,3 +633,46 @@ function removeEmptyVals($array = [])
     return $temp;
 }
 
+/**
+ * Create a one dimensional array to be used in Eloquent whereIn
+ *
+ * @param $val
+ * @return array
+ */
+function arrayForWhereIn($val)
+{
+    $items = [];
+    if (is_array($val) && count($val)) {
+        $items = removeEmptyVals($val);
+    } else if (strlen($val) && strstr($val, ',')) {
+        $items = explode(',', $val);
+    } else if (strlen($val)) {
+        $items[] = (int)$val;
+    }
+    return $items;
+}
+
+
+
+
+/**
+ * create a letter range with arbitrary length
+ * @param int $length
+ * @return array
+ */
+function createLetterRange($length)
+{
+    $range = array();
+    $letters = range('A', 'Z');
+    for($i=0; $i<$length; $i++)
+    {
+        $position = $i*26;
+        foreach($letters as $ii => $letter)
+        {
+            $position++;
+            if($position <= $length)
+                $range[] = ($position > 26 ? $range[$i-1] : '').$letter;
+        }
+    }
+    return $range;
+}
