@@ -41,7 +41,13 @@
  */
 ?>
 {{-- ******************* Form starts ********************* --}}
-@include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+@include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'name_BN','label'=>'Bangla name', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'code','label'=>'Code', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'district_id','label'=>'District', 'table'=>'districts', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'latitude','label'=>'Latitude', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'operatingarea_id','label'=>'Operating area', 'table'=>'operatingareas', 'container_class'=>'col-sm-3']])
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 
@@ -59,6 +65,11 @@
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
             $("input[name=name]").addClass('validate[required]');
+            $('input[name=code]').addClass('validate[required],[min[0],maxSize[2],custom[integer]');
+            $('select[name=district_id]').addClass('validate[required]');
+            $('input[name=latitude]').addClass('validate[min[20.661913],max[26.635695]]');
+            $('input[name=longitude]').addClass('validate[min[88.002548],max[92.675171]]');
+
         }
     </script>
     @if(!isset($$element))
