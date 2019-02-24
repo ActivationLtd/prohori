@@ -2,14 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Module;
-use DB;
-use Redirect;
-use Request;
-use Response;
-use Validator;
-use View;
-
 class SuperheroesController extends ModulebaseController
 {
 
@@ -116,4 +108,16 @@ class SuperheroesController extends ModulebaseController
     // }
 
     // ****************** Grid functions end *********************************
+
+    /**
+     * Transform form inputs
+     *
+     * @param array $inputs
+     * @return array
+     */
+    // public function transformInputs($inputs = [])
+    // {
+    //     return $inputs;
+    // }
+    // ****************** transformInputs functions end ***********************
 }

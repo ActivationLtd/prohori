@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Module;
-use App\Reportbuilder;
+use App\Classes\Reportbuilder;
 use App\Traits\IsoGridDatatable;
 use App\Traits\IsoOutput;
 use App\Upload;
@@ -43,7 +43,6 @@ class ModulebaseController extends Controller
         $this->module_name = controllerModule(get_class($this));
         $this->module = Module::where('name', $this->module_name)->remember(cacheTime('long'))->first();
 
-
         # Add tenant context Inject tenant context in grid query
         if ($tenant_id = inTenantContext($this->module_name)) {
             Request::merge([tenantIdField() => $tenant_id]); // Set tenant_id in request header
@@ -66,7 +65,7 @@ class ModulebaseController extends Controller
     public function index()
     {
         if (hasModulePermission($this->module_name, 'view-list')) {
-            if (Request::get('ret') == 'json') {
+            if (Request::get('ret') === 'json') {
                 return self::list();
             }
             $view = 'modules.base.grid';
@@ -74,11 +73,11 @@ class ModulebaseController extends Controller
                 $view = 'modules.' . $this->module_name . '.grid';
             }
             return view($view)->with('grid_columns', $this->gridColumns());
-        } else {
-            return View::make('template.blank')
-                ->with('title', 'Permission denied!')
-                ->with('body', "You don't have permission [ " . $this->module_name . ".view-list]");
         }
+
+        return View::make('template.blank')
+            ->with('title', 'Permission denied!')
+            ->with('body', "You don't have permission [ " . $this->module_name . ".view-list]");
     }
 
     /**
@@ -91,11 +90,11 @@ class ModulebaseController extends Controller
         if (hasModulePermission($this->module_name, 'create')) { // check for create permission
             $uuid = (Request::old('uuid')) ? Request::old('uuid') : uuid(); // Set uuid for the new element to be created
             return View::make('modules.base.form')->with('uuid', $uuid)->with('element_editable', true);
-        } else {
-            return View::make('template.blank')
-                ->with('title', 'Permission denied!')
-                ->with('body', "You don't have permission [ " . $this->module_name . ".create]");
         }
+
+        return View::make('template.blank')
+            ->with('title', 'Permission denied!')
+            ->with('body', "You don't have permission [ " . $this->module_name . ".create]");
     }
 
     /**
@@ -118,7 +117,8 @@ class ModulebaseController extends Controller
         # Process store while creation
         # --------------------------------------------------------
         $validator = null;
-        $element = new $Model(Request::all());
+        $inputs = $this->transformInputs(Request::all());
+        $element = new $Model($inputs);
         if (hasModulePermission($this->module_name, 'create')) { // check module permission
             $validator = Validator::make(Request::all(), $Model::rules($element), $Model::$custom_validation_messages);
 
@@ -212,13 +212,14 @@ class ModulebaseController extends Controller
         # --------------------------------------------------------
         if (Request::get('ret') === 'json') {
             return Response::json(fillRet($ret));
-        } else {
-            if ($ret['status'] === 'fail') { // Show failed. Redirect to fail path(url)
-                return Redirect::route('home');
-            } else { // Redirect to edit path
-                return Redirect::route("$module_name.edit", $id);
-            }
         }
+
+        if ($ret['status'] === 'fail') { // Show failed. Redirect to fail path(url)
+            return Redirect::route('home');
+        }
+
+        // Redirect to edit path
+        return Redirect::route("$module_name.edit", $id);
     }
 
     /**
@@ -244,18 +245,20 @@ class ModulebaseController extends Controller
                     ->with('element', $element_name)//loads the singular module name in variable called $element = 'user'
                     ->with($element_name, $element)//loads the object into a variable with module name $user = (user object)
                     ->with('element_editable', $element->isEditable());
-            } else { // Not viewable by the user. Set error message and return value.
-                //return showPermissionErrorPage("The element is not view-able by current user.");
-                return View::make('template.blank')
-                    ->with('title', 'Permission denied!')
-                    ->with('body', "The element is not view-able by current user. [ Error :: isViewable()]");
             }
-        } else { // The element does not exist. Set error and return values
-            //return showGenericErrorPage("The item that you are trying to access does not exist or has been deleted");
+
+            // Not viewable by the user. Set error message and return value.
+            //return showPermissionErrorPage("The element is not view-able by current user.");
             return View::make('template.blank')
-                ->with('title', 'Not found!')
-                ->with('body', "The item that you are trying to access does not exist or has been deleted");
+                ->with('title', 'Permission denied!')
+                ->with('body', "The element is not view-able by current user. [ Error :: isViewable()]");
         }
+
+        // The element does not exist. Set error and return values
+        //return showGenericErrorPage("The item that you are trying to access does not exist or has been deleted");
+        return View::make('template.blank')
+            ->with('title', 'Not found!')
+            ->with('body', "The item that you are trying to access does not exist or has been deleted");
     }
 
     /**
@@ -280,13 +283,14 @@ class ModulebaseController extends Controller
         $validator = null;
         if ($element = $Model::find($id)) { // Check if element exists.
             if ($element->isEditable()) { // Check if the element is editable.
-                $element->fill(Request::all());
 
+                $element->fill($this->transformInputs(Request::all()));
                 $validator = $element->validateModel();
+
                 if ($validator->fails()) {
                     $ret = ret('fail', "Validation error(s) on updating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
                 } else {
-                    if ($element->fill(Request::all())->save()) { // Attempt to update/save.
+                    if ($element->save()) { // Attempt to update/save.
                         $ret = ret('success', "{$this->module->title} has been updated", ['data' => $element]);
                     } else { // attempt to update/save failed. Set error message and return values.
                         $ret = ret('fail', "{$this->module->title} update failed.");
@@ -303,23 +307,6 @@ class ModulebaseController extends Controller
         # Process return/redirect
         # --------------------------------------------------------
         return $this->jsonOrRedirect($ret, $validator, $element);
-        // if (Request::get('ret') == 'json') {
-        //     return Response::json(fillRet($ret));
-        // } else {
-        //     if ($ret['status'] == 'fail') { // Update failed. Redirect to fail path(url)
-        //         // Obtain redirection path based on url param redirect_fail
-        //         // Or, default redirect to back if no param is set.
-        //         $redirect = Request::has('redirect_fail') ? Redirect::to(Request::get('redirect_fail')) : Redirect::back();
-        //         // Include Inputs and Validation errors in redirection.
-        //         $redirect = $redirect->withInput();
-        //         if (isset($validator)) $redirect = $redirect->withErrors($validator);
-        //     } else {
-        //         // Obtain redirection path based on url param redirect_fail
-        //         // Or, default redirect to back if no param is set.
-        //         $redirect = Request::has('redirect_success') ? Redirect::to(Request::get('redirect_success')) : Redirect::back();
-        //     }
-        //     return $redirect;
-        // }
     }
 
     /**
@@ -358,23 +345,23 @@ class ModulebaseController extends Controller
         # --------------------------------------------------------
         if (Request::get('ret') === 'json') {
             return Response::json($ret = fillRet($ret));
-        } else {
-            if ($ret['status'] === 'fail') { // Delete failed. Redirect to fail path(url)
-                // Obtain redirection path based on url param redirect_fail
-                // Or, default redirect to back if no param is set.
-                $redirect = Request::has('redirect_fail') ? Redirect::to(Request::get('redirect_fail')) : Redirect::back();
-            } else { // Delete successful. Redirect to success path(url)
-                // Obtain redirection path based on url param redirect_fail
-                // Or, default redirect to back if no param is set.
-                if (Request::has('redirect_success')) $redirect = Redirect::to(Request::get('redirect_success'));
-                else {
-                    return View::make('template.blank')
-                        ->with('title', 'Delete success!')
-                        ->with('body', "The item that you are trying to access does not exist or has been deleted");
-                }
-            }
-            return $redirect;
         }
+
+        if ($ret['status'] === 'fail') { // Delete failed. Redirect to fail path(url)
+            // Obtain redirection path based on url param redirect_fail
+            // Or, default redirect to back if no param is set.
+            $redirect = Request::has('redirect_fail') ? Redirect::to(Request::get('redirect_fail')) : Redirect::back();
+        } else { // Delete successful. Redirect to success path(url)
+            // Obtain redirection path based on url param redirect_fail
+            // Or, default redirect to back if no param is set.
+            if (Request::has('redirect_success')) $redirect = Redirect::to(Request::get('redirect_success'));
+            else {
+                return View::make('template.blank')
+                    ->with('title', 'Delete success!')
+                    ->with('body', "The item that you are trying to access does not exist or has been deleted");
+            }
+        }
+        return $redirect;
     }
 
     /**
@@ -388,7 +375,49 @@ class ModulebaseController extends Controller
         //return showGenericErrorPage("[$id] can not be restored. Restore feature is disabled");
         return View::make('template.blank')
             ->with('title', 'Restore not allowed')
-            ->with('body', "The item can not be restored");
+            ->with('body', 'The item can not be restored');
+    }
+
+    /**
+     * Transforms inputs to a Model compatible format.
+     *
+     * @param array $inputs
+     * @return array
+     */
+    public function transformInputs($inputs = [])
+    {
+        /*
+         * Convert an array input to csv
+         ************************************************/
+        // $arr_to_csv_inputs = [
+        //     'array_input_field_name'
+        // ];
+        //
+        // foreach ($arr_to_csv_inputs as $i){
+        //     if(isset($inputs[$i]) && is_array($inputs[$i])){
+        //         $inputs[$i] = arrayToCsv($inputs[$i]);
+        //     }else{
+        //         $inputs[$i] = null;
+        //     }
+        // }
+
+        /*
+         * Convert an array input to json
+         ************************************************/
+        // $arr_to_json_inputs = [
+        //     'array_input_field_name'
+        // ];
+        //
+        // foreach ($arr_to_json_inputs as $i){
+        //
+        //     if(isset($inputs[$i]) && is_array($inputs[$i])){
+        //         $inputs[$i] = json_encode($inputs[$i]);
+        //     }else{
+        //         $inputs[$i] = null;
+        //     }
+        // }
+
+        return $inputs;
     }
 
     /**
@@ -472,6 +501,7 @@ class ModulebaseController extends Controller
     public function filterQueryConstructor($q)
     {
         $Model = model($this->module_name);
+        $text_fields = $Model::$text_fields;
         //$module_sys_name = $this->module_name;
 
         /** @var \App\Basemodule $q */
@@ -503,8 +533,11 @@ class ModulebaseController extends Controller
                 } else if (strlen($val) && strstr($val, ',')) {
                     $q = $q->whereIn($name, explode(',', $val));
                 } else if (strlen($val)) {
-                    // $q = $q->where($name, $val); // Before select2
-                    $q = $q->where($name, 'LIKE', "%$val%"); // For select2
+                    if (in_array($name, $text_fields)) {
+                        $q = $q->where($name, 'LIKE', "%$val%"); // For select2
+                    } else {
+                        $q = $q->where($name, $val); // Before select2
+                    }
                 }
             }
         }
@@ -577,17 +610,18 @@ class ModulebaseController extends Controller
         # --------------------------------------------------------
         # Process return/redirect
         # --------------------------------------------------------
-        if (Request::get('ret') == 'json') {
+        if (Request::get('ret') === 'json') {
             return Response::json(fillRet($ret));
-        } else {
-            if ($ret['status'] == 'fail') { // Update failed. Redirect to fail path(url)
-                return showGenericErrorPage($ret['message']);
-            } else { // Update successful. Redirect to success path(url)
-                /** @var array $changes */
-                return View::make('modules.base.changes')
-                    ->with('changes', $changes);
-            }
         }
+
+        if ($ret['status'] === 'fail') { // Update failed. Redirect to fail path(url)
+            return showGenericErrorPage($ret['message']);
+        }
+
+        // Update successful. Redirect to success path(url)
+        /** @var array $changes */
+        return View::make('modules.base.changes')
+            ->with('changes', $changes);
     }
 
     /**
@@ -597,35 +631,39 @@ class ModulebaseController extends Controller
      */
     public function report()
     {
-
         if (hasModulePermission($this->module_name, 'report')) {
             # Report source table/view
             if (!$this->report_data_source) { // If no source(view/table) is set in Module controller set the default table.
                 $this->report_data_source = DB::getTablePrefix() . $this->module_name;
             }
-
             /** @var string $data_source SQL view/table full name */
             $data_source = $this->report_data_source; // Define data source
-
             /***************************************************/
 
-            /** @var  $result_path  Define path to results view */
-            $result_path = "modules.base.report.results"; // Define result path
+            /** @var  $base_dir  string Define path to results view */
+            $base_dir = 'modules.base.report'; // Define result path
+
             // Override default if a module specific report blade exists in location  "{module_name}.report.result"
-            $module_report_view_path = $this->module_name . ".report.results";
-            if (View::exists($module_report_view_path)) $result_path = $module_report_view_path;
+            if (View::exists('modules.' . $this->module_name . '.report.results')) {
+                $base_dir = 'modules.' . $this->module_name . '.report';
+            }
 
             // Again override if a tenant specific result blade exists in "{module_name}.{tenant_id.}report.result"
             if (userTenantId()) {
-                $tenant_report_view_path = $this->module_name . "." . userTenantId() . ".report.results";
-                if (View::exists($tenant_report_view_path)) $result_path = $tenant_report_view_path;
+                if (View::exists($this->module_name . "." . userTenantId() . '.report.results')) {
+                    $base_dir = $this->module_name . "." . userTenantId() . '.report';
+                }
             }
+
+            $result_blade = $base_dir . '.results'; // Define result path
+
             /***************************************************/
 
-            if (Request::has('submit') && Request::get('submit') == 'Run') {
+            if (Request::has('submit') && Request::get('submit') === 'Run') {
 
                 /** @var string $fields_csv_esc Select fields enclosed in escape character (`) */
-                $fields_csv_esc = Reportbuilder::fieldsEscCsvPG(Reportbuilder::fieldsPG($data_source));
+                $fields = Reportbuilder::fieldsPG($data_source, arrayFromCsv(Request::get('fields_csv')));
+                $fields_csv_esc = Reportbuilder::fieldsEscCsvPG($fields);
 
                 /** @var array $data_source_fields Fields of data source (SQL table, view) */
                 $data_source_fields = Reportbuilder::dataSourceFields($data_source);
@@ -643,7 +681,7 @@ class ModulebaseController extends Controller
                 /***************************************************************************/
                 if ($user = user()) {
                     if (userTenantId() && in_array(tenantIdField(), $data_source_fields)) {
-                        $filters .= " AND \"public\"." . $data_source . '.' . tenantIdField() . "='" . userTenantId() . "' ";
+                        $filters .= ' AND "public".' . $data_source . '.' . tenantIdField() . "='" . userTenantId() . "' ";
                     }
                 }
                 /***********************************************/
@@ -656,26 +694,38 @@ class ModulebaseController extends Controller
                  * sanctioned post report.
                  ***********************************************/
                 // Add count field (Total) to select fields.
-                if (strlen(trim($group_by))) $fields_csv_esc .= ",Count(*) AS \"total\" ";
+                if (strlen(trim($group_by))) $fields_csv_esc .= ',Count(*) AS "total" ';
 
                 /***************************************************************************/
                 // Result
                 /***************************************************************************/
-                /** @var array $ret compact('results', 'sql', 'total', 'pagination') */
+                /** @var array $ret compact('data_source', 'results', 'sql', 'sql_count','total', 'group_by', 'order_by', 'limit', 'rows_per_page','filters') */
                 $ret = Reportbuilder::query($data_source, $fields_csv_esc, $filters, $group_by);
 
-                /***************************************************************************/
-                // Output
-                /***************************************************************************/
+                # Additional variables to pass to render
+                $ret['data_source'] = $data_source;
+                $ret['column_aliases'] = arrayFromCsv(Request::get('column_aliases_csv'));
+                $ret['columns_to_show'] = arrayFromCsv(Request::get('columns_to_show_csv'));
+                $ret['fields'] = arrayFromCsv(Request::get('fields_csv'));
+                $ret['data_source_fields'] = $data_source_fields;
+                $ret['fields_csv_esc'] = $fields_csv_esc;
+                $ret['base_dir'] = $base_dir;
+                $ret['result_blade'] = $result_blade;
 
-                return Reportbuilder::render($ret, $result_path);
+                /***************************************************************************/
+                // Transform
+                /***************************************************************************/
+                // Do your transformations here...
 
-            } else {
-                return view($result_path);
+                /***************************************************************************/
+                // Output/Render
+                /***************************************************************************/
+                return Reportbuilder::render($ret);
             }
-        } else {
-            return view('template.blank')->with('title', 'Permission denied!')
-                ->with('body', "You don't have permission [ " . $this->module_name . ".report]");
+            return view($result_blade)->with(compact('data_source', 'base_dir'));
         }
+
+        return view('template.blank')->with('title', 'Permission denied!')
+            ->with('body', "You don't have permission [ " . $this->module_name . ".report]");
     }
 }

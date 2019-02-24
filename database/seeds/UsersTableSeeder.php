@@ -11,13 +11,18 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $name = 'superuser';
-        if (\App\User::where('name', $name)->doesntExist()) {
-            \App\User::create([
-                'name' => $name,
-                'email' => "{$name}@gmail.com",
-                'password' => Hash::make('activation')
-            ]);
-        }
+        // $name = 'newsuperuser';
+        // if (\App\User::where('name', $name)->doesntExist()) {
+        //     \App\User::create([
+        //         'name' => $name,
+        //         'email' => "{$name}-seed@gmail.com",
+        //         'password' => Hash::make('activation'),
+        //         'remember_token' => str_random(10),
+        //         'email_verified_at' => now(),
+        //         'group_ids_csv' => 1,
+        //     ]);
+        // }
+
+        factory(App\User::class, 10)->create();
     }
 }
