@@ -40,7 +40,55 @@ class Task extends Basemodule
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = [
+        'uuid',
+        'name',
+        'name_ext',
+        'parent_id',
+        'priority',
+        'seq',
+        'description',
+        'tasktype_id',
+        'tasktype_name',
+        'assignment_id',
+        'assigned_to',
+        'watchers',
+        'status',
+        'previous_status',
+        'due_date',
+        'days_open',
+        'is_closed',
+        'closed_by',
+        'closing_note',
+        'is_resolved',
+        'resolved_by',
+        'resolve_note',
+        'is_verified',
+        'verified_by',
+        'verify_note',
+        'is_flagged',
+        'flagged_by',
+        'flag_note',
+        'tags',
+        'is_active',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'deleted_by',
+        'first_login_at',
+        'last_login_at',
+        'social_account_id',
+        'social_account_type',
+        'is_active',
+        'created_by',
+        'updated_by',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'deleted_by',
+    ];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
@@ -48,6 +96,20 @@ class Task extends Basemodule
      * @var array
      */
     // protected $guarded = [];
+
+    public static $statuses = [
+        'To do',
+        'In progress',
+        'Verify',
+        'Done',
+        'Closed'
+    ];
+
+    public static $priorities = [
+        'Normal',
+        'Low',
+        'High',
+    ];
 
     /**
      * Date fields

@@ -40,5 +40,11 @@ $factory->define(\App\Reply::class, function (Faker $faker) {
     ];
 });
 
+$factory->define(\App\Client::class, function (Faker $faker) {
+    return [
+        'name' => $faker->company,
+    ];
+});
+
 
 

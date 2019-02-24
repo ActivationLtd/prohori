@@ -6,21 +6,21 @@
  */
 
 /** Common view parameters for form elements */
-$var['container_class'] = isset($var['container_class']) ? $var['container_class'] : ''; // container_class: main wrapper div class.
-$var['name'] = isset($var['name']) ? $var['name'] : 'NO_NAME';    // name: Form file input name, this name will be posted when the form is submitted.
-$var['params'] = isset($var['params']) ? $var['params'] : [];     // params: Array of parameters to be passed to Form::select(). Usually this contains all the additional HTML attributes for the HTML input tag. i.e. ]class=>'my_class', id=>'my_id']
+$var['container_class'] = $var['container_class'] ?? 'col-sm-4'; // container_class: main wrapper div class.
+$var['name'] = $var['name'] ?? 'NO_NAME';    // name: Form file input name, this name will be posted when the form is submitted.
+$var['params'] = $var['params'] ?? [];     // params: Array of parameters to be passed to Form::select(). Usually this contains all the additional HTML attributes for the HTML input tag. i.e. ]class=>'my_class', id=>'my_id']
 $var['params']['class'] = isset($var['params']['class']) ? $var['params']['class'] . " form-control " : ' form-control '; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
 //$var['params']['id'] = isset($var['params']['id']) ? $var['params']['id'] : $var['name']; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
-$var['value'] = isset($var['value']) ? $var['value'] : '';        // value: Set the value of the form field. This will override all other values passed or derived from form-model binding or old input values.
-$var['label'] = isset($var['label']) ? $var['label'] : '';        // label: Label of the form field
-$var['label_class'] = isset($var['label_class']) ? $var['label_class'] : ''; //label_class: class of the label
+$var['value'] = $var['value'] ?? '';        // value: Set the value of the form field. This will override all other values passed or derived from form-model binding or old input values.
+$var['label'] = $var['label'] ?? '';        // label: Label of the form field
+$var['label_class'] = $var['label_class'] ?? ''; //label_class: class of the label
 $var['old_input'] = oldInputValue($var['name'], $var['value']);   // old_input: stores the existing value by computing using oldInputValue() function is the $var['value'] is not given.
 if (!isset($var['editable'])) { // Check if the form input/select is editable based on the value of $element_editable. The variable is set in the controller ModulebaseController and passed to the form view(form.blade.php) while rendering.
-    $var['editable'] = (isset($element_editable) && $element_editable == false) ? false : true;
+    $var['editable'] = !(isset($element_editable) && $element_editable == false);
 }
 
 /** Custom parameters */
-$var['type'] = isset($var['type']) ? $var['type'] : 'text';       // type: Defines what type of input it is for text type input. type can be 'text' or 'password'.
+$var['type'] = $var['type'] ?? 'text';       // type: Defines what type of input it is for text type input. type can be 'text' or 'password'.
 ?>
 
 

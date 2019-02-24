@@ -6,7 +6,7 @@
  * Variables used in this view file.
  * @var $module_name           string 'tasks'
  * @var $mod                   \App\Module
- * @var $task             \App\Task Object that is being edited
+ * @var $task                  \App\Task Object that is being edited
  * @var $element               string 'task'
  * @var $element_editable      boolean
  * @var $uuid                  string '1709c091-8114-4ba4-8fd8-91f0ba0b63e8'
@@ -41,7 +41,52 @@
  */
 ?>
 {{-- ******************* Form starts ********************* --}}
-@include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+@include('form.input-text',['var'=>['name'=>'name','label'=>'Task title', 'container_class'=>'col-sm-6']])
+{{--parent_id--}}
+<?php
+$var = [
+    'label' => 'Parent task',
+    'name' => 'parent_id',
+    'table' => 'tasks',
+    'name_field' => 'name_ext',
+    'container_class' => 'col-sm-6',
+];
+?>
+@include('form.select-ajax',['var'=>$var])
+
+{{--@include('form.select-model',['var'=>['name'=>'parent_id','label'=>'Parent task','table'=>'tasks', 'name_field'=>'name_ext', 'container_class'=>'col-sm-3']])--}}
+
+{{--priority--}}
+@include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>kv(\App\Task::$priorities),'container_class'=>'col-sm-3']])
+{{--seq--}}
+@include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-sm-6']])
+
+<div class="clearfix"></div>
+description
+tasktype_id
+tasktype_name
+assignment_id
+assigned_to
+watchers
+status
+previous_status
+due_date
+days_open
+is_closed
+closed_by
+closing_note
+is_resolved
+resolved_by
+resolve_note
+is_verified
+verified_by
+verify_note
+is_flagged
+flagged_by
+flag_note
+
+is_active
+
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 
