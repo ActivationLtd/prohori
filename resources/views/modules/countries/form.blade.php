@@ -37,15 +37,12 @@
 
 <div class="clearfix"></div>
 <h5>Original currency</h5>
-@include('form.input-text',['var'=>['name'=>'currency','label'=>'Qurrency', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'currency','label'=>'Currency', 'container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'currency_symbol','label'=>'Oiginal symbol', 'container_class'=>'col-sm-3']])
-<div class="clearfix"></div>
 
-<h5>LB currency override</h5>
-Over-ride the original currency with a currency used for LB -
 <div class="clearfix"></div>
-@include('form.input-text',['var'=>['name'=>'currency_override','label'=>'Currency usd(LB)', 'container_class'=>'col-sm-3']])
-@include('form.input-text',['var'=>['name'=>'currency_override_symbol','label'=>'Currency symbol(LB)', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'currency_override','label'=>'Currency usd', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'currency_override_symbol','label'=>'Currency symbol', 'container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'currency_override_symbol','label'=>'Is Un member', 'container_class'=>'col-sm-6']])--}}
 {{--is_active--}}
 @include('form.is_active')
@@ -61,8 +58,11 @@ Over-ride the original currency with a currency used for LB -
 
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
-            $("input[name=country_short_name]").addClass('validate[required]');
-            $("input[name=country_long_name]").addClass('validate[required]');
+            $("input[name=name]").addClass('validate[required]');
+            $("input[name=currency]").addClass('validate[required]');
+            $("input[name=currency_symbol]").addClass('validate[required]');
+            //$("input[name=country_short_name]").addClass('validate[required]');
+            //$("input[name=country_long_name]").addClass('validate[required]');
         }
     </script>
     @if(!isset($$element))
