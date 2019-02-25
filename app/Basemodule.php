@@ -4,8 +4,6 @@ namespace App;
 
 use App\Traits\IsoModule;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Watson\Rememberable\Rememberable;
 
 /**
  * Class Basemodule
@@ -46,6 +44,13 @@ class Basemodule extends Model
      * @var array
      */
     protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+
+    /**
+     * Fields for full text search i.e. LIKE '%substr%'
+     *
+     * @var array
+     */
+    public static $text_fields = ['name', 'name_ext'];
 
     /**
      * List of appended attribute. This attributes will be loaded in each Model

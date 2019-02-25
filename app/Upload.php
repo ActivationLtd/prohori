@@ -108,7 +108,7 @@ class Upload extends Basemodule
      *
      * @var array
      */
-    public static $types = ['Avatar', 'Block-logo', 'Logo', 'Cover-horizontal', 'Cover-vertical'];
+    public static $types = ['Profile photo', 'Logo'];
     /**
      * Disallow from mass assignment. (Black-listed fields)
      *

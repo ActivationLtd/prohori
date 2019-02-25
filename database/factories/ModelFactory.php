@@ -40,10 +40,11 @@ $factory->define(\App\Reply::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(\App\Channel::class, function (Faker $faker) {
-    $name = $faker->word;
+$factory->define(\App\Client::class, function (Faker $faker) {
     return [
-        'name' => $name,
-        'slug' => $name,
+        'name' => $faker->company,
     ];
 });
+
+
+

@@ -13,26 +13,26 @@
 
 /** Common view parameters for form elements */
 $rand = randomString();
-$var['container_class'] = isset($var['container_class']) ? $var['container_class'] : ''; // container_class: main wrapper div class.
-$var['name'] = isset($var['name']) ? $var['name'] : 'NO_NAME';    // name: Form file input name, this name will be posted when the form is submitted.
-$var['params'] = isset($var['params']) ? $var['params'] : [];     // params: Array of parameters to be passed to Form::select(). Usually this contains all the additional HTML attributes for the HTML input tag. i.e. ]class=>'my_class', id=>'my_id']
-$var['params']['class'] = isset($var['params']['class']) ? $var['params']['class'] . " form-control ajax" : ' form-control ajax'; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
-$var['params']['id'] = isset($var['params']['id']) ? $var['params']['id'] : $var['name']; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
-$var['value'] = isset($var['value']) ? $var['value'] : null;        // value: Set the value of the form field. This will override all other values passed or derived from form-model binding or old input values.
-$var['label'] = isset($var['label']) ? $var['label'] : '';        // label: Label of the form field
-$var['label_class'] = isset($var['label_class']) ? $var['label_class'] : ''; //label_class: class of the label
+$var['container_class'] = $var['container_class'] ?? ''; // container_class: main wrapper div class.
+$var['name'] = $var['name'] ?? 'NO_NAME';               // name: Form file input name, this name will be posted when the form is submitted.
+$var['params'] = $var['params'] ?? [];     // params: Array of parameters to be passed to Form::select(). Usually this contains all the additional HTML attributes for the HTML input tag. i.e. ]class=>'my_class', id=>'my_id']
+$var['params']['class'] = isset($var['params']['class']) ? $var['params']['class'] . ' form-control ajax' : ' form-control ajax'; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
+$var['params']['id'] = $var['params']['id'] ?? $var['name']; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
+$var['value'] = $var['value'] ?? null;        // value: Set the value of the form field. This will override all other values passed or derived from form-model binding or old input values.
+$var['label'] = $var['label'] ?? '';        // label: Label of the form field
+$var['label_class'] = $var['label_class'] ?? ''; //label_class: class of the label
 $var['old_input'] = oldInputValue($var['name'], $var['value']);   // old_input: stores the existing value by computing using oldInputValue() function is the $var['value'] is not given.
 if (!isset($var['editable'])) { // Check if the form input/select is editable based on the value of $element_editable. The variable is set in the controller ModulebaseController and passed to the form view(form.blade.php) while rendering.
-    $var['editable'] = (isset($element_editable) && $element_editable == false) ? false : true;
+    $var['editable'] = !(isset($element_editable) && $element_editable === false);
 }
 
 //$var['table'];
-$var['name_field'] = (isset($var['name_field'])) ? $var['name_field'] : 'name'; // name_field: Column of the table that will be shown as the readable name of the option for user. Usually this field is a text field. i.e. name, name_ext. Default is 'name'.
+$var['name_field'] = $var['name_field'] ?? 'name'; // name_field: Column of the table that will be shown as the readable name of the option for user. Usually this field is a text field. i.e. name, name_ext. Default is 'name'.
 $name_field = $var['name_field'];
-$var['value_field'] = (isset($var['value_field'])) ? $var['value_field'] : 'id'; // value_field: Column of the table that will be used for the value that will be actually posted. Usually this field is an id field. Default is 'id'.
+$var['value_field'] = $var['value_field'] ?? 'id'; // value_field: Column of the table that will be used for the value that will be actually posted. Usually this field is an id field. Default is 'id'.
 $value_field = $var['value_field'];
 
-$var['url'] = isset($var['url']) ? $var['url'] : ''; // URL to get Ajax data as search result
+$var['url'] = $var['url'] ?? route($var['table'] . '.list-json'); // URL to get Ajax data as search result
 
 $id = $preload = null;
 if ($var['old_input']) {
@@ -98,8 +98,10 @@ if ($var['value']) {
                     quietMillis: 1000,
                     data: function (term, page) {
                         return {
-                            {{$name_field}}: term
-                        };
+                        {{$name_field}}:
+                        term
+                    }
+                        ;
                     },
                     results: function (response) {
                         return {
