@@ -1,6 +1,6 @@
 <ul class="sidebar-menu">
     @if(user())
-        <li><a href="{{route("home")}}"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>
+        <li><a href="{{route("home")}}"><i class="fa fa-desktop"></i><span>Dashboard</span></a></li>
 
         @if(user()->isSuperUser())
             {{--<li class="header">MENU</li>--}}
@@ -18,16 +18,16 @@
             }
             renderMenuTree(\App\Modulegroup::tree(), $current_module_name, $breadcrumbs);
             ?>
-
+            <li><a href="{{route('invoices.report-bankline-export')}}"><i class="fa fa-download"></i>Bankline Export</a></li>
             {{--<li class="header">LABELS</li>--}}
             {{--<li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>--}}
             {{--<li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>--}}
             {{--<li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>--}}
         @else
             @if(user()->ofPartner())
-                <li><a href="{{route('partners.show', user()->partner_id)}}"><i class="fa fa-info-circle"></i> Brand
+                <li><a href="{{route('partners.show', user()->partner_id)}}"><i class="fa fa-info-circle"></i>Brand
                         settings</a></li>
-                <li><a href="{{route('partners.integration')}}"><i class="fa fa-code"></i>Tracker Integration</a></li>
+                <li><a href="{{route('partners.integration')}}"><i class="fa fa-code"></i>Integration</a></li>
                 <?php
                 $module_names = [
                     'recommendurls',
@@ -42,7 +42,7 @@
                     /** @var \App\Module $module */
                     $module = \App\Module::where('name', $name)->remember(cacheTime('long'))->first()?>
                     <li><a href="{{route("{$module->name}.index")}}"><i
-                                    class="{{$module->icon_css}}"></i> {{$module->title}}</a></li>
+                                    class="{{$module->icon_css}}"></i>{{$module->title}}</a></li>
                 @endforeach
 
             @endif

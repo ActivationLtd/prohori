@@ -6,7 +6,7 @@
  */
 
 /** Common view parameters for form elements */
-$var['container_class'] = $var['container_class'] ?? '';
+$var['container_class'] = $var['container_class'] ?? 'col-md-4';
 $var['name'] = $var['name'] ?? 'NO_NAME';
 $var['params'] = $var['params'] ?? [];
 $var['params']['class'] = (isset($var['params']['class'])) ? $var['params']['class'] . " form-control " : ' form-control ';
@@ -21,8 +21,7 @@ if ($var['editable'] == false) $var['params']['disabled'] = true;
 
 /** Custom parameters */
 $var['options'] = (isset($var['options'])) ? $var['options'] : [];
-$var['multiple'] = (array_search('multiple', $var['params']) !== false) ? true : false; // multiple: Store a flag if multiple selection is provided $var['params']
-$var['name_transformed'] = ($var['multiple']) ? $var['name'] . "[]" : $var['name'];  // Add [] after name if multiple selection
+$var['multiple'] = (in_array('multiple', $var['params'])) ? true : false; // multiple: Store a flag if multiple selection is provided $var['params']
 ?>
 
 {{-- HTML for the input/select block --}}
@@ -35,8 +34,11 @@ $var['name_transformed'] = ($var['multiple']) ? $var['name'] . "[]" : $var['name
             {{$var['label']}}
         </label>
     @endif
+    <?php
 
-    {{ Form::select($var['name_transformed'], $var['options'], $var['old_input'], $var['params']) }}
+    $var['select_name'] = ($var['multiple']) ? $var['name'] . "[]" : $var['name'];
+    ?>
+    {{ Form::select($var['select_name'], $var['options'], $var['old_input'], $var['params']) }}
     {!! $errors->first($var['name'], '<span class="help-block">:message</span>') !!}
 </div>
 
