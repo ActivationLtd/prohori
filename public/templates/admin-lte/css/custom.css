@@ -9,7 +9,7 @@
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6,
 .content-header h4,
 .main-header .logo, .logo-mini, .logo-lg {
-    font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;
+    /*font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;*/
 !important;
 }
 
@@ -79,9 +79,9 @@ textarea {
     height: 271px;
 }
 
-/* made label font weight notmal*/
+/* made label font weight bold*/
 label {
-    font-weight: normal;
+    font-weight: bold;
 }
 
 /* style for permissions tree in group details form*/
@@ -263,6 +263,7 @@ div.form-group span.readonly {
 
 .select2-container-multi .select2-choices .select2-search-choice {
     line-height: 13px;
+    border: 0;
 }
 
 .select2-container-multi .select2-choices {
@@ -341,6 +342,16 @@ textarea.form-control {
 }
 
 /* Remove border bottom from datatable rows_per_page selector */
-.div.dataTables_length select{
+.div.dataTables_length select {
     border-bottom: 0;
 }
+
+.sidebar-menu > li > a > .fa, .sidebar-menu > li > a > .glyphicon, .sidebar-menu > li > a > .ion {
+    width: 25px;
+}
+
+pre.sf-dump, pre.sf-dump .sf-dump-default {
+    z-index: 100;
+!important;
+}
+

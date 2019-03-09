@@ -221,7 +221,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'tenant_id',
         'name',
         'email',
-        //'password',
+        'password',
         'remember_token',
         'email_verification_code',
         'email_verified_at',
@@ -293,12 +293,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function rules($element, $merge = [])
     {
         $rules = [
-            // 'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
-            // 'name' => 'required|string|max:255',
+            //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
+            //'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email' . (isset($element->id) ? ",$element->id" : ''),
-            // 'first_name' => 'required|between:0,128',
-            // 'last_name' => 'required|between:0,128',
-            // 'group_id' => 'required',
             // 'address1' => 'between:0,512',
             // 'address2' => 'between:0,512',
             // 'city' => 'between:0,64',
@@ -311,11 +308,15 @@ class User extends Authenticatable implements MustVerifyEmail
         // While creation/registration of user password and password_confirm both should be available
         // Also if one password is given the other one should be given as well
         // While creation/registration of user password and password_confirm both should be available
-        // if (!isset($element->id) || (Request::has('password') && Request::has('password_confirmation'))) {
-        //     $rules = array_merge($rules, [
-        //         'password' => 'required|digits_between:5,8|numeric|confirmed',
-        //     ]);
-        // }
+        if (!isset($element->id)) {
+            $rules = array_merge($rules, [
+                'password' => 'required|min:6|confirmed',
+            ]);
+        } else if (Request::get('password')) {
+            $rules = array_merge($rules, [
+                'password' => 'min:6|confirmed',
+            ]);
+        }
 
         return array_merge($rules, $merge);
     }
