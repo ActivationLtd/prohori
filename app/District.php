@@ -68,6 +68,11 @@ class District extends Basemodule
     {
         $rules = [
             'name' => 'required|between:1,255|unique:districts,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'code' => 'required|digits_between:2,2|unique:districts,code' . (isset($element->id) ? ",$element->id" : ''),
+            'name_BN' => 'between:1,255',
+            'latitude' => 'numeric|between:20.661913,26.635695',
+            'longitude' => 'numeric|between:88.002548,92.675171',
+            'division_id' => 'required|exists:divisions,id,is_active,"1"',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
