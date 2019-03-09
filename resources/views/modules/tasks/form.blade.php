@@ -84,7 +84,6 @@ verify_note
 is_flagged
 flagged_by
 flag_note
-
 is_active
 
 @include('form.is_active')
