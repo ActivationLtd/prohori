@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Reports\DefaultModuleReport;
 use App\Module;
-use App\Classes\Reportbuilder;
 use App\Traits\IsoGridDatatable;
 use App\Traits\IsoOutput;
 use App\Upload;
@@ -148,35 +148,6 @@ class ModulebaseController extends Controller
         # Process return/redirect
         # --------------------------------------------------------
         return $this->jsonOrRedirect($ret, $validator, $element);
-        // if (Request::get('ret') == 'json') {
-        //     // fill with session values(messages, errors, success etc) and redirect
-        //     $ret = fillRet($ret);
-        //     if ($ret['status'] == 'success' && (isset($ret['redirect']) && $ret['redirect'] == '#new')) {
-        //         $ret['redirect'] = route("$module_name.edit", $element->id);
-        //     }
-        //     return Response::json($ret);
-        // } else {
-        //     if ($ret['status'] == 'fail') {
-        //         // Obtain redirection path based on url param redirect_fail
-        //         // Or, default redirect to back if no param is set.
-        //         $redirect = Request::has('redirect_fail') ? Redirect::to(Request::get('redirect_fail')) : Redirect::back();
-        //
-        //         // Include Inputs and Validation errors in redirection.
-        //         $redirect = $redirect->withInput();
-        //         if (isset($validator)) $redirect = $redirect->withErrors($validator);
-        //
-        //     } else {
-        //         // Obtain redirection path based on url param redirect_fail
-        //         // Or, default redirect to back if no param is set.
-        //         if (Request::has('redirect_success')) {
-        //             $redirect = Request::get('redirect_success') == '#new' ? Redirect::route("$module_name.edit", $element->id)
-        //                 : Redirect::to(Request::get('redirect_success'));
-        //         } else {
-        //             $redirect = Redirect::back();
-        //         }
-        //     }
-        //
-        //     return $redirect;
     }
 
     /**
@@ -379,48 +350,6 @@ class ModulebaseController extends Controller
     }
 
     /**
-     * Transforms inputs to a Model compatible format.
-     *
-     * @param array $inputs
-     * @return array
-     */
-    public function transformInputs($inputs = [])
-    {
-        /*
-         * Convert an array input to csv
-         ************************************************/
-        // $arr_to_csv_inputs = [
-        //     'array_input_field_name'
-        // ];
-        //
-        // foreach ($arr_to_csv_inputs as $i){
-        //     if(isset($inputs[$i]) && is_array($inputs[$i])){
-        //         $inputs[$i] = arrayToCsv($inputs[$i]);
-        //     }else{
-        //         $inputs[$i] = null;
-        //     }
-        // }
-
-        /*
-         * Convert an array input to json
-         ************************************************/
-        // $arr_to_json_inputs = [
-        //     'array_input_field_name'
-        // ];
-        //
-        // foreach ($arr_to_json_inputs as $i){
-        //
-        //     if(isset($inputs[$i]) && is_array($inputs[$i])){
-        //         $inputs[$i] = json_encode($inputs[$i]);
-        //     }else{
-        //         $inputs[$i] = null;
-        //     }
-        // }
-
-        return $inputs;
-    }
-
-    /**
      * Returns a collection of objects as Json
      *
      * @var \App\Basemodule $Model
@@ -487,7 +416,8 @@ class ModulebaseController extends Controller
 
         /*********** Query construction ends ********************/
 
-        $data = $q->remember(cacheTime('none'))->get();
+        // $data = $q->remember(cacheTime('none'))->get();
+        $data = $q->get();
         $ret = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
         return Response::json(fillRet($ret));
     }
@@ -541,40 +471,10 @@ class ModulebaseController extends Controller
                 }
             }
         }
-        #sort field
-        // if (Request::has('sort_by')) {
-        //     $sort_by = Request::get('sort_by');
-        //     $q = $q->orderBy($sort_by, 'ASC');
-        // }
-        # set offset
-        /*if (Request::has('offset')) $q = $q->skip(Request::get('offset'));
-        #set limit
-        $limit = $max_limit = 20;
-        if (Request::has('limit')) {
-            if (Request::get('limit') <= $max_limit) {
-                $limit = Request::get('limit');
-            }
-        }
-        $q = $q->take($limit);*/
 
         return $q;
 
     }
-
-    /*public function filterQueryConstructorAddLimit($q) {
-        # set offset
-        if (Request::has('offset')) $q = $q->skip(Request::get('offset'));
-        #set limit
-        $limit = $max_limit = 20;
-        if (Request::has('limit')) {
-            if (Request::get('limit') <= $max_limit) {
-                $limit = Request::get('limit');
-            }
-        }
-        $q = $q->take($limit);
-
-        return $q;
-    }*/
 
     /**
      * Show all the changes/change logs of an item
@@ -625,107 +525,86 @@ class ModulebaseController extends Controller
     }
 
     /**
-     * Module generic report
+     * Get data source of report
      *
-     * @return \App\Http\Controllers\JsonResponse|bool|\Illuminate\Contracts\View\View|\Illuminate\View\View
+     * @return null|string
+     */
+    public function reportDataSource()
+    {
+        return $this->report_data_source ?? DB::getTablePrefix() . $this->module_name;
+    }
+
+    /**
+     * Get base directory of blade views
+     *
+     * @return string
+     */
+    public function reportViewBaseDir()
+    {
+        /** @var  $base_dir  string Define path to results view */
+        $base_dir = 'modules.base.report';
+
+        // Override default if a module specific report blade exists in location  "{module_name}.report.result"
+        if (View::exists('modules.' . $this->module_name . '.report.results')) {
+            $base_dir = 'modules.' . $this->module_name . '.report';
+        }
+        return $base_dir;
+    }
+
+    /**
+     * Show and render report
      */
     public function report()
     {
         if (hasModulePermission($this->module_name, 'report')) {
-            # Report source table/view
-            if (!$this->report_data_source) { // If no source(view/table) is set in Module controller set the default table.
-                $this->report_data_source = DB::getTablePrefix() . $this->module_name;
-            }
-            /** @var string $data_source SQL view/table full name */
-            $data_source = $this->report_data_source; // Define data source
-            /***************************************************/
-
-            /** @var  $base_dir  string Define path to results view */
-            $base_dir = 'modules.base.report'; // Define result path
-
-            // Override default if a module specific report blade exists in location  "{module_name}.report.result"
-            if (View::exists('modules.' . $this->module_name . '.report.results')) {
-                $base_dir = 'modules.' . $this->module_name . '.report';
-            }
-
-            // Again override if a tenant specific result blade exists in "{module_name}.{tenant_id.}report.result"
-            if (userTenantId()) {
-                if (View::exists($this->module_name . "." . userTenantId() . '.report.results')) {
-                    $base_dir = $this->module_name . "." . userTenantId() . '.report';
-                }
-            }
-
-            $result_blade = $base_dir . '.results'; // Define result path
-
-            /***************************************************/
-
-            if (Request::has('submit') && Request::get('submit') === 'Run') {
-
-                /** @var string $fields_csv_esc Select fields enclosed in escape character (`) */
-                $fields = Reportbuilder::fieldsPG($data_source, arrayFromCsv(Request::get('fields_csv')));
-                $fields_csv_esc = Reportbuilder::fieldsEscCsvPG($fields);
-
-                /** @var array $data_source_fields Fields of data source (SQL table, view) */
-                $data_source_fields = Reportbuilder::dataSourceFields($data_source);
-
-                /***********************************************
-                 * Customize : Over-ride this custom query builder for
-                 * handling special fields. i.e. date range etc.
-                 ***********************************************/
-                /** @var string $filters SQL where clause */
-                $filters = Reportbuilder::sqlFiltersFromInputsPG($data_source_fields, $data_source);
-
-                /***************************************************************************/
-                // Based on currently logged in user type further narrow down the query
-                // by adding tenant context or facility context.
-                /***************************************************************************/
-                if ($user = user()) {
-                    if (userTenantId() && in_array(tenantIdField(), $data_source_fields)) {
-                        $filters .= ' AND "public".' . $data_source . '.' . tenantIdField() . "='" . userTenantId() . "' ";
-                    }
-                }
-                /***********************************************/
-
-                /** @var string $group_by Group By string */
-                $group_by = Reportbuilder::groupByPG($data_source);
-
-                /***********************************************
-                 * Customize : Over-ride this for cases where more fields are required to show. i.e. male, female count in
-                 * sanctioned post report.
-                 ***********************************************/
-                // Add count field (Total) to select fields.
-                if (strlen(trim($group_by))) $fields_csv_esc .= ',Count(*) AS "total" ';
-
-                /***************************************************************************/
-                // Result
-                /***************************************************************************/
-                /** @var array $ret compact('data_source', 'results', 'sql', 'sql_count','total', 'group_by', 'order_by', 'limit', 'rows_per_page','filters') */
-                $ret = Reportbuilder::query($data_source, $fields_csv_esc, $filters, $group_by);
-
-                # Additional variables to pass to render
-                $ret['data_source'] = $data_source;
-                $ret['column_aliases'] = arrayFromCsv(Request::get('column_aliases_csv'));
-                $ret['columns_to_show'] = arrayFromCsv(Request::get('columns_to_show_csv'));
-                $ret['fields'] = arrayFromCsv(Request::get('fields_csv'));
-                $ret['data_source_fields'] = $data_source_fields;
-                $ret['fields_csv_esc'] = $fields_csv_esc;
-                $ret['base_dir'] = $base_dir;
-                $ret['result_blade'] = $result_blade;
-
-                /***************************************************************************/
-                // Transform
-                /***************************************************************************/
-                // Do your transformations here...
-
-                /***************************************************************************/
-                // Output/Render
-                /***************************************************************************/
-                return Reportbuilder::render($ret);
-            }
-            return view($result_blade)->with(compact('data_source', 'base_dir'));
+            $report = new DefaultModuleReport();
+            $report->data_source = $this->reportDataSource();
+            $report->base_dir = $this->reportViewBaseDir();
+            return $report->show();
         }
-
         return view('template.blank')->with('title', 'Permission denied!')
             ->with('body', "You don't have permission [ " . $this->module_name . ".report]");
+    }
+
+    /**
+     * Transforms inputs to a Model compatible format.
+     *
+     * @param array $inputs
+     * @return array
+     */
+    public function transformInputs($inputs = [])
+    {
+        /*
+         * Convert an array input to csv
+         ************************************************/
+        // $arr_to_csv_inputs = [
+        //     'array_input_field_name'
+        // ];
+        //
+        // foreach ($arr_to_csv_inputs as $i){
+        //     if(isset($inputs[$i]) && is_array($inputs[$i])){
+        //         $inputs[$i] = arrayToCsv($inputs[$i]);
+        //     }else{
+        //         $inputs[$i] = null;
+        //     }
+        // }
+
+        /*
+         * Convert an array input to json
+         ************************************************/
+        // $arr_to_json_inputs = [
+        //     'array_input_field_name'
+        // ];
+        //
+        // foreach ($arr_to_json_inputs as $i){
+        //
+        //     if(isset($inputs[$i]) && is_array($inputs[$i])){
+        //         $inputs[$i] = json_encode($inputs[$i]);
+        //     }else{
+        //         $inputs[$i] = null;
+        //     }
+        // }
+
+        return $inputs;
     }
 }

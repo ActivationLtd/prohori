@@ -14,7 +14,7 @@
 /** Common view parameters for form elements */
 $rand = randomString();
 $var['container_class'] = $var['container_class'] ?? ''; // container_class: main wrapper div class.
-$var['name'] = $var['name'] ?? 'NO_NAME';               // name: Form file input name, this name will be posted when the form is submitted.
+$var['name'] = $var['name'] ?? 'NO_NAME';    // name: Form file input name, this name will be posted when the form is submitted.
 $var['params'] = $var['params'] ?? [];     // params: Array of parameters to be passed to Form::select(). Usually this contains all the additional HTML attributes for the HTML input tag. i.e. ]class=>'my_class', id=>'my_id']
 $var['params']['class'] = isset($var['params']['class']) ? $var['params']['class'] . ' form-control ajax' : ' form-control ajax'; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
 $var['params']['id'] = $var['params']['id'] ?? $var['name']; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.

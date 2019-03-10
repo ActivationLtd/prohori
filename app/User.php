@@ -6,7 +6,6 @@ use App\Observers\UserObserver;
 use App\Traits\IsoModule;
 use App\Traits\IsoUserPermission;
 use App\Traits\ProhoriUserTrait;
-use Hash;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -233,6 +232,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'session_secret',
         'tenant_editable',
         'permissions',
+        'group_ids',
         'group_ids_csv',
         'group_titles_csv',
         'name_initial',
@@ -263,6 +263,15 @@ class User extends Authenticatable implements MustVerifyEmail
         'updated_at',
         'deleted_at',
         'deleted_by',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'group_ids' => 'array',
     ];
 
     /**
@@ -402,62 +411,36 @@ class User extends Authenticatable implements MustVerifyEmail
                 $element->api_token = hash('sha256', randomString(10), false);
             }
 
-            // Create new hashed password
-            if (Request::has('password') && Request::has('password_confirmation')) {
-                $new_password = Request::get('password');
-                $new_password_confirmation = Request::get('password_confirmation');
-                if (strlen($new_password) && strlen($new_password_confirmation)) {
-                    if ($new_password == $new_password_confirmation) {
-                        $element->password = Hash::make(Request::get('password'));
-                    } else {
-                        $valid = setError('Password does not match');
-                    }
-                }
+            if (is_array($element->group_ids)) {
+                $group_ids = $element->group_ids;
+                $element->group_ids = json_encode($element->group_ids);
+            } else {
+                $group_ids = json_decode($element->group_ids);
             }
 
             // Set group selection limit
             $max_groups = 1;
-            if (inputIsArray('group_id') && count(Request::get('group_id')) > $max_groups) {
+            if (is_array($group_ids) && (count($group_ids) > $max_groups)) {
                 $valid = setError("You can assign only {$max_groups} group.");
             }
-
-            // Make invalid if superuser is assigned to any specific tenant.
-            $tenant_idf = tenantIdField();
-            $superuser_group_id = Group::where('name', 'superuser')->remember(cacheTime('long'))->first()->id;
-            if ($valid && inputIsArray('group_id') && in_array($superuser_group_id, Request::get('group_id', [])) && $element->$tenant_idf > 0) {
-                $valid = setError("Superuser can not belong to any tenant/customer.");
-            }
-            if ($valid && Request::has('group_id')) {
-
-                // Fill group_ids_csv based on group selection
-                $element->group_ids_csv = $element->group_titles_csv = null;
-
-                //$element->group_ids_csv = commaWrap(implode(',', Request::get('group_id', []))); // Comma wrap is not necessary for single group assignment.
-
-                $element->group_ids_csv = Request::get('group_id');
-                if (is_array($element->group_ids_csv)) {
-                    $element->group_ids_csv = implode(',', $element->group_ids_csv);
-                }
-                $group_ids = explode(',', $element->group_ids_csv);
-                $group_titles = [];
-                foreach ($group_ids as $group_id) {
-                    if ($group = Group::remember(cacheTime('long'))->find($group_id)) {
-                        array_push($group_titles, $group->title);
-                    }
-                }
-                //$element->group_titles_csv = commaWrap(implode(',', $group_titles)); // Comma wrap is not necessary for single group assignment.
-                $element->group_titles_csv = implode(',', $group_titles);
+            if (is_array($group_ids) && count($group_ids)) {
+                $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
+                $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
 
             // fill common fields, null-fill, trim blanks from Request
             if ($valid) {
+
                 if ($element->country()->exists()) {
                     $element->country_name = $element->country->name;
                     $element->currency = $element->country->currency();
                 }
 
-                $element->is_active = $element->is_active ?? 0;
-                if ($element->is_active == 1 && $element->email_verified_at === null) {
+                if (!isset($element->is_active)) {
+                    $element->is_active = ($element->email_confirmed == 1) ? 1 : 0;
+                }
+
+                if ($element->is_active && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
                 }
             }
@@ -469,7 +452,8 @@ class User extends Authenticatable implements MustVerifyEmail
         // Execute codes after model is successfully saved
         /************************************************************/
         static::saved(function (User $element) {
-            $element->updateGroups($element->group_ids_csv);
+            // Sync partner_category table
+            $element->groups()->sync($element->group_ids);
         });
 
         /************************************************************/
@@ -883,5 +867,28 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         if ($this->avatar()) return $this->avatar()->url;
         return null;
+    }
+
+    /**
+     * Set partnercategory ids to array
+     *
+     *
+     * @param  array $value
+     * @return void
+     */
+    public function setGroupIdsAttribute($value)
+    {
+        // Original default value
+        $this->attributes['group_ids'] = $value;
+
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['group_ids'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
     }
 }

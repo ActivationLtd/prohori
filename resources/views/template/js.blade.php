@@ -3,10 +3,10 @@ $script_paths = [
     'templates/admin-lte/plugins/jQuery/jquery-2.2.3.min.js',
     'templates/js/jquery-ui-1.10.3.min.js',
     'templates/admin-lte/bootstrap/js/bootstrap.min.js',
-    'templates/admin-lte/plugins/chartjs/Chart.min.js', // Chart
-    'templates/admin-lte/plugins/fastclick/fastclick.js', // Chart
-    'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js', // Chart
-    'templates/admin-lte/plugins/morris/morris.min.js', // Chart
+    'templates/admin-lte/plugins/chartjs/Chart.min.js',
+    'templates/admin-lte/plugins/fastclick/fastclick.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js',
+    'templates/admin-lte/plugins/morris/morris.min.js',
     'templates/admin-lte/plugins/sparkline/jquery.sparkline.min.js',
     'https://www.gstatic.com/charts/loader.js',
     'templates/admin-lte/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js',
@@ -19,7 +19,7 @@ $script_paths = [
     'templates/admin-lte/plugins/iCheck/icheck.min.js',
     'templates/admin-lte/plugins/ckeditor/ckeditor.js',
     'templates/admin-lte/js/app.min.js',
-    'templates/admin-lte/js/demo.js',
+    // 'templates/admin-lte/js/demo.js',
     // 'templates/admin-lte/plugins/validator/validation.js',
     'templates/admin-lte/plugins/uploadfile/jquery.uploadfile.js',
     'templates/admin-lte/plugins/datatables/jquery.dataTables.min.js',
