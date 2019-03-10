@@ -16,6 +16,13 @@ trait IsoModule
     use IsoTenant;
 
     /**
+     * Fields for full text search i.e. LIKE '%substr%'
+     * @var array
+     */
+    public static $text_fields = ['name', 'name_ext'];
+
+
+    /**
      * @param $element
      * @param array $merge
      * @return array
@@ -148,7 +155,7 @@ trait IsoModule
      */
     public function module()
     {
-        return Module::where('name', moduleName(get_class($this)))->remember(cacheTime('long'))->first();
+        return Module::where('name', moduleName(get_class($this)))->remember(cacheTime('very-long'))->first();
     }
 
 
@@ -215,7 +222,7 @@ trait IsoModule
                 // Write new validation logic for this operation in this block.
             }
             */
-            $valid = $this->isCreatable($user_id, $set_msg);
+            //$valid = $this->isCreatable($user_id, $set_msg);
         }
         return $valid;
     }
@@ -232,6 +239,7 @@ trait IsoModule
      */
     public function isEditable($user_id = null, $set_msg = false)
     {
+
         /** @var \App\User $user */
         $user = user($user_id);
         $valid = true;
@@ -241,7 +249,7 @@ trait IsoModule
             //     // Write new validation logic for this operation in this block.
             // }
 
-            $valid = $this->isViewable($user_id, $set_msg);
+            // $valid = $this->isViewable($user_id, $set_msg);
         }
         return $valid;
     }
@@ -406,6 +414,8 @@ trait IsoModule
     {
         return $this->hasOne(Upload::class, 'element_id')->where('module_id', $this->module()->id)->orderBy('created_at', 'DESC');
     }
+
+
 
     /**
      * Get a list of changes that happened to an element

@@ -13,7 +13,7 @@
 
 /** Common view parameters for form elements */
 $rand = randomString();
-$var['container_class'] = $var['container_class'] ?? ''; // container_class: main wrapper div class.
+$var['container_class'] = $var['container_class'] ?? 'col-md-3'; // container_class: main wrapper div class.
 $var['name'] = $var['name'] ?? 'NO_NAME';    // name: Form file input name, this name will be posted when the form is submitted.
 $var['params'] = $var['params'] ?? [];     // params: Array of parameters to be passed to Form::select(). Usually this contains all the additional HTML attributes for the HTML input tag. i.e. ]class=>'my_class', id=>'my_id']
 $var['params']['class'] = isset($var['params']['class']) ? $var['params']['class'] . ' form-control ajax' : ' form-control ajax'; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
@@ -34,11 +34,13 @@ $value_field = $var['value_field'];
 
 $var['url'] = $var['url'] ?? route($var['table'] . '.list-json'); // URL to get Ajax data as search result
 
+
 $id = $preload = null;
 if ($var['old_input']) {
     $var['value'] = $var['old_input'];
 } else if (isset($$element)) {
-    $var['value'] = $$element->user_id;
+    $name = $var['name'];
+    $var['value'] = $$element->$name;
 }
 if ($var['value']) {
     $item = DB::table($var['table'])->select([$value_field, $name_field])->where($value_field, $var['value'])->first();
@@ -47,7 +49,6 @@ if ($var['value']) {
 ?>
 
 
-<!--suppress ALL -->
 <div id="{{$rand}}" class="form-group {{$errors->first($var['name'], ' has-error')}} {{$var['container_class']}}">
     @if(strlen(trim($var['label'])))
         <label id="label_{{$var['name']}}" class="control-label {{$var['label_class']}}" for="{{$var['name']}}">

@@ -41,52 +41,71 @@
  */
 ?>
 {{-- ******************* Form starts ********************* --}}
-@include('form.input-text',['var'=>['name'=>'name','label'=>'Task title', 'container_class'=>'col-sm-6']])
-{{--parent_id--}}
-<?php
-$var = [
-    'label' => 'Parent task',
-    'name' => 'parent_id',
-    'table' => 'tasks',
-    'name_field' => 'name_ext',
-    'container_class' => 'col-sm-6',
-];
-?>
-@include('form.select-ajax',['var'=>$var])
 
-{{--@include('form.select-model',['var'=>['name'=>'parent_id','label'=>'Parent task','table'=>'tasks', 'name_field'=>'name_ext', 'container_class'=>'col-sm-3']])--}}
+<div class="col-md-6 no-padding-l">
+    {{--parent_id--}}
+    @include('form.select-ajax',['var'=>['label' => 'Parent task', 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name_ext', 'container_class' => 'col-md-12',]])
+    <div class="clearfix"></div>
 
-{{--priority--}}
-@include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>kv(\App\Task::$priorities),'container_class'=>'col-sm-3']])
-{{--seq--}}
-@include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-sm-6']])
+    {{--name--}}
+    @include('form.input-text',['var'=>['name'=>'name','label'=>'Task title', 'container_class'=>'col-md-12']])
+    <div class="clearfix"></div>
 
-<div class="clearfix"></div>
-description
-tasktype_id
-tasktype_name
-assignment_id
-assigned_to
-watchers
-status
-previous_status
-due_date
-days_open
-is_closed
-closed_by
-closing_note
-is_resolved
-resolved_by
-resolve_note
-is_verified
-verified_by
-verify_note
-is_flagged
-flagged_by
-flag_note
-is_active
+    {{--tasktype_id--}}
+    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>'Task type','query'=> new \App\Tasktype(),'container_class'=>'col-md-6']])
 
-@include('form.is_active')
+    {{--priority--}}
+    @include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>\App\Task::$priorities,'container_class'=>'col-md-4']])
+    {{--seq--}}
+    @include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-md-2']])
+
+    <div class="clearfix"></div>
+    {{--client_id--}}
+    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>'Client','query'=> new \App\Client,'container_class'=>'col-md-6']])
+
+    {{-- clientlocation_id --}}
+    @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])
+
+
+    {{--description--}}
+    @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
+
+    {{--watchers--}}
+    @include('form.select-model-multiple', ['var'=> ['name' => 'watchers', 'label' => 'Watchers', 'query' => new \App\User(),'container_class'=>'col-md-6']])
+
+    @include('form.is_active')
+</div>
+
+<div class="col-md-6 no-padding-l">
+
+    {{--priority--}}
+    @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-6']])
+
+    {{--assigned_to--}}
+    @include('form.select-ajax', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','table'=> 'users','container_class'=>'col-md-6']])
+
+
+
+    assignment_id
+    status
+    previous_status
+    due_date
+    days_open
+    is_closed
+    closed_by
+    closing_note
+    is_resolved
+    resolved_by
+    resolve_note
+    is_verified
+    verified_by
+    verify_note
+    is_flagged
+    flagged_by
+    flag_note
+    is_active
+</div>
+
 {{-- ******************* Form ends *********************** --}}
 
 @section('content-bottom')

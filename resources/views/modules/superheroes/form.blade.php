@@ -64,6 +64,15 @@
 ?>
 {{--@include('form.select-model', ['var'=>$var])--}}
 
+<?php
+// $var = [
+// 'name' => 'charity_id',
+// 'label' => 'Charity',
+// 'query' => new \App\Charity,
+// ];
+?>
+{{--@include('form.select-model', ['var'=>$var])--}}
+
 {{-- Textarea--}}
 {{--@include('form.textarea',['var'=>['name'=>'live_access','label'=>'Other Access Details']])--}}
 
