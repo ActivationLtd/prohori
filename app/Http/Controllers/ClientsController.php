@@ -2,14 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Module;
-use DB;
-use Redirect;
-use Request;
-use Response;
-use Validator;
-use View;
-
 class ClientsController extends ModulebaseController
 {
 
@@ -23,17 +15,20 @@ class ClientsController extends ModulebaseController
      *
      * @return array
      */
-    // public function gridColumns()
-    // {
-    //     return [
-    //         //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
-    //         ["{$this->module_name}.id", "id", "ID"],
-    //         ["{$this->module_name}.name", "name", "Name"],
-    //         ["updater.name", "user_name", "Updater"],
-    //         ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
-    //         ["{$this->module_name}.is_active", "is_active", "Active"]
-    //     ];
-    // }
+    public function gridColumns()
+    {
+        return [
+            //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
+            ["{$this->module_name}.id", "id", "ID"],
+            ["{$this->module_name}.name", "name", "Name"],
+            ["{$this->module_name}.address1", "address1", "Address"],
+            ["{$this->module_name}.phone", "phone", "Phone"],
+            ["{$this->module_name}.mobile", "mobile", "Mobile"],
+            ["updater.name", "user_name", "Updater"],
+            ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
+            ["{$this->module_name}.is_active", "is_active", "Active"],
+        ];
+    }
 
     /**
      * Construct SELECT statement based

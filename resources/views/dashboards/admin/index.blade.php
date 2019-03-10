@@ -9,6 +9,7 @@
                 <div class="clearfix"></div>
                 <div id="area-2" class="col-md-8 pull-left no-padding-l">
                     @include('dashboards.admin.widgets.tasks-created-in-last-ten-days')
+                    @include('dashboards.admin.widgets.map')
                 </div>
 
             </div>
