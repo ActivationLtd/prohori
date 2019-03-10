@@ -8,8 +8,8 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h4>Area Wise Service</h4>
-        <div id="chart_div"></div>
+        <h4>Area Wise Clients</h4>
+        <div id="chart_div_client"></div>
     </div>
 </div>
 
@@ -22,8 +22,8 @@
 
         function drawStacked() {
             var data = google.visualization.arrayToDataTable([
-                ['City', 'Amount of Services'],
-                ['Dhaka', 8175000],
+                ['City', 'Amount of Client'],
+                ['Dhaka', 6175000],
                 ['Sylhet', 3792000],
                 ['Rajshai', 2695000],
                 ['Chittagong', 2099000],
@@ -38,14 +38,14 @@
                 chartArea: {width: '75%'},
                 // isStacked: true,
                 hAxis: {
-                    title: 'Total services',
+                    title: 'Total Clients',
                     minValue: 0,
                 },
                 vAxis: {
                     title: 'Areas'
                 }
             };
-            var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+            var chart = new google.visualization.BarChart(document.getElementById('chart_div_client'));
             chart.draw(data, options);
         }
     </script>
