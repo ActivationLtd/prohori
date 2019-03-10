@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Observers\TaskObserver;
+use App\Traits\Assignable;
 use App\Traits\IsoModule;
 
 /**
@@ -35,6 +36,7 @@ use App\Traits\IsoModule;
 class Task extends Basemodule
 {
     use IsoModule;
+    use Assignable;
     /**
      * Mass assignment fields (White-listed fields)
      *
@@ -47,6 +49,18 @@ class Task extends Basemodule
         'parent_id',
         'priority',
         'seq',
+        'client_id',
+        'client_name',
+        'clientlocation_id',
+        'clientlocation_name',
+        'clientlocationtype_id',
+        'clientlocationtype_name',
+        'division_id',
+        'division_name',
+        'district_id',
+        'district_name',
+        'upazila_id',
+        'upazila_name',
         'description',
         'tasktype_id',
         'tasktype_name',
@@ -91,12 +105,24 @@ class Task extends Basemodule
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'watchers' => 'array',
+    ];
+
+    /**
      * Disallow from mass assignment. (Black-listed fields)
      *
      * @var array
      */
     // protected $guarded = [];
 
+    /**
+     * @var array
+     */
     public static $statuses = [
         'To do',
         'In progress',
@@ -105,10 +131,13 @@ class Task extends Basemodule
         'Closed'
     ];
 
+    /**
+     * @var array
+     */
     public static $priorities = [
-        'Normal',
-        'Low',
-        'High',
+        1 => 'Normal',
+        0 => 'Low',
+        2 => 'High',
     ];
 
     /**
@@ -129,7 +158,7 @@ class Task extends Basemodule
     public static function rules($element, $merge = [])
     {
         $rules = [
-            'name' => 'required|between:1,255|unique:tasks,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            //'name' => 'required|between:1,255|unique:tasks,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
@@ -205,7 +234,13 @@ class Task extends Basemodule
         /************************************************************/
         // Execute codes after model is successfully saved
         /************************************************************/
-        // static::saved(function (Task $element) {});
+        static::saved(function (Task $element) {
+
+            // if ($element->latestAssignment()->exists()) {
+            //     $last_assignment = $element->latestAssignment;
+            // }
+
+        });
 
         /************************************************************/
         // Following code block executes - when some element is in
@@ -401,6 +436,13 @@ class Task extends Basemodule
     //public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
     //public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function assignee() { return $this->belongsTo(\App\User::class, 'assigned_to'); }
+
+    public function subtTasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
+
     // Write new relationships below this line
 
     ############################################################################################
@@ -417,5 +459,26 @@ class Task extends Basemodule
     ############################################################################################
 
     // Write accessors and mutators here.
+    /**
+     * Set partnercategory ids to array
+     *
+     *
+     * @param  array $value
+     * @return void
+     */
+    public function setWatchersAttribute($value)
+    {
+        // Original default value
+        $this->attributes['watchers'] = $value;
 
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['watchers'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
+    }
 }

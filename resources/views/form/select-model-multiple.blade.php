@@ -8,7 +8,7 @@ $rand = randomString(8);
  */
 
 /** Common view parameters for form elements For details of the fields see app/views/spyr/form/input-text.blade.php */
-$var['container_class'] = $var['container_class'] ?? 'col-md-4';
+$var['container_class'] = $var['container_class'] ?? 'col-md-3';
 $var['name'] = $var['name'] ?? 'NO_NAME';
 $var['params'] = $var['params'] ?? [];
 $var['params']['class'] = (isset($var['params']['class'])) ? $var['params']['class'] . " form-control " : ' form-control ';

@@ -46,13 +46,6 @@ class Basemodule extends Model
     protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
 
     /**
-     * Fields for full text search i.e. LIKE '%substr%'
-     *
-     * @var array
-     */
-    public static $text_fields = ['name', 'name_ext'];
-
-    /**
      * List of appended attribute. This attributes will be loaded in each Model
      *
      * @var array
