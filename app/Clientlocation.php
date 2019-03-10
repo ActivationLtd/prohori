@@ -40,7 +40,7 @@ class Clientlocation extends Basemodule
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['uuid', 'name', 'division_id', 'district_id', 'upazila_id', 'latitude', 'longitude', 'client_id', 'operatingarea_id', 'clientlocationtype_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
@@ -64,8 +64,7 @@ class Clientlocation extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
             'name' => 'required|between:1,255|unique:clientlocations,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
@@ -97,8 +96,7 @@ class Clientlocation extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Clientlocation::observe(ClientlocationObserver::class);
 
@@ -333,6 +331,32 @@ class Clientlocation extends Basemodule
      * In the parent class there are the follow two relations creator(), updater() are
      * already defined.
      */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function division() {
+        return $this->belongsTo(Division::class);
+    }
+
+    public function district() {
+        return $this->belongsTo(District::class);
+    }
+
+    public function upazila() {
+        return $this->belongsTo(Upazila::class);
+    }
+
+    public function client() {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function operatingarea() {
+        return $this->belongsTo(Operatingarea::class);
+    }
+
+    public function clientlocationcategory() {
+        return $this->belongsTo(Clientlocationtype::class);
+    }
     ############################################################################################
 
     # Default relationships already available in base Class 'Basemodule'

@@ -42,11 +42,25 @@
 ?>
 {{-- ******************* Form starts ********************* --}}
 @include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+@include('form.textarea',['var'=>['name'=>'description','label'=>'Description', 'container_class'=>'col-sm-6']])
+@include('form.input-text',['var'=>['name'=>'address1','label'=>'Address1', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'address2','label'=>'Address2', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'city','label'=>'City', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'county','label'=>'County', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'country_id','label'=>'Country','table'=>'countries', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'zip_code','label'=>'Zip Code', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'phone','label'=>'Phone', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'mobile','label'=>'Mobile', 'container_class'=>'col-sm-3']])
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 
 @section('content-bottom')
     @parent
+    <h5>Uploads</h5>
+    <div class="col-md-6 no-padding-l">
+        <b>Logo</b>
+        @include('modules.base.include.uploads',['var'=>['limit'=>1,'type'=>'Logo','name'=>'logo']])
+    </div>
 @endsection
 
 {{-- JS starts: javascript codes go here.--}}
@@ -58,7 +72,8 @@
         /*******************************************************************/
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
-            $("input[name=name]").addClass('validate[required]');
+            $("input[name=name],input[name=address1]").addClass('validate[required]');
+            $('input[name=mobile]').addClass('validate[required,maxSize[11],custom[integer],min[0]]');
         }
     </script>
     @if(!isset($$element))
