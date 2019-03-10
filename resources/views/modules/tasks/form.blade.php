@@ -44,7 +44,7 @@
 
 <div class="col-md-6 no-padding-l">
     {{--parent_id--}}
-    @include('form.select-ajax',['var'=>['label' => 'Parent task', 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name_ext', 'container_class' => 'col-md-12',]])
+    @include('form.select-ajax',['var'=>['label' => 'Parent task', 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-12',]])
     <div class="clearfix"></div>
 
     {{--name--}}
@@ -67,8 +67,6 @@
     @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])
 
 
-    {{--description--}}
-    @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
 
     {{--watchers--}}
     @include('form.select-model-multiple', ['var'=> ['name' => 'watchers', 'label' => 'Watchers', 'query' => new \App\User(),'container_class'=>'col-md-6']])
@@ -85,32 +83,55 @@
     @include('form.select-ajax', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','table'=> 'users','container_class'=>'col-md-6']])
 
 
+    {{--assignment_id--}}
+    {{--status--}}
+    {{--previous_status--}}
+    {{--due_date--}}
+    {{--days_open--}}
+    {{--is_closed--}}
+    {{--closed_by--}}
+    {{--closing_note--}}
+    {{--is_resolved--}}
+    {{--resolved_by--}}
+    {{--resolve_note--}}
+    {{--is_verified--}}
+    {{--verified_by--}}
+    {{--verify_note--}}
+    {{--is_flagged--}}
+    {{--flagged_by--}}
+    {{--flag_note--}}
+    {{--is_active--}}
+    {{--description--}}
+    @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
 
-    assignment_id
-    status
-    previous_status
-    due_date
-    days_open
-    is_closed
-    closed_by
-    closing_note
-    is_resolved
-    resolved_by
-    resolve_note
-    is_verified
-    verified_by
-    verify_note
-    is_flagged
-    flagged_by
-    flag_note
-    is_active
 </div>
 
 {{-- ******************* Form ends *********************** --}}
 
+
 @section('content-bottom')
     @parent
+    <div class="col-md-6 no-padding-l">
+        <h4>Task files</h4>
+        {{--<small>Upload one or more files</small>--}}
+        @include('modules.base.include.uploads',['var'=>['type'=>'Task file','limit'=>10]])
+
+        <h4>Evidences</h4>
+        {{--<small>Upload one or more files</small>--}}
+        @include('modules.base.include.uploads',['var'=>['type'=>'Evidences','limit'=>10]])
+
+        @if(isset($task))
+            <h4>Sub-tasks</h4>
+            @include('modules.tasks.subtasks')
+        @endif
+    </div>
+    <div class="col-md-6 no-padding-l">
+        <h4>Messages</h4>
+        {{--<small>Upload one or more files</small>--}}
+        @include('modules.base.include.messages')
+    </div>
 @endsection
+
 
 {{-- JS starts: javascript codes go here.--}}
 @section('js')
@@ -174,6 +195,6 @@
         // frontend and Ajax hybrid validation
         /*******************************************************************/
         addValidationRulesForSaving(); // Assign validation classes/rules
-        enableValidation('{{$module_name}}'); // Instantiate validation function
+        // enableValidation('{{$module_name}}'); // Instantiate validation function
     </script>
 @endsection

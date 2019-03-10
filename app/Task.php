@@ -236,11 +236,9 @@ class Task extends Basemodule
         /************************************************************/
         static::saved(function (Task $element) {
 
-
             // if ($element->latestAssignment()->exists()) {
             //     $last_assignment = $element->latestAssignment;
             // }
-
 
         });
 
@@ -442,6 +440,8 @@ class Task extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function assignee() { return $this->belongsTo(\App\User::class, 'assigned_to'); }
+
+    public function subtTasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
 
     // Write new relationships below this line
 
