@@ -6,7 +6,7 @@
  */
 
 /** Common view parameters for form elements */
-$var['container_class'] = $var['container_class'] ?? ''; // container_class: main wrapper div class.
+$var['container_class'] = $var['container_class'] ?? ' col-md-4'; // container_class: main wrapper div class.
 $var['name'] = $var['name'] ?? 'NO_NAME';    // name: Form file input name, this name will be posted when the form is submitted.
 $var['params'] = $var['params'] ?? [];     // params: Array of parameters to be passed to Form::select(). Usually this contains all the additional HTML attributes for the HTML input tag. i.e. ]class=>'my_class', id=>'my_id']
 $var['params']['class'] = isset($var['params']['class']) ? $var['params']['class'] . " form-control " : ' form-control '; // ['params']['class']: Enforce a class 'form-control' for the input/select HTML element. 'form-control' is a native class of UI framework.
@@ -28,4 +28,4 @@ $var['old_input'] = oldInputValue($var['name'], $var['value']);   // old_input: 
 </div>
 
 {{-- Unset the local variable used in this view. --}}
-<?php unset($var, $tmp_name) ?>
+<?php unset($var) ?>

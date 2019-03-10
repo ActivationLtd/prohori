@@ -54,22 +54,20 @@
 
 <div class="clearfix"></div>
 @if(user()->isSuperUser())
-    @include('form.select-array',['var'=>['name'=>'email_confirmed','label'=>'Email confirmed', 'options'=>['1'=>'Yes',''=>'No'],'container_class'=>'col-sm-3']])
     @include('form.input-text',['var'=>['name'=>'email_verified_at','label'=>'Email verified at', 'container_class'=>'col-sm-3']])
     @include('form.select-array',['var'=>['name'=>'is_active','label'=>'Active', 'options'=>['1'=>'Yes',''=>'No'],'container_class'=>'col-sm-3']])
     <div class="clearfix"></div>
     <?php
     $var = [
-        'name' => 'group_id',
-        'label' => 'Group',
-        'value' => (isset($user)) ? $user->groupIds() : [],
+        'name' => 'group_ids',
+        'label' => 'Groups',
         'query' => new \App\Group,
+        'container_class' => 'col-md-3',
         'name_field' => 'title',
-        'params' => ['multiple', 'id' => 'groups'],
     ];
     ?>
-    @include('form.select-model', ['var'=>$var])
-    
+    @include('form.select-model-multiple', ['var'=>$var])
+
 @endif
 
 <div class="clearfix"></div>

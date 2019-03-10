@@ -38,6 +38,7 @@ function oldInputValue($name = '', $value = null)
     if (isset($value) && (is_array($value) || strlen(trim($value)))) {
         $val = $value;
     }
+
     return $val;
 }
 
@@ -346,9 +347,9 @@ function conf($key = '')
  */
 function cacheTime($key)
 {
-    // if (Request::get('no_cache') !== 'true') {
-    //     return Config::get('query-cache-times.' . $key);
-    // }
+    if (env('QUERY_CACHE_ENABLED') == true && Request::get('no_cache') !== 'true') {
+        return Config::get('query-cache-times.' . $key);
+    }
 }
 
 /**
@@ -523,7 +524,7 @@ function mlink($module_name = '', $id = null, $link_text = null)
 {
 
     //$model = model($module_name);
-    if ($module = Module::remember(cacheTime('long'))->whereName($module_name)->first()) {
+    if ($module = Module::remember(cacheTime('very-long'))->whereName($module_name)->first()) {
         if ($id) {
             $link_text = $link_text ? $link_text . "[#$id]" : $module->title . "[#$id]";
             return "<a href='" . route($module_name . '.edit', $id) . "' target='_blank' >$link_text</a> ";
@@ -568,7 +569,7 @@ function modelNameFromModuleId($module_id)
  */
 function moduleNameFromId($module_id)
 {
-    return Module::remember(cacheTime('long'))->find($module_id)->name;
+    return Module::remember(cacheTime('very-long'))->find($module_id)->name;
 }
 
 /**
@@ -652,7 +653,7 @@ function tagsForView($view)
 }
 
 /**
- * @param $query
+ * @param $query \Illuminate\Database\Query\Builder
  * @param $minutes
  * @return mixed
  */

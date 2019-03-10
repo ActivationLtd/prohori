@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Invoice;
-use App\Purchase;
-use App\User;
+use App\Upload;
+use Hash;
+use Request;
+use Session;
+use Validator;
 
 class UsersController extends ModulebaseController
 {
@@ -116,31 +118,183 @@ class UsersController extends ModulebaseController
     // ****************** Grid functions end *********************************
 
     /**
-     * @param \App\User $user
-     * @return string
+     * In Controller store(), update() before filling the model input values are
+     * transformed. Usually it is a good approach for converting arrays to json.
+     *
+     *
+     * @param array $inputs
+     * @return array
      */
-    public function invoices(User $user)
+    public function transformInputs($inputs = [])
     {
-        if ($user->isViewable()) {
+        /*
+         * Convert an array input to csv
+         ************************************************/
+        // $arr_to_csv_inputs = [
+        //     'partnercategory_ids'
+        // ];
+        //
+        // foreach ($arr_to_csv_inputs as $i){
+        //     if(isset($inputs[$i]) && is_array($inputs[$i])){
+        //         $inputs[$i] = arrayToCsv($inputs[$i]);
+        //     }else{
+        //         $inputs[$i] = null;
+        //     }
+        // }
 
-            $purchases_not_invoiced = Purchase::with(['recommender', 'partner'])
-                ->where('recommender_user_id', $user->id)
-                //->where('is_approved','=',1)
-                //->where('charity_donation_charity_currency', '>', 0)
-                ->whereNull('recommender_invoice_id')
-                ->orderBy('created_at', 'asc')
-                ->get();
+        /*
+         * Convert an array input to json
+         ************************************************/
+        $arr_to_json_inputs = [
+            'group_ids',
+        ];
 
-            $invoices = Invoice::with(['recommender', 'partner'])->where('recommender_user_id', $user->id)
-                ->orderBy('created_at', 'asc')
-                ->get();
+        foreach ($arr_to_json_inputs as $i) {
+            if (isset($inputs[$i]) && is_array($inputs[$i])) {
+                $inputs[$i] = json_encode($inputs[$i]);
+            }
 
-            return view('modules.users.invoices')
-                ->with('purchases_not_invoiced', $purchases_not_invoiced)
-                ->with('invoices', $invoices)
-                ->with('user', $user)
-                ->with('grid_columns', $this->gridColumns());
         }
-        return 'Permission denied';
+
+        return $inputs;
     }
+
+    // ****************** transformInputs functions end ***********************
+
+    public function store()
+    {
+        /** @var \App\Basemodule $Model */
+        /** @var \App\Basemodule $element */
+        // init local variables
+        $module_name = $this->module_name;
+        $Model = model($this->module_name);
+
+        //$element_name = str_singular($module_name);
+        //$ret = ret();
+        # --------------------------------------------------------
+        # Process store while creation
+        # --------------------------------------------------------
+        $validator = null;
+        $inputs = $this->transformInputs(Request::all());
+        $element = new $Model($inputs);
+        if (hasModulePermission($this->module_name, 'create')) { // check module permission
+            $validator = Validator::make(Request::all(), $Model::rules($element), $Model::$custom_validation_messages);
+
+            // $element = new $Model;
+            // $element->fill(Request::all());
+            // $validator = $element->validateModel();
+
+            if ($validator->fails()) {
+                $ret = ret('fail', "Validation error(s) on creating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
+            } else {
+                if ($element->isCreatable()) {
+
+                    /************************************************************************
+                     * If there is a password Hash it. And set a lfag just_changed_password
+                     */
+                    if (Request::get('password') !== null) {
+                        $element->password = Hash::make(Request::get('password'));
+                    }
+
+                    // Generate new api token
+                    if (Request::get('api_token_generate') === 'yes') {
+                        $element->api_token = hash('sha256', randomString(10), false);
+                    }
+
+                    if ($element->save()) {
+                        //$ret = ret('success', "$Model " . $element->id . " has been created", ['data' => $Model::find($element->id)]);
+                        $ret = ret('success', "{$this->module->title} has been added", ['data' => $Model::find($element->id)]);
+                        Upload::linkTemporaryUploads($element->id, $element->uuid);
+                    } else {
+                        $ret = ret('fail', "{$this->module->title} create failed.");
+                    }
+                } else {
+                    $ret = ret('fail', "{$this->module->title} could not be saved. (error: isCreatable())");
+                }
+            }
+        } else {
+            $ret = ret('fail', "User does not have create permission for {$this->module->title} ");
+        }
+        # --------------------------------------------------------
+        # Process return/redirect
+        # --------------------------------------------------------
+        return $this->jsonOrRedirect($ret, $validator, $element);
+    }
+
+    /**
+     * Update handler for spyr element.
+     *
+     * @param $id
+     * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function update($id)
+    {
+        /**
+         * @var \App\User $Model
+         * @var \App\User $element
+         */
+        $Model = model($this->module_name);
+        $ret = ret(); // load default return values
+        # --------------------------------------------------------
+        # Process update
+        # --------------------------------------------------------
+        $validator = null;
+        if ($element = $Model::find($id)) { // Check if element exists.
+            if ($element->isEditable()) { // Check if the element is editable.
+
+                /******************************************************************************************
+                 * Differently handled validation due to password, password_confirmation.
+                 * - All password input must be paired with password_confirmation and go through validation.
+                 * - User can be updated without password in input, in that case old password will retain.
+                 */
+
+                //dd(array_merge($element->getAttributes(), Request::all()));
+
+                $validator = Validator::make(array_merge($element->getAttributes(), Request::all()), $Model::rules($element), $Model::$custom_validation_messages);
+                //$validator = $element->validateModel();
+                /******************************************************************************************/
+
+                if ($validator->fails()) {
+                    $ret = ret('fail', "Validation error(s) on updating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
+                } else {
+
+                    $element->fill($this->transformInputs(Request::all()));
+
+                    /************************************************************************
+                     * If there is a password Hash it. And set a lfag just_changed_password
+                     */
+                    if (Request::get('password') !== null) {
+                        $element->password = Hash::make(Request::get('password'));
+                        if ($element->last_login_at) {
+                            Session::push('just_changed_password', 1);
+                        }
+                    } else {
+                        $element->password = $element->getOriginal('password');
+                    }
+
+                    // Generate new api token
+                    if (Request::get('api_token_generate') === 'yes') {
+                        $element->api_token = hash('sha256', randomString(10), false);
+                    }
+                    /************************************************************************/
+
+                    if ($element->save()) { // Attempt to update/save.
+                        $ret = ret('success', "{$this->module->title} has been updated", ['data' => $element]);
+                    } else { // attempt to update/save failed. Set error message and return values.
+                        $ret = ret('fail', "{$this->module->title} update failed.");
+                    }
+                }
+
+            } else { // Element is not editable. Set message and return values.
+                $ret = ret('fail', "{$this->module->title} is not editable by user.");
+            }
+        } else { // element does not exist(or possibly deleted). Set error message and return values
+            $ret = ret('fail', "{$this->module->title} could not be found. The element is either unavailable or deleted.");
+        }
+        # --------------------------------------------------------
+        # Process return/redirect
+        # --------------------------------------------------------
+        return $this->jsonOrRedirect($ret, $validator, $element);
+    }
+
 }

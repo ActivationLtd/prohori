@@ -30,14 +30,14 @@ $var['params']['id'] = (isset($var['params']['id'])) ? $var['params']['id'] : $v
     @endif
     @if($var['editable'])
         {{ Form::textarea($var['name'], $var['old_input'], $var['params']) }}
-        {{ $errors->first($var['name'], '<span class="help-block">:message</span>') }}
+        {!!  $errors->first($var['name'], '<span class="help-block">:message</span>') !!}
     @else
 
-            <?php $tmp_name = $var['name']?>
-            <span class="{{$var['params']['class']}} readonly">
+        <?php $tmp_name = $var['name']?>
+        <span class="{{$var['params']['class']}} readonly">
             @if(isset($$element))
-                    {{$$element->$tmp_name}}
-                @endif
+                {{$$element->$tmp_name}}
+            @endif
         </span>
     @endif
 </div>

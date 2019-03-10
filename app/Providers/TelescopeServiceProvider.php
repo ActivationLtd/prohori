@@ -24,7 +24,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             if ($this->app->isLocal()) {
                 return true;
             }
-            if ($this->app->environment()=='stage') {
+            if ($this->app->environment()=='staging') {
                 return true;
             }
 
@@ -66,7 +66,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     {
         Gate::define('viewTelescope', function ($user) {
             return in_array($user->email, [
-                'admin@prohori.com'
+                'superadmin@prohori.com'
             ]);
         });
     }
