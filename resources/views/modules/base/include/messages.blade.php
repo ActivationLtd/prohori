@@ -34,42 +34,38 @@ if ((isset($element) && isset($$element))) {
 
 ?>
 
-{{-- upload div + form --}}
+{{-- message div + form --}}
 <div class="{{$var['container_class']}}">
     @if(hasModulePermission($mod->name,'create') || hasModulePermission($mod->name,'edit'))
         {{-- A form where values are stored that are later posted with attached file --}}
-        {{-- initUploader gets these values and post to uplaod route  --}}
-        <div id="{{$var['upload_container_id']}}" class="uploads_container">
-            <form>
+        {{-- initmessageer gets these values and post to uplaod route  --}}
+        <div id="{{$var['message_container_id']}}" class="messages_container">
+            <form method="post" action="{{route('messages.store')}}">
                 {{csrf_field()}}
-                <input type="hidden" name="ret" value="json"/>
+                {{--<input type="hidden" name="ret" value="json"/>--}}
                 <input type="hidden" name="tenant_id" value="{{$var['tenant_id']}}"/>
                 <input type="hidden" name="module_id" value="{{$var['module_id']}}"/>
                 <input type="hidden" name="element_id" value="{{$var['element_id']}}"/>
                 <input type="hidden" name="element_uuid" value="{{$var['element_uuid']}}"/>
-                
-                @if($var['type'])
-                    <input type="hidden" name="type" value="{{$var['type']}}"/>
-                @endif
+                <input type="hidden" name="redirect_success" value="{{URL::full()}}"/>
+                    <textarea class="form-control col-md-6" name="body"></textarea>
+                <button type="submit" class="btn btn-default">Post</button>
             </form>
-            <div id="fileuploader">Upload file</div>
         </div>
     @endif
 
-    {{-- uploaded file list --}}
+    {{-- message list --}}
     @if($var['module_id'] && $var['element_id'])
         <?php
-        $q = \App\Upload::where('module_id',$var['module_id'])
-            ->where('element_id',$var['element_id'])->whereNull('deleted_at');
-        if ($var['type']) $q = $q->where('type',$var['type']);
-        $q = $q->orderBy('order', 'ASC')->orderBy('created_at', 'DESC');
-        $uploads = $q->offset(0)->take($var['limit'])->get();
-        // $uploads = Upload::getList($var['element_uuid'])
+        $q = \App\Message::where('module_id', $var['module_id'])
+            ->where('element_id', $var['element_id'])->whereNull('deleted_at');
+        $q = $q->orderBy('created_at', 'DESC');
+        $messages = $q->offset(0)->take($var['limit'])->get();
         ?>
         <div class="clearfix">
-            {{-- uploaded file list --}}
-            @if(count($uploads))
-                @include('modules.base.include.uploads-list-default',$uploads)
+            {{-- message list --}}
+            @if(count($messages))
+                @include('modules.base.include.messages-list-default',$messages)
             @endif
         </div>
     @endif
@@ -78,17 +74,8 @@ if ((isset($element) && isset($$element))) {
 {{-- js --}}
 @section('js')
     @parent
-    @if(hasModulePermission($mod->name,'create') || hasModulePermission($mod->name,'edit'))
-        <script>
-            initUploader("{{$var['upload_container_id']}}", "{{ route('uploads.store')}}"); // init initially
-        </script>
-    @endif
 @endsection
 
-<?php
-unset($var);
-unset($q);
-unset($uploads);
-?>
+<?php unset($var, $q, $messages); ?>
 
 
