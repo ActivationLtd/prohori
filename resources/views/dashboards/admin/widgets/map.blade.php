@@ -6,12 +6,11 @@
 
 ?>
 
-<div class="row">
-    <div class="col-md-12">
-        <h4>Area Wise Service</h4>
-        <div id="mapid" style="width: 600px; height: 400px;"></div>
-    </div>
-</div>
+
+<h4>See task in map</h4>
+<div id="mapid" style="width: 100%; height: 400px;"></div>
+
+
 
 @section('css')
     @parent
@@ -32,7 +31,7 @@
 
 
     <script>
-        var mymap = L.map('mapid').setView([23.483401, 90.186768], 7);
+        var mymap = L.map('mapid').setView([23.483401, 90.186768], 13);
 
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 18,
@@ -41,10 +40,6 @@
             'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             id: 'mapbox.streets'
         }).addTo(mymap);
-
-        L.marker([23.483401, 90.186768]).addTo(mymap)
-            .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
-
 
 
         var popup = L.popup();
@@ -57,5 +52,20 @@
         }
 
         mymap.on('click', onMapClick);
+
+        <?php $tasks = \App\Task::with('clientlocation')->get(); ?>
+
+        @foreach($tasks as $task)
+            @if($task->clientlocation()->exists())
+                @if($task->clientlocation->latitude && $task->clientlocation->longitude)
+                    L.marker([{{$task->clientlocation->latitude}}, {{$task->clientlocation->longitude}}])
+                        .addTo(mymap)
+                        .bindPopup("<img style='width:50px' src='{{asset($task->assignee->profile_pic_url)}}'/><b>{{$task->tasktype->name}}</b> {{$task->status}}")
+                        .openPopup();
+
+                @endif
+            @endif
+        @endforeach
+
     </script>
 @endsection

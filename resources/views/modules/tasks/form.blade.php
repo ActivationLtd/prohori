@@ -64,8 +64,8 @@
     @include('form.select-model', ['var'=>['name'=>'client_id','label'=>'Client','query'=> new \App\Client,'container_class'=>'col-md-6']])
 
     {{-- clientlocation_id --}}
-    @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])
-
+    {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
+    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>'Location','query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
 
 
     {{--watchers--}}
@@ -80,8 +80,8 @@
     @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-6']])
 
     {{--assigned_to--}}
-    @include('form.select-ajax', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','table'=> 'users','container_class'=>'col-md-6']])
-
+    {{--    @include('form.select-ajax', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','table'=> 'users','container_class'=>'col-md-6']])--}}
+    @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','query'=> new \App\User,'container_class'=>'col-md-6']])
 
     {{--assignment_id--}}
     {{--status--}}

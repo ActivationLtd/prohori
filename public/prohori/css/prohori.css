@@ -1,16 +1,16 @@
 /* Global font type and size*/
 /*.h1, .h2, .h3, .h4, .h5, .h6, body, h1, h2, h3, h4, h5, h6, .cke_editable {*/
-    /*!*font-family: 'Roboto', 'Ubuntu', sans-serif;*!*/
-    /*font-family: 'Ubuntu', sans-serif;*/
+/*!*font-family: 'Roboto', 'Ubuntu', sans-serif;*!*/
+/*font-family: 'Ubuntu', sans-serif;*/
 /*!important;*/
 /*}*/
 
 /*.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6,*/
 /*.content-header h4,*/
-/*.main-header .logo, .logo-mini, .logo-lg {*/
-    /*font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;*/
-/*!important;*/
-/*}*/
+.main-header .logo, .logo-mini, .logo-lg {
+    font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;
+    !important
+}
 
 .lb-font {
     font-family: 'Baumans', cursive;
