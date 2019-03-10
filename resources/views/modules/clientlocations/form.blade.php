@@ -42,6 +42,14 @@
 ?>
 {{-- ******************* Form starts ********************* --}}
 @include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+@include('form.select-model',['var'=>['name'=>'division_id','label'=>'Division','table'=>'divisions', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'district_id','label'=>'District','table'=>'districts', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'upazila_id','label'=>'Upazila','table'=>'upazilas', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'latitude','label'=>'Latitude', 'container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'client_id','label'=>'Client','table'=>'clients', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'operatingarea_id','label'=>'Operatingarea','table'=>'operatingareas', 'container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocationtype','table'=>'clientlocationtypes', 'container_class'=>'col-sm-3']])
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 

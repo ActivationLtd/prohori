@@ -40,7 +40,7 @@ class Designation extends Basemodule
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['uuid', 'name', 'code', 'description', 'level', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
@@ -64,10 +64,11 @@ class Designation extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
             'name' => 'required|between:1,255|unique:designations,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'code' => 'between:0,50',
+            'level' => 'nullable|numeric|digits:11',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
@@ -97,8 +98,7 @@ class Designation extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Designation::observe(DesignationObserver::class);
 

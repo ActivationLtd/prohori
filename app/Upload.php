@@ -216,10 +216,13 @@ class Upload extends Basemodule
         // Execute codes after model is successfully saved
         /************************************************************/
         static::saved(function (Upload $element) {
-            if ($element->type == 'Avatar') {
+            if ($element->type == 'Profile photo') {
                 Upload::where('module_id', $element->module_id)->where('element_id', $element->element_id)
                     ->where('type', $element->type)->where('id', '!=', $element->id)
                     ->delete();
+            }
+            if($element->type == 'Profile photo' && $element->module_id == 4){
+                User::where('id',$element->element_id)->update(['profile_pic_url'=>$element->path]);
             }
         });
 

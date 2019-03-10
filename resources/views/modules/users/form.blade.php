@@ -49,7 +49,8 @@
     @include('form.input-text',['var'=>['name'=>'password','type'=>'password','label'=>'Password', 'container_class'=>'col-sm-3','value'=>'']])
     @include('form.input-text',['var'=>['name'=>'password_confirmation','type'=>'password','label'=>'Confirm password', 'container_class'=>'col-sm-3']])
 @endif
-
+<div class="clearfix"></div>
+@include('form.select-model',['var'=>['name'=>'designation_id','label'=>'Designation','table'=>'designations','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
 
 <div class="clearfix"></div>
@@ -158,7 +159,13 @@
 
 @section('content-bottom')
     @parent
-
+    @if(isset($user))
+        <div class="col-md-6 no-padding-l">
+            <h4>Profile Photo</h4>
+            {{--<small>Upload one or more files</small>--}}
+            @include('modules.base.include.uploads',['var'=>['type'=>'Profile photo','limit'=>1]])
+        </div>
+    @endif
 
     @if(isset($user) && user()->isSuperUser())
         <div class="col-md-6 no-padding">
