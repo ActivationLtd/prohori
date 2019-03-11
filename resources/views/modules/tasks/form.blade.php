@@ -70,6 +70,7 @@
 
     {{--watchers--}}
     @include('form.select-model-multiple', ['var'=> ['name' => 'watchers', 'label' => 'Watchers', 'query' => new \App\User(),'container_class'=>'col-md-6']])
+    <div class="clearfix"></div>
 
     @include('form.is_active')
 </div>
@@ -143,6 +144,7 @@
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
             $("input[name=name]").addClass('validate[required]');
+            $('select[name=assigned_to]').addClass('validate[required]');
         }
     </script>
     @if(!isset($$element))
