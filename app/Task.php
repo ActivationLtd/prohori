@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Mail\TaskCreated;
 use App\Observers\TaskObserver;
 use App\Traits\Assignable;
 use App\Traits\IsoModule;
@@ -35,7 +36,7 @@ use App\Traits\IsoModule;
  */
 class Task extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     use Assignable;
     /**
      * Mass assignment fields (White-listed fields)
@@ -155,8 +156,7 @@ class Task extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
             //'name' => 'required|between:1,255|unique:tasks,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
@@ -188,22 +188,26 @@ class Task extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Task::observe(TaskObserver::class);
 
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-        // static::saving(function (Task $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
+        static::saving(function (Task $element) {
+            $valid = true;
+            /************************************************************/
+            // Your validation goes here
+            // if($valid) $valid = $element->isSomethingDoable(true)
+            /************************************************************/
+            if ($valid) {
+                if ($element->client()->exists()) {
+                    $element->client_name = $element->client->name;
+                }
+            }
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - when an element is in process
@@ -216,7 +220,12 @@ class Task extends Basemodule
         // Following code block executes - after an element is created
         // for the first time.
         /************************************************************/
-        // static::created(function (Task $element) { });
+        static::created(function (Task $element) {
+            //send mail to the assignee when task is created
+            \Mail::to($element->assignee->email)->send(
+                new TaskCreated($element)
+            );
+        });
 
         /************************************************************/
         // Following code block executes - when an already existing
@@ -440,10 +449,14 @@ class Task extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function assignee() { return $this->belongsTo(\App\User::class, 'assigned_to'); }
+
     public function clientlocation() { return $this->belongsTo(\App\Clientlocation::class); }
+
     public function tasktype() { return $this->belongsTo(\App\Tasktype::class); }
 
     public function subtTasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
+
+    public function client() { return $this->belongsTo(\App\Client::class); }
 
     // Write new relationships below this line
 
@@ -468,8 +481,7 @@ class Task extends Basemodule
      * @param  array $value
      * @return void
      */
-    public function setWatchersAttribute($value)
-    {
+    public function setWatchersAttribute($value) {
         // Original default value
         $this->attributes['watchers'] = $value;
 

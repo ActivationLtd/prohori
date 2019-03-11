@@ -34,13 +34,13 @@ use App\Traits\IsoModule;
  */
 class Clientlocation extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name', 'division_id', 'district_id', 'upazila_id', 'latitude', 'longitude', 'client_id', 'operatingarea_id', 'clientlocationtype_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['uuid', 'name','tenant_id', 'division_id', 'district_id', 'upazila_id', 'latitude', 'longitude', 'client_id', 'operatingarea_id', 'clientlocationtype_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)

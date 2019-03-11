@@ -42,6 +42,7 @@
 ?>
 {{-- ******************* Form starts ********************* --}}
 @include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+<div class="clearfix"></div>
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 
