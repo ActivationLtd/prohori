@@ -23,7 +23,7 @@
                                          title="{{setting('app-name')}}"/></span>
             <!-- logo for regular state and mobile devices -->
             <span class="logo-lg">
-                <img style="width: 100%" src="{{asset("prohori/images/logo.png")}}" alt="{{setting('app-name')}}"
+                <img style="width: 100%" src="{{asset("prohori/images/logo-ev.png")}}" alt="{{setting('app-name')}}"
                      title="{{setting('app-name')}}"/>
             </span>
         </a>
