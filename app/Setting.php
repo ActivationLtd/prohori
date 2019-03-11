@@ -55,7 +55,7 @@ use App\Traits\IsoModule;
  */
 class Setting extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
      *
