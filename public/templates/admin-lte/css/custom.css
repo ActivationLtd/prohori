@@ -364,3 +364,14 @@ pre.sf-dump, pre.sf-dump .sf-dump-default {
     font-size: 30px;
     color: rgba(0, 0, 0, 0.15);
 }
+
+.small-box p{
+    font-size: 14px;
+}
+
+.small-box:hover .icon{
+    font-size: inherit;
+}
+.small-box:hover{
+    color: #666666;
+}

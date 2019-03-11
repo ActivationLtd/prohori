@@ -68,7 +68,7 @@ class Designation extends Basemodule
         $rules = [
             'name' => 'required|between:1,255|unique:designations,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'code' => 'between:0,50',
-            'level' => 'nullable|numeric|digits:11',
+            //'level' => 'nullable|numeric|digits:11',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by

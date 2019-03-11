@@ -257,6 +257,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'social_account_id',
         'social_account_type',
         'is_active',
+        'designation_id',
         'created_by',
         'updated_by',
         'created_at',
@@ -304,7 +305,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $rules = [
             //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
             //'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email' . (isset($element->id) ? ",$element->id" : ''),
+            'email' => 'required|email|unique:users,email,' . (isset($element->id) ? $element->id : 'null'). ',id,deleted_at,NULL',
             // 'address1' => 'between:0,512',
             // 'address2' => 'between:0,512',
             // 'city' => 'between:0,64',
@@ -436,6 +437,10 @@ class User extends Authenticatable implements MustVerifyEmail
                     $element->currency = $element->country->currency();
                 }
 
+                if($element->designation()->exists()){
+                    $element->designation_name = $element->designation->name;
+                }
+
                 if (!isset($element->is_active)) {
                     $element->is_active = ($element->email_confirmed == 1) ? 1 : 0;
                 }
@@ -454,6 +459,7 @@ class User extends Authenticatable implements MustVerifyEmail
         static::saved(function (User $element) {
             // Sync partner_category table
             $element->groups()->sync($element->group_ids);
+
         });
 
         /************************************************************/
@@ -794,6 +800,11 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function country() { return $this->belongsTo(Country::class); }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function designation() { return $this->belongsTo(Designation::class); }
 
 
     // Write new relationships below this line

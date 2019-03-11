@@ -18,10 +18,14 @@
         <a href="{{route('home')}}" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
 
-            <span class="logo-mini"><img style="height: 60%" src="{{asset("prohori/images/logo.png")}}" alt="{{setting('app-name')}}"
+            <span class="logo-mini"><img style="width: 50%" src="{{asset("prohori/images/logo-small.png")}}"
+                                         alt="{{setting('app-name')}}"
                                          title="{{setting('app-name')}}"/></span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg">Prohori</span>
+            <span class="logo-lg">
+                <img style="width: 100%" src="{{asset("prohori/images/logo.png")}}" alt="{{setting('app-name')}}"
+                     title="{{setting('app-name')}}"/>
+            </span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">

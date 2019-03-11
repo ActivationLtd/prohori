@@ -440,6 +440,8 @@ class Task extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function assignee() { return $this->belongsTo(\App\User::class, 'assigned_to'); }
+    public function clientlocation() { return $this->belongsTo(\App\Clientlocation::class); }
+    public function tasktype() { return $this->belongsTo(\App\Tasktype::class); }
 
     public function subtTasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
 
