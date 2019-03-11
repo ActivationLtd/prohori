@@ -45,6 +45,7 @@
 @include('form.input-text',['var'=>['name'=>'code','label'=>'Code', 'container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'level','label'=>'Level', 'container_class'=>'col-sm-3']])
 @include('form.textarea',['var'=>['name'=>'description','label'=>'Description', 'container_class'=>'col-sm-6']])
+<div class="clearfix"></div>
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 

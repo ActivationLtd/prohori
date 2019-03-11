@@ -106,14 +106,19 @@ class Client extends Basemodule
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-        // static::saving(function (Client $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
+        static::saving(function (Client $element) {
+            $valid = true;
+            /************************************************************/
+            // Your validation goes here
+            // if($valid) $valid = $element->isSomethingDoable(true)
+            /************************************************************/
+            if ($valid) {
+                if ($element->country()->exists()) {
+                    $element->country_name = $element->country->name;
+                }
+            }
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - when an element is in process
@@ -333,6 +338,11 @@ class Client extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function locations() { return $this->hasMany(Clientlocation::class); }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function country() { return $this->belongsTo(Country::class); }
     /*
      * This is a place holder to write model relationships. In the parent class there are
      * In the parent class there are the follow two relations creator(), updater() are

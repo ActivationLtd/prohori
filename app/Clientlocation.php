@@ -103,14 +103,34 @@ class Clientlocation extends Basemodule
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-        // static::saving(function (Clientlocation $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
+        static::saving(function (Clientlocation $element) {
+            $valid = true;
+            /************************************************************/
+            // Your validation goes here
+            // if($valid) $valid = $element->isSomethingDoable(true)
+            /************************************************************/
+            if ($valid) {
+                if ($element->division()->exists()) {
+                    $element->division_name = $element->division->name;
+                }
+                if ($element->district()->exists()) {
+                    $element->district_name = $element->district->name;
+                }
+                if ($element->upazila()->exists()) {
+                    $element->upazila_name = $element->upazila->name;
+                }
+                if ($element->client()->exists()) {
+                    $element->client_name = $element->client->name;
+                }
+                if ($element->operatingarea()->exists()) {
+                    $element->operatingarea_name = $element->operatingarea->name;
+                }
+                if ($element->clientlocationtype()->exists()) {
+                    $element->clientlocationtype_name = $element->clientlocationtype->name;
+                }
+            }
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - when an element is in process
@@ -338,23 +358,43 @@ class Clientlocation extends Basemodule
         return $this->belongsTo(Division::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+
     public function district() {
         return $this->belongsTo(District::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
 
     public function upazila() {
         return $this->belongsTo(Upazila::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+
     public function client() {
         return $this->belongsTo(Client::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
 
     public function operatingarea() {
         return $this->belongsTo(Operatingarea::class);
     }
 
-    public function clientlocationcategory() {
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+
+    public function clientlocationtype() {
         return $this->belongsTo(Clientlocationtype::class);
     }
     ############################################################################################

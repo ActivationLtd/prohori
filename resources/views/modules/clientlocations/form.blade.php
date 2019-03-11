@@ -50,6 +50,7 @@
 @include('form.select-model',['var'=>['name'=>'client_id','label'=>'Client','table'=>'clients', 'container_class'=>'col-sm-3']])
 @include('form.select-model',['var'=>['name'=>'operatingarea_id','label'=>'Operatingarea','table'=>'operatingareas', 'container_class'=>'col-sm-3']])
 @include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocationtype','table'=>'clientlocationtypes', 'container_class'=>'col-sm-3']])
+<div class="clearfix"></div>
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 
