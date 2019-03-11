@@ -15,17 +15,19 @@ class DesignationsController extends ModulebaseController
      *
      * @return array
      */
-    // public function gridColumns()
-    // {
-    //     return [
-    //         //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
-    //         ["{$this->module_name}.id", "id", "ID"],
-    //         ["{$this->module_name}.name", "name", "Name"],
-    //         ["updater.name", "user_name", "Updater"],
-    //         ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
-    //         ["{$this->module_name}.is_active", "is_active", "Active"]
-    //     ];
-    // }
+    public function gridColumns()
+    {
+        return [
+            //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
+            ["{$this->module_name}.id", "id", "ID"],
+            ["{$this->module_name}.name", "name", "Name"],
+            ["{$this->module_name}.code", "code", "Code"],
+            ["{$this->module_name}.level", "level", "Level"],
+            ["updater.name", "user_name", "Updater"],
+            ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
+            ["{$this->module_name}.is_active", "is_active", "Active"]
+        ];
+    }
 
     /**
      * Construct SELECT statement based

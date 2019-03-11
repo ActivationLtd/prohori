@@ -23,17 +23,23 @@ class ClientlocationsController extends ModulebaseController
      *
      * @return array
      */
-    // public function gridColumns()
-    // {
-    //     return [
-    //         //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
-    //         ["{$this->module_name}.id", "id", "ID"],
-    //         ["{$this->module_name}.name", "name", "Name"],
-    //         ["updater.name", "user_name", "Updater"],
-    //         ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
-    //         ["{$this->module_name}.is_active", "is_active", "Active"]
-    //     ];
-    // }
+    public function gridColumns()
+    {
+        return [
+            //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
+            ["{$this->module_name}.id", "id", "ID"],
+            ["{$this->module_name}.name", "name", "Name"],
+            ["{$this->module_name}.client_name", "client_name", "Client"],
+            ["{$this->module_name}.division_name", "division_name", "Division"],
+            ["{$this->module_name}.district_name", "district_name", "District"],
+            ["{$this->module_name}.upazila_name", "upazila_name", "Upazila"],
+            ["{$this->module_name}.operatingarea_name", "operatingarea_name", "Operatingarea"],
+            ["{$this->module_name}.clientlocationtype_name", "clientlocationtype_name", "Locationtype"],
+            ["updater.name", "user_name", "Updater"],
+            ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
+            ["{$this->module_name}.is_active", "is_active", "Active"]
+        ];
+    }
 
     /**
      * Construct SELECT statement based

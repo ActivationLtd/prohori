@@ -22,6 +22,8 @@ class ClientsController extends ModulebaseController
             ["{$this->module_name}.id", "id", "ID"],
             ["{$this->module_name}.name", "name", "Name"],
             ["{$this->module_name}.address1", "address1", "Address"],
+            ["{$this->module_name}.city", "city", "City"],
+            ["{$this->module_name}.country_name", "country_name", "Country"],
             ["{$this->module_name}.phone", "phone", "Phone"],
             ["{$this->module_name}.mobile", "mobile", "Mobile"],
             ["updater.name", "user_name", "Updater"],
