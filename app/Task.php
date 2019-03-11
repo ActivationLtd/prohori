@@ -35,7 +35,7 @@ use App\Traits\IsoModule;
  */
 class Task extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     use Assignable;
     /**
      * Mass assignment fields (White-listed fields)

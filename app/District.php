@@ -34,7 +34,7 @@ use App\Traits\IsoModule;
  */
 class District extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
      *

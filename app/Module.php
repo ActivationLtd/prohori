@@ -63,9 +63,11 @@ use App\Traits\IsoModule;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
  * @property-read \App\Upload $latestUpload
  */
+
 class Module extends Basemodule
 {
-    use IsoModule;
+
+    //use IsoModule;
 
     /**
      * Mass assignment fields (White-listed fields)
