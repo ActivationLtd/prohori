@@ -448,6 +448,9 @@ class User extends Authenticatable implements MustVerifyEmail
                 if ($element->is_active && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
                 }
+                if(isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)){
+                    $element->full_name=$element->first_name.$element->last_name;
+                }
             }
 
             return $valid;

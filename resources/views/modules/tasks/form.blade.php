@@ -62,49 +62,73 @@
     <div class="clearfix"></div>
     {{--client_id--}}
     @include('form.select-model', ['var'=>['name'=>'client_id','label'=>'Client','query'=> new \App\Client,'container_class'=>'col-md-6']])
-
     {{-- clientlocation_id --}}
     {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
     @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>'Location','query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
-
-
     {{--watchers--}}
     @include('form.select-model-multiple', ['var'=> ['name' => 'watchers', 'label' => 'Watchers', 'query' => new \App\User(),'container_class'=>'col-md-6']])
     <div class="clearfix"></div>
-
     @include('form.is_active')
 </div>
 
 <div class="col-md-6 no-padding-l">
-
-    {{--priority--}}
+    {{--status--}}
     @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-6']])
-
     {{--assigned_to--}}
-    {{--    @include('form.select-ajax', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','table'=> 'users','container_class'=>'col-md-6']])--}}
     @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','query'=> new \App\User,'container_class'=>'col-md-6']])
 
     {{--assignment_id--}}
     {{--status--}}
     {{--previous_status--}}
     {{--due_date--}}
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])
     {{--days_open--}}
+    @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2']])
+</div>
+<div class="clearfix"></div>
+<div class="col-md-8">
     {{--is_closed--}}
+    @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
     {{--closed_by--}}
+    @include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed', 'query' => new \App\User(),'container_class'=>'col-md-4']])
     {{--closing_note--}}
+    <div class="clearfix"></div>
+    @include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])
+</div>
+<div class="clearfix"></div>
+<div class="col-md-8">
     {{--is_resolved--}}
+    @include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
     {{--resolved_by--}}
+    @include('form.select-model', ['var'=> ['name' => 'resolved_by', 'label' => 'Resolved', 'query' => new \App\User(),'container_class'=>'col-md-4']])
+    <div class="clearfix"></div>
     {{--resolve_note--}}
+    @include('form.textarea',['var'=>['name'=>'resolve_note','label'=>'Resolve Notes','container_class'=>'col-md-8']])
+</div>
+<div class="clearfix"></div>
+<div class="col-md-8">
     {{--is_verified--}}
+    @include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
     {{--verified_by--}}
+    @include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified', 'query' => new \App\User(),'container_class'=>'col-md-4']])
+    <div class="clearfix"></div>
     {{--verify_note--}}
+    @include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])
+</div>
+<div class="clearfix"></div>
+<div class="col-md-8">
     {{--is_flagged--}}
+    @include('form.select-array',['var'=>['name'=>'is_flagged','label'=>'Is Flagged','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
     {{--flagged_by--}}
+    @include('form.select-model', ['var'=> ['name' => 'flagged_by', 'label' => 'Flaged By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
     {{--flag_note--}}
-    {{--is_active--}}
+    @include('form.textarea',['var'=>['name'=>'flag_note','label'=>'Flag Notes','container_class'=>'col-md-8']])
+</div>
+<div class="clearfix"></div>
+{{--is_active--}}
+<div class="col-md-8">
     {{--description--}}
     @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
-
 </div>
 
 {{-- ******************* Form ends *********************** --}}
