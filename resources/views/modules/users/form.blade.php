@@ -51,6 +51,7 @@
 @endif
 <div class="clearfix"></div>
 @include('form.select-model',['var'=>['name'=>'designation_id','label'=>'Designation','table'=>'designations','container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'employee_id','label'=>'Employee Id','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
 
 <div class="clearfix"></div>

@@ -41,7 +41,21 @@
  */
 ?>
 {{-- ******************* Form starts ********************* --}}
-@include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+{{--assigned_to--}}
+@include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','query'=> new \App\User,'container_class'=>'col-md-6']])
+{{--assigned_by--}}
+@include('form.select-model', ['var'=>['name'=>'assigned_by','label'=>'Assigned by','query'=> new \App\User,'container_class'=>'col-md-6']])
+{{--assigned_for_days--}}
+@include('form.input-text',['var'=>['name'=>'assigned_for_days','label'=>'Days Open', 'container_class'=>'col-md-2']])
+<div class="clearfix"></div>
+{{--is_resolved--}}
+@include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+{{--is_verified--}}
+@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verified','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+{{--is_closed--}}
+@include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+{{--note--}}
+@include('form.textarea',['var'=>['name'=>'note','label'=>'Note','container_class'=>'col-md-6']])
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 

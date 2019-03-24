@@ -239,15 +239,21 @@ class Task extends Basemodule
                 \Mail::to($element->assignee->email)->send(
                     new TaskCreated($element)
                 );
-                Assignment::create([
-                    'name' => $element->name,
-                    'type' => $element->name,
-                    'module_id' => '29',
-                    'element_id' => $element->id,
-                    'assigned_by' => user()->id,
-                    'assigned_to' => $element->assigned_to,
-                ]);
+                if(count($element->assignee())){
+                    Assignment::create([
+                        'name' => $element->name,
+                        'type' => $element->name,
+                        'module_id' => '29',
+                        'element_id' => $element->id,
+                        'assigned_by' => user()->id,
+                        'assigned_to' => $element->assigned_to,
+                    ]);
+                }
+
             }
+
+                $element->status = 'To do'; // Set initial status to draft.
+
         });
 
         /************************************************************/
