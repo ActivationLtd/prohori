@@ -40,7 +40,28 @@ class Assignment extends Basemodule
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = [
+        'uuid',
+        'name',
+        'type',
+        'note',
+        'module_id',
+        'element_id',
+        'element_uuid',
+        'assigned_by',
+        'assigned_to',
+        'assigned_for_days',
+        'previous_id',
+        'next_id',
+        'is_resolved',
+        'is_verified',
+        'is_closed',
+        'tenant_id',
+        'is_active',
+        'created_by',
+        'updated_by',
+        'deleted_by'
+    ];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
@@ -67,7 +88,7 @@ class Assignment extends Basemodule
     public static function rules($element, $merge = [])
     {
         $rules = [
-            'name' => 'required|between:1,255|unique:assignments,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            //'name' => 'required|between:1,255|unique:assignments,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
@@ -119,7 +140,9 @@ class Assignment extends Basemodule
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-        // static::creating(function (Assignment $element) { });
+         static::creating(function (Assignment $element) {
+             $element->assigned_for_days = 0;
+         });
 
         /************************************************************/
         // Following code block executes - after an element is created

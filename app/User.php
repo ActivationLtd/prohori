@@ -235,6 +235,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'group_ids',
         'group_ids_csv',
         'group_titles_csv',
+        'employee_id',
         'name_initial',
         'first_name',
         'last_name',
@@ -307,6 +308,7 @@ class User extends Authenticatable implements MustVerifyEmail
             //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
             //'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . (isset($element->id) ? $element->id : 'null'). ',id,deleted_at,NULL',
+            'employee_id' =>'integer',
             // 'address1' => 'between:0,512',
             // 'address2' => 'between:0,512',
             // 'city' => 'between:0,64',
@@ -451,6 +453,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
                 if ($element->is_active && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
+                }
+                if(isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)){
+                    $element->full_name=$element->first_name.$element->last_name;
                 }
             }
 

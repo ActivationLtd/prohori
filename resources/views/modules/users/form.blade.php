@@ -51,7 +51,7 @@
 @endif
 <div class="clearfix"></div>
 @include('form.select-model',['var'=>['name'=>'designation_id','label'=>'Designation','table'=>'designations','container_class'=>'col-sm-3']])
-@include('form.select-model',['var'=>['name'=>'department_id','label'=>'Department','table'=>'departments','container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'employee_id','label'=>'Employee Id','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
 
 <div class="clearfix"></div>
@@ -97,7 +97,7 @@
                 {{--city--}}
                 @include('form.input-text',['var'=>['name'=>'city','label'=>'City', 'container_class'=>'col-sm-3']])
                 {{--county--}}
-                @include('form.input-text',['var'=>['name'=>'county','label'=>'County', 'container_class'=>'col-sm-3']])
+                {{--@include('form.input-text',['var'=>['name'=>'county','label'=>'County', 'container_class'=>'col-sm-3']])--}}
                 {{--country_id--}}
                 @include('form.select-model',['var'=>['name'=>'country_id','label'=>'Country','table'=>'countries', 'container_class'=>'col-sm-3']])
                 {{--zip_code--}}
@@ -106,6 +106,8 @@
                 @include('form.input-text',['var'=>['name'=>'phone','label'=>'Phone', 'container_class'=>'col-sm-3']])
                 {{--mobile--}}
                 @include('form.input-text',['var'=>['name'=>'mobile','label'=>'Mobile', 'container_class'=>'col-sm-3']])
+                {{--gender--}}
+                @include('form.select-array',['var'=>['name'=>'gender','label'=>'Gender','options'=>[" "=>" ",'male'=>'Male','female'=>'Female'], 'container_class'=>'col-sm-3']])
             </div>
             <div class="clearfix"></div>
         </div>
@@ -162,7 +164,7 @@
     @parent
     @if(isset($user))
         <div class="col-md-6 no-padding-l">
-            <h4>Profile Photo</h4>
+            <h4>Profile Photo (*Required Field)</h4>
             {{--<small>Upload one or more files</small>--}}
             @include('modules.base.include.uploads',['var'=>['type'=>'Profile photo','limit'=>1]])
         </div>

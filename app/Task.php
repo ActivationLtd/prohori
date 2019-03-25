@@ -52,8 +52,10 @@ class Task extends Basemodule
         'seq',
         'client_id',
         'client_name',
+        'client_obj',
         'clientlocation_id',
         'clientlocation_name',
+        'clientlocation_obj',
         'clientlocationtype_id',
         'clientlocationtype_name',
         'division_id',
@@ -91,18 +93,7 @@ class Task extends Basemodule
         'created_at',
         'updated_at',
         'deleted_at',
-        'deleted_by',
-        'first_login_at',
-        'last_login_at',
-        'social_account_id',
-        'social_account_type',
-        'is_active',
-        'created_by',
-        'updated_by',
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'deleted_by',
+        'deleted_by'
     ];
 
     /**
@@ -197,6 +188,7 @@ class Task extends Basemodule
         /************************************************************/
         static::saving(function (Task $element) {
             $valid = true;
+
             /************************************************************/
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
@@ -204,7 +196,33 @@ class Task extends Basemodule
             if ($valid) {
                 if ($element->client()->exists()) {
                     $element->client_name = $element->client->name;
+                    $element->client_obj = $element->client->toJson();
                 }
+            }
+            if ($element->clientlocation()->exists()) {
+                $element->clientlocation_obj = $element->clientlocation->toJson();
+
+                $element->clientlocation_name=$element->clientlocation->name;
+
+                $element->clientlocationtype_id=$element->clientlocation->clientlocationtype_id;
+                $element->clientlocationtype_name=$element->clientlocation->clientlocationtype_name;
+
+                $element->division_id=$element->clientlocation->division_id;
+                $element->division_name=$element->clientlocation->division_name;
+                $element->district_id=$element->clientlocation->district_id;
+                $element->district_name=$element->clientlocation->district_name;
+                $element->upazila_id=$element->clientlocation->upazila_id;
+                $element->upazila_name=$element->clientlocation->upazila_name;
+
+                $element->longitude=$element->clientlocation->longitude;
+                $element->latitude=$element->clientlocation->latitude;
+            }
+            if ($element->tasktype()->exists()) {
+                $element->clientlocation_name = $element->tasktype->name;
+            }
+            //storing previous status
+            if($element->getOriginal('status')!=$element->status){
+                $element->previous_status=$element->getOriginal('status');
             }
             return $valid;
         });
@@ -226,7 +244,21 @@ class Task extends Basemodule
                 \Mail::to($element->assignee->email)->send(
                     new TaskCreated($element)
                 );
+                if(count($element->assignee())){
+                    Assignment::create([
+                        'name' => $element->name,
+                        'type' => $element->name,
+                        'module_id' => '29',
+                        'element_id' => $element->id,
+                        'assigned_by' => user()->id,
+                        'assigned_to' => $element->assigned_to,
+                    ]);
+                }
+
             }
+
+                $element->status = 'To do'; // Set initial status to draft.
+
         });
 
         /************************************************************/
@@ -250,7 +282,11 @@ class Task extends Basemodule
             // if ($element->latestAssignment()->exists()) {
             //     $last_assignment = $element->latestAssignment;
             // }
+            //log the status-update
 
+            Statusupdate::log($element, [
+                'status' => $element->status,
+            ]);
         });
 
         /************************************************************/

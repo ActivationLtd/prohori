@@ -42,6 +42,7 @@
 ?>
 {{-- ******************* Form starts ********************* --}}
 @include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+@include('form.input-text',['var'=>['name'=>'code','label'=>'Client Code', 'container_class'=>'col-sm-3']])
 @include('form.textarea',['var'=>['name'=>'description','label'=>'Description', 'container_class'=>'col-sm-6']])
 @include('form.input-text',['var'=>['name'=>'address1','label'=>'Address1', 'container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'address2','label'=>'Address2', 'container_class'=>'col-sm-3']])
