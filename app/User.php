@@ -258,6 +258,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'social_account_type',
         'is_active',
         'designation_id',
+        'department_id',
         'created_by',
         'updated_by',
         'created_at',
@@ -439,6 +440,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
                 if($element->designation()->exists()){
                     $element->designation_name = $element->designation->name;
+                }
+                if($element->department()->exists()){
+                    $element->department_name = $element->department->name;
                 }
 
                 if (!isset($element->is_active)) {
@@ -805,6 +809,11 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function designation() { return $this->belongsTo(Designation::class); }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo(Department::class); }
 
 
     // Write new relationships below this line
