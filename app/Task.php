@@ -188,6 +188,7 @@ class Task extends Basemodule
         /************************************************************/
         static::saving(function (Task $element) {
             $valid = true;
+
             /************************************************************/
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
@@ -218,6 +219,10 @@ class Task extends Basemodule
             }
             if ($element->tasktype()->exists()) {
                 $element->clientlocation_name = $element->tasktype->name;
+            }
+            //storing previous status
+            if($element->getOriginal('status')!=$element->status){
+                $element->previous_status=$element->getOriginal('status');
             }
             return $valid;
         });
@@ -277,7 +282,11 @@ class Task extends Basemodule
             // if ($element->latestAssignment()->exists()) {
             //     $last_assignment = $element->latestAssignment;
             // }
+            //log the status-update
 
+            Statusupdate::log($element, [
+                'status' => $element->status,
+            ]);
         });
 
         /************************************************************/

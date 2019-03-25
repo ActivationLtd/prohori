@@ -40,7 +40,25 @@ class Statusupdate extends Basemodule
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = [
+        'uuid',
+        'name',
+        'type',
+        'note',
+        'module_id',
+        'element_id',
+        'element_uuid',
+        'status',
+        'previous_id',
+        'previous_status',
+        'next_id',
+        'next_status',
+        'diff_secs',
+        'is_active',
+        'created_by',
+        'updated_by',
+        'deleted_by'
+    ];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
@@ -64,10 +82,9 @@ class Statusupdate extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
-            'name' => 'required|between:1,255|unique:statusupdates,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            //'name' => 'required|between:1,255|unique:statusupdates,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
@@ -97,22 +114,46 @@ class Statusupdate extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Statusupdate::observe(StatusupdateObserver::class);
 
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-        // static::saving(function (Statusupdate $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
+        static::saving(function (Statusupdate $element) {
+            $valid = true;
+            /************************************************************/
+            // Your validation goes here
+            // if($valid) $valid = $element->isSomethingDoable(true)
+
+            /************************************************************/
+            //if status is same as previous, it should not save.
+            // Only if the status is different from last, it will save.
+            /************************************************************/
+            $previous_status_entry = $element->previous();
+            if ($previous_status_entry) {
+                if ($previous_status_entry->status == $element->status) $valid = false;
+            }
+
+            //status_id_field,previous_status_id, status_id - These fields will be used for storing status ids where status options are saved in a table and have id,code,name.
+
+            /************************************************************/
+            // if the new entry has previous statusupdates then the new entry's previous_statusupdate_id will be the
+            // last current previous entry's statusupdate id
+            /************************************************************/
+            if ($valid && $previous_status_entry) {
+                $element->previous_id = $previous_status_entry->id;
+                $element->previous_status = $previous_status_entry->status;
+                $element->type = "Update";
+            }
+            if ($valid) {
+                $element->is_active = 1; //Auto fill
+            }
+
+            /************************************************************/
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - when an element is in process
@@ -143,7 +184,16 @@ class Statusupdate extends Basemodule
         /************************************************************/
         // Execute codes after model is successfully saved
         /************************************************************/
-        // static::saved(function (Statusupdate $element) {});
+        static::saved(function (Statusupdate $element) {
+            //Dry update previous Status-updates
+            if (isset($element->previousStatusupdate->id)) {
+                $element->previousStatusupdate->where('id', $element->previousStatusupdate->id)->update([
+                    'next_id' => $element->id,
+                    'next_status' => $element->status,
+                    'diff_secs' => round(dateDiff($element->previousStatusupdate->created_at, today())) //stores the day count between two status updates
+                ]);
+            }
+        });
 
         /************************************************************/
         // Following code block executes - when some element is in
@@ -208,7 +258,47 @@ class Statusupdate extends Basemodule
      * @param $id
      */
     // public static function someOtherAction($id) { }
+    /**
+     * Get the previous status-update
+     *
+     * @return \Illuminate\Database\Eloquent\Model|mixed|null|static
+     */
+    public function previous() {
+        return Statusupdate::where('module_id', $this->module_id)->where('element_id', $this->element_id)
+            ->where('created_at', '<', $this->created_at)->orderBy('created_at', 'DESC')->first();
 
+    }
+
+    /**
+     * Get the next status-update
+     *
+     * @return \Illuminate\Database\Eloquent\Model|mixed|null|static
+     */
+    public function next() {
+        return Statusupdate::where('module_id', $this->module_id)->where('element_id', $this->element_id)
+            ->where('created_at', '>', $this->created_at)->orderBy('created_at', 'ASC')->first();
+    }
+
+    /**
+     * If a status-update is created it will return that newly created object, otherwise it will return null/false
+     * @param Basemodule $element
+     * @param array $vals
+     * @return \Illuminate\Database\Eloquent\Model|static
+     */
+    public static function log(Basemodule $element, $vals = []) {
+        return Statusupdate::create([
+            "name" => get_class($element) . " ID-" . $element->id,
+            "module_id" => $element->module()->id,
+            "element_id" => $element->id,
+            "element_uuid" => $element->uuid,
+            "status" => $vals['status'],
+            "previous_id" => isset($vals['previous_id']) ? $vals['previous_id'] : null,
+            "previous_status" => isset($vals['previous_status']) ? $vals['previous_status'] : null,
+            "note" => isset($element->note) ? $element->note : null,
+            "type" => "Create"
+        ]);
+
+    }
     ############################################################################################
     # Permission functions
     # ---------------------------------------------------------------------------------------- #
@@ -340,7 +430,24 @@ class Statusupdate extends Basemodule
     //public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
 
     // Write new relationships below this line
-
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function previousStatusupdate() {
+        return $this->belongsTo(\App\Statusupdate::class, 'previous_id');
+    }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function nextStatusupdate() {
+        return $this->belongsTo(\App\Statusupdate::class, 'next_id');
+    }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function linkedElement() {
+        return $this->belongsTo(modelNameFromModuleId($this->module_id), 'element_id');
+    }
     ############################################################################################
     # Accessors & Mutators
     # ---------------------------------------------------------------------------------------- #
