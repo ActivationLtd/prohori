@@ -244,16 +244,7 @@ class Task extends Basemodule
                 \Mail::to($element->assignee->email)->send(
                     new TaskCreated($element)
                 );
-                if(count($element->assignee())){
-                    Assignment::create([
-                        'name' => $element->name,
-                        'type' => $element->name,
-                        'module_id' => '29',
-                        'element_id' => $element->id,
-                        'assigned_by' => user()->id,
-                        'assigned_to' => $element->assigned_to,
-                    ]);
-                }
+
 
             }
 
@@ -278,15 +269,32 @@ class Task extends Basemodule
         // Execute codes after model is successfully saved
         /************************************************************/
         static::saved(function (Task $element) {
+            $valid=true;
+            if(isset($element->assigned_to)){
+                if($element->getOriginal('assigned_to') != $element->assigned_to){
+                    $existing_assignment=Assignment::where('assigned_to',$element->assigned_to)->where('type',$element->tasktype_id)->where('element_id',$element->id)->count();
+                    if($existing_assignment<1){
+                        Assignment::create([
+                            'name' => $element->name,
+                            'type' => $element->tasktype_id,
+                            'module_id' => '29',
+                            'element_id' => $element->id,
+                            'assigned_by' => user()->id,
+                            'assigned_to' => $element->assigned_to,
+                        ]);
+                        $valid=setMessage("Assignment created");
+                    }else{
+                        $valid=setMessage("Assignment exists");
+                    }
 
-            // if ($element->latestAssignment()->exists()) {
-            //     $last_assignment = $element->latestAssignment;
-            // }
-            //log the status-update
+                }
+
+            }
 
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
+            return $valid;
         });
 
         /************************************************************/
