@@ -66,7 +66,15 @@
     {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
     @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>'Location','query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
     {{--watchers--}}
-    @include('form.select-model-multiple', ['var'=> ['name' => 'watchers', 'label' => 'Watchers', 'query' => new \App\User(),'container_class'=>'col-md-6']])
+    <?php
+    $var = [
+        'name' => 'watchers',
+        'label' => 'Watchers',
+        'query' => new \App\User,
+        'container_class' => 'col-md-12',
+    ];
+    ?>
+    @include('form.select-model-multiple', ['var'=>$var])
     <div class="clearfix"></div>
     @include('form.is_active')
 </div>
