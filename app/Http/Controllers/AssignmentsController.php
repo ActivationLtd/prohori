@@ -15,17 +15,23 @@ class AssignmentsController extends ModulebaseController
      *
      * @return array
      */
-    // public function gridColumns()
-    // {
-    //     return [
-    //         //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
-    //         ["{$this->module_name}.id", "id", "ID"],
-    //         ["{$this->module_name}.name", "name", "Name"],
-    //         ["updater.name", "user_name", "Updater"],
-    //         ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
-    //         ["{$this->module_name}.is_active", "is_active", "Active"]
-    //     ];
-    // }
+    public function gridColumns()
+    {
+        return [
+            //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
+            ["{$this->module_name}.id", "id", "ID"],
+            ["{$this->module_name}.name", "name", "Name"],
+            ["{$this->module_name}.assigned_by", "assigned_by", "Assigned By"],
+            ["{$this->module_name}.assigned_to", "assigned_to", "Assigned To"],
+            ["{$this->module_name}.assigned_for_days", "assigned_for_days", "Assigned For Days"],
+            ["{$this->module_name}.is_resolved", "is_resolved", "Is Resolved"],
+            ["{$this->module_name}.is_verified", "is_verified", "Is Verified"],
+            ["{$this->module_name}.is_closed", "is_closed", "Is Closed"],
+            ["updater.name", "user_name", "Updater"],
+            ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
+            ["{$this->module_name}.is_active", "is_active", "Active"]
+        ];
+    }
 
     /**
      * Construct SELECT statement based

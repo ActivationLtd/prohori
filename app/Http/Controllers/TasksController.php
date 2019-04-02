@@ -22,6 +22,12 @@ class TasksController extends ModulebaseController
             //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
             ["{$this->module_name}.id", "id", "ID"],
             ["{$this->module_name}.name", "name", "Name"],
+            ["{$this->module_name}.tasktype_name", "tasktype_name", "Type"],
+            ["{$this->module_name}.client_name", "client_name", "Client"],
+            ["{$this->module_name}.clientlocation_name", "clientlocation_name", "client location"],
+            ["{$this->module_name}.due_date", "due_date", "Due Date"],
+            ["{$this->module_name}.priority", "priority", "Priority"],
+            ["{$this->module_name}.status", "status", "Status"],
             ["updater.name", "user_name", "Updater"],
             ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
             ["{$this->module_name}.is_active", "is_active", "Active"]

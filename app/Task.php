@@ -150,6 +150,12 @@ class Task extends Basemodule
     public static function rules($element, $merge = []) {
         $rules = [
             'name' => 'required|between:1,255|unique:tasks,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'assigned_to' => 'required',
+            'tasktype_id' => 'required',
+            'priority' => 'required',
+            'client_id' => 'required',
+            'clientlocation_id' => 'required',
+            'due_date' => 'required',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
@@ -201,16 +207,19 @@ class Task extends Basemodule
             }
             if ($element->clientlocation()->exists()) {
                 $element->clientlocation_obj = $element->clientlocation->toJson();
-
                 $element->clientlocation_name=$element->clientlocation->name;
 
                 $element->clientlocationtype_id=$element->clientlocation->clientlocationtype_id;
                 $element->clientlocationtype_name=$element->clientlocation->clientlocationtype_name;
 
+                $element->clientlocation_obj=$element->clientlocation->toJson();
+
                 $element->division_id=$element->clientlocation->division_id;
                 $element->division_name=$element->clientlocation->division_name;
+
                 $element->district_id=$element->clientlocation->district_id;
                 $element->district_name=$element->clientlocation->district_name;
+
                 $element->upazila_id=$element->clientlocation->upazila_id;
                 $element->upazila_name=$element->clientlocation->upazila_name;
 
@@ -218,7 +227,7 @@ class Task extends Basemodule
                 $element->latitude=$element->clientlocation->latitude;
             }
             if ($element->tasktype()->exists()) {
-                $element->clientlocation_name = $element->tasktype->name;
+                $element->tasktype_name = $element->tasktype->name;
             }
             //storing previous status
             if($element->getOriginal('status')!=$element->status){
