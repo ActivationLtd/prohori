@@ -308,7 +308,7 @@ class User extends Authenticatable implements MustVerifyEmail
             //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
             //'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . (isset($element->id) ? $element->id : 'null'). ',id,deleted_at,NULL',
-            'employee_id' =>'integer',
+            //'employee_id' =>'integer',
             // 'address1' => 'between:0,512',
             // 'address2' => 'between:0,512',
             // 'city' => 'between:0,64',
