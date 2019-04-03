@@ -48,15 +48,19 @@
 {{--assigned_for_days--}}
 @include('form.input-text',['var'=>['name'=>'assigned_for_days','label'=>'Days Open', 'container_class'=>'col-md-2']])
 <div class="clearfix"></div>
-{{--is_resolved--}}
-@include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-{{--is_verified--}}
-@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verified','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-{{--is_closed--}}
-@include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
 {{--note--}}
 @include('form.textarea',['var'=>['name'=>'note','label'=>'Note','container_class'=>'col-md-6']])
 @include('form.is_active')
+
+@if(in_array($assignment->task->status,['Closed','Done']))
+    {{--is_resolved--}}
+    {{--@include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
+    {{--is_verified--}}
+    {{--@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verified','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
+    {{--is_closed--}}
+    @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+
+    @endif
 {{-- ******************* Form ends *********************** --}}
 
 @section('content-bottom')

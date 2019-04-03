@@ -85,8 +85,7 @@ class Assignment extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
             //'name' => 'required|between:1,255|unique:assignments,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
@@ -118,8 +117,7 @@ class Assignment extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Assignment::observe(AssignmentObserver::class);
 
@@ -140,9 +138,9 @@ class Assignment extends Basemodule
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-         static::creating(function (Assignment $element) {
-             $element->assigned_for_days = 0;
-         });
+        static::creating(function (Assignment $element) {
+            $element->assigned_for_days = 0;
+        });
 
         /************************************************************/
         // Following code block executes - after an element is created
@@ -362,8 +360,11 @@ class Assignment extends Basemodule
     //public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
     //public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
 
+    public function assignee() { return $this->belongsTo(\App\User::class, 'assigned_to'); }
 
+    public function task() { return $this->belongsTo(\App\Task::class, 'assignment_id'); }
 
+    public function assigner(){return $this->belongsTo(\App\User::class, 'assigned_by');}
     // Write new relationships below this line
 
     ############################################################################################

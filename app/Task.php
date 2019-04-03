@@ -207,32 +207,44 @@ class Task extends Basemodule
             }
             if ($element->clientlocation()->exists()) {
                 $element->clientlocation_obj = $element->clientlocation->toJson();
-                $element->clientlocation_name=$element->clientlocation->name;
+                $element->clientlocation_name = $element->clientlocation->name;
 
-                $element->clientlocationtype_id=$element->clientlocation->clientlocationtype_id;
-                $element->clientlocationtype_name=$element->clientlocation->clientlocationtype_name;
+                $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
+                $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
 
-                $element->clientlocation_obj=$element->clientlocation->toJson();
+                $element->clientlocation_obj = $element->clientlocation->toJson();
 
-                $element->division_id=$element->clientlocation->division_id;
-                $element->division_name=$element->clientlocation->division_name;
+                $element->division_id = $element->clientlocation->division_id;
+                $element->division_name = $element->clientlocation->division_name;
 
-                $element->district_id=$element->clientlocation->district_id;
-                $element->district_name=$element->clientlocation->district_name;
+                $element->district_id = $element->clientlocation->district_id;
+                $element->district_name = $element->clientlocation->district_name;
 
-                $element->upazila_id=$element->clientlocation->upazila_id;
-                $element->upazila_name=$element->clientlocation->upazila_name;
+                $element->upazila_id = $element->clientlocation->upazila_id;
+                $element->upazila_name = $element->clientlocation->upazila_name;
 
-                $element->longitude=$element->clientlocation->longitude;
-                $element->latitude=$element->clientlocation->latitude;
+                $element->longitude = $element->clientlocation->longitude;
+                $element->latitude = $element->clientlocation->latitude;
             }
             if ($element->tasktype()->exists()) {
                 $element->tasktype_name = $element->tasktype->name;
             }
             //storing previous status
-            if($element->getOriginal('status')!=$element->status){
-                $element->previous_status=$element->getOriginal('status');
+            if ($element->getOriginal('status') != $element->status) {
+                $element->previous_status = $element->getOriginal('status');
             }
+            //update assignment and closed by
+            if ($element->status === "Closed") {
+                $element->is_closed = 1;
+                $element->closed_by = $element->assigned_to;
+                if(count($element->assignments)){
+                    foreach($element->assignments() as $assignment){
+                        $assignment->is_closed=1;
+                        $assignment->save();
+                    }
+                }
+            }
+            dd(Assignment::where('element_id',$element->id)->orderBy('created_at','ASC')->first());
             return $valid;
         });
 
@@ -253,11 +265,9 @@ class Task extends Basemodule
                 \Mail::to($element->assignee->email)->send(
                     new TaskCreated($element)
                 );
-
-
             }
 
-                $element->status = 'To do'; // Set initial status to draft.
+            $element->status = 'To do'; // Set initial status to draft.
 
         });
 
@@ -278,11 +288,11 @@ class Task extends Basemodule
         // Execute codes after model is successfully saved
         /************************************************************/
         static::saved(function (Task $element) {
-            $valid=true;
-            if(isset($element->assigned_to)){
-                if($element->getOriginal('assigned_to') != $element->assigned_to){
-                    $existing_assignment=Assignment::where('assigned_to',$element->assigned_to)->where('type',$element->tasktype_id)->where('element_id',$element->id)->count();
-                    if($existing_assignment<1){
+            $valid = true;
+            if (isset($element->assigned_to)) {
+                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
+                    $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)->where('element_id', $element->id)->count();
+                    if ($existing_assignment < 1) {
                         Assignment::create([
                             'name' => $element->name,
                             'type' => $element->tasktype_id,
@@ -291,9 +301,10 @@ class Task extends Basemodule
                             'assigned_by' => user()->id,
                             'assigned_to' => $element->assigned_to,
                         ]);
-                        $valid=setMessage("Assignment created");
-                    }else{
-                        $valid=setMessage("Assignment exists");
+
+                        $valid = setMessage("Assignment created");
+                    } else {
+                        $valid = setMessage("Assignment exists");
                     }
 
                 }
@@ -510,6 +521,8 @@ class Task extends Basemodule
     public function tasktype() { return $this->belongsTo(\App\Tasktype::class); }
 
     public function subtTasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
+
+    public function assignments() { return $this->hasMany(\App\Assignment::class, 'element_id'); }
 
     public function client() { return $this->belongsTo(\App\Client::class); }
 
