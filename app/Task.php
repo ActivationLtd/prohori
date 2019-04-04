@@ -234,17 +234,43 @@ class Task extends Basemodule
                 $element->previous_status = $element->getOriginal('status');
             }
             //update assignment and closed by
-            if ($element->status === "Closed") {
+            if ($element->status == 'Closed') {
                 $element->is_closed = 1;
                 $element->closed_by = $element->assigned_to;
-                if(count($element->assignments)){
-                    foreach($element->assignments() as $assignment){
-                        $assignment->is_closed=1;
+                if (count($element->assignments) > 0) {
+                    foreach ($element->assignments as $assignment) {
+                        $assignment->is_closed = 1;
                         $assignment->save();
                     }
                 }
             }
-            dd(Assignment::where('element_id',$element->id)->orderBy('created_at','ASC')->first());
+            //creating assignement based on changing of assingee
+            if (isset($element->assigned_to)) {
+                //taking any existing assignments
+                $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)->where('element_id', $element->id)->first();
+                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
+                    //if assignment does not exists
+                    if (!isset($existing_assignment->id)) {
+                        $assignment = Assignment::create([
+                            'name' => $element->name,
+                            'type' => $element->tasktype_id,
+                            'module_id' => '29',
+                            'element_id' => $element->id,
+                            'assigned_by' => user()->id,
+                            'assigned_to' => $element->assigned_to,
+                        ]);
+                        $valid = setMessage("Assignment created");
+                        //filling the assignment id in task table
+                        $element->assignment_id = $assignment->id;
+                    } else {
+                        $valid = setMessage("Assignment exists");
+                        //filling the assignment id in task table
+                        $element->assignment_id = $existing_assignment->id;
+                    }
+                }
+
+            }
+
             return $valid;
         });
 
@@ -266,6 +292,16 @@ class Task extends Basemodule
                     new TaskCreated($element)
                 );
             }
+            // if(isset($element->assigned_to)){
+            //     Assignment::create([
+            //         'name' => $element->name,
+            //         'type' => $element->tasktype_id,
+            //         'module_id' => '29',
+            //         'element_id' => $element->id,
+            //         'assigned_by' => user()->id,
+            //         'assigned_to' => $element->assigned_to,
+            //     ]);
+            // }
 
             $element->status = 'To do'; // Set initial status to draft.
 
@@ -289,27 +325,6 @@ class Task extends Basemodule
         /************************************************************/
         static::saved(function (Task $element) {
             $valid = true;
-            if (isset($element->assigned_to)) {
-                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
-                    $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)->where('element_id', $element->id)->count();
-                    if ($existing_assignment < 1) {
-                        Assignment::create([
-                            'name' => $element->name,
-                            'type' => $element->tasktype_id,
-                            'module_id' => '29',
-                            'element_id' => $element->id,
-                            'assigned_by' => user()->id,
-                            'assigned_to' => $element->assigned_to,
-                        ]);
-
-                        $valid = setMessage("Assignment created");
-                    } else {
-                        $valid = setMessage("Assignment exists");
-                    }
-
-                }
-
-            }
 
             Statusupdate::log($element, [
                 'status' => $element->status,

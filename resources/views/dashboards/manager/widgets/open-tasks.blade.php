@@ -1,5 +1,5 @@
 <?php
-$tasks = \App\Task::where('is_active', 1)->orderBy('created_at', 'desc')->get();
+$tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orderBy('created_at', 'desc')->get();
 ?>
 
 <b>Currently assigned</b>
@@ -32,4 +32,3 @@ $tasks = \App\Task::where('is_active', 1)->orderBy('created_at', 'desc')->get();
     @endforeach
     </tbody>
 </table>
- 

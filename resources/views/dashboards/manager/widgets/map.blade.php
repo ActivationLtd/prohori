@@ -53,7 +53,7 @@
 
         mymap.on('click', onMapClick);
 
-        <?php $tasks = \App\Task::with('clientlocation')->get(); ?>
+        <?php $tasks = \App\Task::with('clientlocation')->where('assigned_to',user()->id)->get(); ?>
 
         @foreach($tasks as $task)
             @if($task->clientlocation()->exists())

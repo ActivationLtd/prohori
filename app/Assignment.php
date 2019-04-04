@@ -362,9 +362,11 @@ class Assignment extends Basemodule
 
     public function assignee() { return $this->belongsTo(\App\User::class, 'assigned_to'); }
 
-    public function task() { return $this->belongsTo(\App\Task::class, 'assignment_id'); }
+    public function assigner() { return $this->belongsTo(\App\User::class, 'assigned_by'); }
 
-    public function assigner(){return $this->belongsTo(\App\User::class, 'assigned_by');}
+    public function task() {
+        return $this->belongsTo(Task::class, 'element_id');
+    }
     // Write new relationships below this line
 
     ############################################################################################
