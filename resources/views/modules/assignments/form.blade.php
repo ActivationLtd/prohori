@@ -51,7 +51,7 @@
 {{--note--}}
 @include('form.textarea',['var'=>['name'=>'note','label'=>'Note','container_class'=>'col-md-6']])
 
-@if(in_array($assignment->task->status,['Closed','Done']))
+@if(isset($assignment) && in_array($assignment->task->status,['Closed','Done']))
     {{--is_resolved--}}
     {{--@include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
     {{--is_verified--}}
@@ -60,7 +60,7 @@
     @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4','value'=>$assignment->is_closed]])
 @endif
 <div class="clearfix"></div>
-@if(isset($assignment->task->id))
+@if(isset($assignment,$assignment->task->id))
     <h2>Task Information</h2>
     {{--tasktype_id--}}
     @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>'Task type','query'=> new \App\Tasktype(),'container_class'=>'col-md-4','value'=>$assignment->task->tasktype_id]])
