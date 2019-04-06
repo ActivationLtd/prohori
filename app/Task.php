@@ -244,32 +244,7 @@ class Task extends Basemodule
                     }
                 }
             }
-            //creating assignement based on changing of assingee
-            if (isset($element->assigned_to)) {
-                //taking any existing assignments
-                $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)->where('element_id', $element->id)->first();
-                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
-                    //if assignment does not exists
-                    if (!isset($existing_assignment->id)) {
-                        $assignment = Assignment::create([
-                            'name' => $element->name,
-                            'type' => $element->tasktype_id,
-                            'module_id' => '29',
-                            'element_id' => $element->id,
-                            'assigned_by' => user()->id,
-                            'assigned_to' => $element->assigned_to,
-                        ]);
-                        $valid = setMessage("Assignment created");
-                        //filling the assignment id in task table
-                        $element->assignment_id = $assignment->id;
-                    } else {
-                        $valid = setMessage("Assignment exists");
-                        //filling the assignment id in task table
-                        $element->assignment_id = $existing_assignment->id;
-                    }
-                }
 
-            }
 
             return $valid;
         });
@@ -325,7 +300,32 @@ class Task extends Basemodule
         /************************************************************/
         static::saved(function (Task $element) {
             $valid = true;
+            //creating assignement based on changing of assingee
+            if (isset($element->assigned_to)) {
+                //taking any existing assignments
+                $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)->where('element_id', $element->id)->first();
+                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
+                    //if assignment does not exists
+                    if (!isset($existing_assignment->id)) {
+                        $assignment = Assignment::create([
+                            'name' => $element->name,
+                            'type' => $element->tasktype_id,
+                            'module_id' => '29',
+                            'element_id' => $element->id,
+                            'assigned_by' => user()->id,
+                            'assigned_to' => $element->assigned_to,
+                        ]);
+                        $valid = setMessage("Assignment created");
+                        //filling the assignment id in task table
+                        $element->assignment_id = $assignment->id;
+                    } else {
+                        $valid = setMessage("Assignment exists");
+                        //filling the assignment id in task table
+                        $element->assignment_id = $existing_assignment->id;
+                    }
+                }
 
+            }
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
