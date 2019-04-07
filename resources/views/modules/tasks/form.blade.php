@@ -66,7 +66,15 @@
     {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
     @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>'Location','query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
     {{--watchers--}}
-    @include('form.select-model-multiple', ['var'=> ['name' => 'watchers', 'label' => 'Watchers', 'query' => new \App\User(),'container_class'=>'col-md-6']])
+    <?php
+    $var = [
+        'name' => 'watchers',
+        'label' => 'Watchers',
+        'query' => new \App\User,
+        'container_class' => 'col-md-12',
+    ];
+    ?>
+    @include('form.select-model-multiple', ['var'=>$var])
     <div class="clearfix"></div>
     @include('form.is_active')
 </div>
@@ -85,54 +93,53 @@
     {{--days_open--}}
     @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2']])
 </div>
-<div class="clearfix"></div>
-<div class="col-md-8">
-    {{--is_closed--}}
-    @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-    {{--closed_by--}}
-    @include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
-    {{--closing_note--}}
-    <div class="clearfix"></div>
-    @include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])
-</div>
-<div class="clearfix"></div>
-<div class="col-md-8">
-    {{--is_resolved--}}
-    @include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-    {{--resolved_by--}}
-    @include('form.select-model', ['var'=> ['name' => 'resolved_by', 'label' => 'Resolved By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
-    <div class="clearfix"></div>
-    {{--resolve_note--}}
-    @include('form.textarea',['var'=>['name'=>'resolve_note','label'=>'Resolve Notes','container_class'=>'col-md-8']])
-</div>
-<div class="clearfix"></div>
-<div class="col-md-8">
-    {{--is_verified--}}
-    @include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-    {{--verified_by--}}
-    @include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
-    <div class="clearfix"></div>
-    {{--verify_note--}}
-    @include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])
-</div>
-<div class="clearfix"></div>
-<div class="col-md-8">
-    {{--is_flagged--}}
-    @include('form.select-array',['var'=>['name'=>'is_flagged','label'=>'Is Flagged','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-    {{--flagged_by--}}
-    @include('form.select-model', ['var'=> ['name' => 'flagged_by', 'label' => 'Flaged By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
-    {{--flag_note--}}
-    @include('form.textarea',['var'=>['name'=>'flag_note','label'=>'Flag Notes','container_class'=>'col-md-8']])
-</div>
-<div class="clearfix"></div>
-{{--is_active--}}
-<div class="col-md-8">
+<div class="col-md-8 no-padding">
     {{--description--}}
     @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
 </div>
+<div class="clearfix"></div>
+@if(isset($task) && in_array($task->status,['Closed','Done']))
+    <div class="col-md-6 no-padding " >
+        {{--is_flagged--}}
+        @include('form.select-array',['var'=>['name'=>'is_flagged','label'=>'Is Flagged','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+        {{--flagged_by--}}
+        @include('form.select-model', ['var'=> ['name' => 'flagged_by', 'label' => 'Flaged By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
+        {{--flag_note--}}
+        @include('form.textarea',['var'=>['name'=>'flag_note','label'=>'Flag Notes','container_class'=>'col-md-8']])
+    </div>
+
+    <div class="col-md-6 no-padding ">
+        {{--is_resolved--}}
+        @include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+        {{--resolved_by--}}
+        @include('form.select-model', ['var'=> ['name' => 'resolved_by', 'label' => 'Resolved By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
+        <div class="clearfix"></div>
+        {{--resolve_note--}}
+        @include('form.textarea',['var'=>['name'=>'resolve_note','label'=>'Resolve Notes','container_class'=>'col-md-8']])
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-6 no-padding ">
+        {{--is_verified--}}
+        @include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+        {{--verified_by--}}
+        @include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
+        <div class="clearfix"></div>
+        {{--verify_note--}}
+        @include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])
+    </div>
+
+    <div class="col-md-6 no-padding ">
+        {{--is_closed--}}
+        @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+        {{--closed_by--}}
+        @include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
+        {{--closing_note--}}
+        <div class="clearfix"></div>
+        @include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])
+    </div>
+@endif
 
 {{-- ******************* Form ends *********************** --}}
-
 
 @section('content-bottom')
     @parent
@@ -145,9 +152,14 @@
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidences','limit'=>10]])
 
-        @if(isset($task))
+        @if(isset($task) && !in_array($task->status,['Closed','Done']) )
             <h4>Sub-tasks</h4>
             @include('modules.tasks.subtasks')
+        @endif
+        <div class="clearfix"></div>
+        @if(isset($task) && count($task->assignments))
+            <h4>Task Related Assignments</h4>
+            @include('modules.tasks.taskassignments')
         @endif
     </div>
     <div class="col-md-6 no-padding-l">

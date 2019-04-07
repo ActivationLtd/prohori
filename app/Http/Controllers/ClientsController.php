@@ -21,6 +21,7 @@ class ClientsController extends ModulebaseController
             //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
             ["{$this->module_name}.id", "id", "ID"],
             ["{$this->module_name}.name", "name", "Name"],
+            ["{$this->module_name}.code", "code", "Code"],
             ["{$this->module_name}.address1", "address1", "Address"],
             ["{$this->module_name}.city", "city", "City"],
             ["{$this->module_name}.country_name", "country_name", "Country"],
