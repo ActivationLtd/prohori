@@ -23,6 +23,25 @@
             {{--<li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>--}}
             {{--<li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>--}}
         @else
+            {{--if user is manager--}}
+            @if(user()->inGroupId(5))
+                <?php
+                $module_names = [
+                    'tasks',
+                    'users',
+                    //'clients',
+                    'uploads',
+                    'messages',
+                ];
+                ?>
+                @foreach($module_names as $name)
+                    <?php
+                    /** @var \App\Module $module */
+                    $module = \App\Module::where('name', $name)->remember(cacheTime('long'))->first()?>
+                    <li><a href="{{route("{$module->name}.index")}}"><i
+                                    class="{{$module->icon_css}}"></i>{{$module->title}}</a></li>
+                @endforeach
+            @endif
 
         @endif
     @endif
