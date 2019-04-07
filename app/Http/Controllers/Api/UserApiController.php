@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UploadsController;
 use App\Http\Controllers\UsersController;
+use App\Task;
 use Request;
 use Response;
 
@@ -66,5 +68,14 @@ class UserApiController extends ApiController
         $this->user()->uploads()->where('type', 'Avatar')->delete();
         $ret = ret('success', "Avatar deleted");
         return Response::json(fillRet($ret));
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function tasks()
+    {
+        Request::merge([ 'sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
+        return app(TasksController::class)->list();
     }
 }

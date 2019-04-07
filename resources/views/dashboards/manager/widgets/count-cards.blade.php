@@ -17,7 +17,7 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
             <div class="icon">
                 <i class="fa fa-check-square"></i>
             </div>
-            <a href={{route('home').'/tasks'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href={{route('home').'/tasks?status="to do"'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->

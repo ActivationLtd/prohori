@@ -48,7 +48,10 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
             Route::prefix('user')->group(function () {
 
                 // Profile + logout
+                Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
+
                 Route::get('profile', 'Api\UserApiController@getUserProfile')->name('api.user.profile');
+
                 Route::get('logout', 'Auth\LoginController@logout')->name('api.user.logout');
                 Route::post('uploads', 'Api\UserApiController@uplaodsStore')->name('api.user.uploads-store');
                 Route::delete('uploads/avatar', 'Api\UserApiController@uplaodsDeleteAvatar')->name('api.user.uploads-delete-avatar');
