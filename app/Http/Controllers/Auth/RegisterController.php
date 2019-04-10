@@ -53,7 +53,7 @@ class RegisterController extends Controller
     {
         $user = new User($request->all());
         $validator = Validator::make($request->all(), array_merge(User::rules($user), [
-            'password' => 'required|digits_between:5,8|numeric|confirmed',
+            'password' => 'required|confirmed',
             'group_id' => 'required',
         ]));
         if ($validator->fails()) {

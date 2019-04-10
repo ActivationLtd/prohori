@@ -69,6 +69,8 @@ trait IsoGridDatatable
             $query = injectTenantIdInModelQuery($this->module_name, $query);
         }
 
+        // Construct query based on filter param
+        $query = self::filterQueryConstructor($query);
         // Exclude deleted rows
         $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
 

@@ -85,7 +85,7 @@ trait IsoUserPermission
      */
     public function canMakeApiCall()
     {
-        return $this->inGroupId(9); // 9 = API user
+        return $this->inGroupId(2); // 9 = API user
     }
 
     /**

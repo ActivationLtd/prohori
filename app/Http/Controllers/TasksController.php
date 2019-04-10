@@ -76,6 +76,8 @@ class TasksController extends ModulebaseController
             $query = $query->where('tasks.created_by' , user()->id)->orWhere('tasks.assigned_to',user()->id);
 
         }
+        // Construct query based on filter param
+        $query = self::filterQueryConstructor($query);
         // Exclude deleted rows
         $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
 

@@ -17,7 +17,7 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
             <div class="icon">
                 <i class="fa fa-check-square"></i>
             </div>
-            <a href={{route('home').'/tasks'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href={{route('home').'/tasks?status=to%20do'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
@@ -31,7 +31,7 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
             <div class="icon">
                 <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href={{route('home').'/tasks?status=Done'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
@@ -45,7 +45,7 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
             <div class="icon">
                 <i class="ion ion-person-add"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href={{route('home').'/tasks?status=In%20progress'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
@@ -60,7 +60,7 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
             <div class="icon">
                 <i class="ion ion-pie-graph"></i>
             </div>
-            <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href={{route('home').'/tasks'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
