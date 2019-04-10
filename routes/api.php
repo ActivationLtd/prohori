@@ -35,10 +35,8 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::resource($module, $Controller); // for some reason this resource route needs be placed at the bottom otherwise it does work.
             }
         });
-
         // Settings api
         Route::get('setting/{name}', ['as' => 'api.get.setting', 'uses' => 'SettingsController@getSetting']);
-
         Route::post('register', 'Auth\RegisterController@register')->name('api.register');
         Route::post('login', 'Auth\LoginController@login')->name('api.login');
         Route::post('social-login', 'Auth\LoginController@socialLogin')->name('api.social-login');
