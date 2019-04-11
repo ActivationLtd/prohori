@@ -46,44 +46,20 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
             Route::prefix('user')->group(function () {
 
                 // Profile + logout
-                Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
+
 
                 Route::get('profile', 'Api\UserApiController@getUserProfile')->name('api.user.profile');
 
                 Route::get('logout', 'Auth\LoginController@logout')->name('api.user.logout');
                 Route::post('uploads', 'Api\UserApiController@uplaodsStore')->name('api.user.uploads-store');
                 Route::delete('uploads/avatar', 'Api\UserApiController@uplaodsDeleteAvatar')->name('api.user.uploads-delete-avatar');
-
-                // Update user information in users table
-                Route::get('summary', 'Api\UserApiController@recommenderUserSummary')->name('api.user.summary');
-
-                // Update user information in users table
-                Route::get('activities', 'Api\UserApiController@recommenderUserActivities')->name('api.user.activities');
-
-                // Update user information in users table
-                Route::patch('/', 'Api\UserApiController@usersPatch')->name('api.user.users-patch');
-
-                // User brands page
-                Route::get('brands', 'Api\UserApiController@brands')->name('api.user.brands');
-
-                // User charity options
-                Route::get('charities', 'Api\UserApiController@charities')->name('api.user.charities');
-
-                // charity-selections
-                Route::post('charityselections', 'Api\UserApiController@charityselectionsStore')->name('api.user.charityselections-store');
-                Route::get('charityselections', 'Api\UserApiController@charityselectionsList')->name('api.user.charityselections');
-                Route::get('charityselections/latest', 'Api\UserApiController@charityselectionsLatest')->name('api.user.charityselections-latest');
-
-                // aid-declaration
-                Route::post('aiddeclarations', 'Api\UserApiController@aiddeclarationsStore')->name('api.user.aiddeclarations-store');
-                Route::get('aiddeclarations', 'Api\UserApiController@aiddeclarationsList')->name('api.user.aiddeclarations');
-                Route::get('aiddeclarations/latest', 'Api\UserApiController@aiddeclarationsLatest')->name('api.user.aiddeclarations-latest');
-
-                // recommend urls
-                Route::post('recommendurls', 'Api\UserApiController@recommendurlsStore')->name('api.user.recommendurls-store');
-                Route::get('recommendurls', 'Api\UserApiController@recommendurlsList')->name('api.user.recommendurls');
-                //Route::get('aiddeclarations/latest', 'Api\UserApiController@aiddeclarationsLatest')->name('api.user.aiddeclarations-latest');
-
+                //task url
+                //get all task of users
+                Route::get('tasks', 'Api\UserApiController@userTasks')->name('api.user.tasks');
+                //get assigned tasks of user
+                Route::get('assignedtasks', 'Api\UserApiController@userAssignedTasks')->name('api.userassigned.tasks');
+                //create a task
+                Route::post('createtasks', 'Api\UserApiController@createTask')->name('api.create.tasks');
             });
         });
 

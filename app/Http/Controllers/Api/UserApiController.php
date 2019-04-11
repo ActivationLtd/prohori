@@ -73,7 +73,19 @@ class UserApiController extends ApiController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function tasks()
+    public function userTasks()
+    {
+        $usertasks=Task::where('created_by',$this->user()->id)->orWhere('assigned_to',$this->user()->id)->where('is_active',1)->get();
+        $ret = ret('success', "User Task List", ['data' => $usertasks]);
+        //Request::merge(['assigned_to'=>$this->user()->id,'created_by'=>$this->user()->id,'sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
+        return Response::json($ret);
+    }
+    public function userAssignedTasks()
+    {
+        Request::merge(['assigned_to'=>$this->user()->id,'sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
+        return app(TasksController::class)->list();
+    }
+    public function createTask()
     {
         Request::merge([ 'sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
         return app(TasksController::class)->list();
