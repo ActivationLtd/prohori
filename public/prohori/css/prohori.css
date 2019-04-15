@@ -1,15 +1,17 @@
 /* Global font type and size*/
-/*.h1, .h2, .h3, .h4, .h5, .h6, body, h1, h2, h3, h4, h5, h6, .cke_editable {*/
-/*!*font-family: 'Roboto', 'Ubuntu', sans-serif;*!*/
-/*font-family: 'Ubuntu', sans-serif;*/
-/*!important;*/
-/*}*/
+.h1, .h2, .h3, .h4, .h5, .h6, body, h1, h2, h3, h4, h5, h6, .cke_editable {
+    /*font-family: 'Roboto', 'Ubuntu', sans-serif;*/
+    /*font-family: 'Ubuntu', sans-serif;*/
+    /*font-family: 'Arvo', serif;;*/
+    /*font-family: 'Ruda', sans-serif;*/
+    /*font-family: 'Montserrat', sans-serif;*/
+
+}
 
 /*.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6,*/
 /*.content-header h4,*/
 .main-header .logo, .logo-mini, .logo-lg {
-    font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;
-    !important
+    font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;!important
 }
 
 .lb-font {
@@ -18,7 +20,7 @@
 
 body, html,
 .sidebar-menu .treeview-menu > li > a {
-    font-size: 14px;
+    font-size: 15px;
     color: #333333;
 
 }

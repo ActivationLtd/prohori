@@ -1,9 +1,11 @@
 <?php
 
+use App\Module;
+use App\Modulegroup;
 use Illuminate\Http\Request;
 
-$modules = dbTableExists('modules') ? \App\Module::names() : []; // dbTableExists() was causing issue.
-$modulegroups = dbTableExists('modulegroups') ? \App\Modulegroup::names() : [];
+$modules      = dbTableExists('modules') ? Module::names() : []; // dbTableExists() was causing issue.
+$modulegroups = dbTableExists('modulegroups') ? Modulegroup::names() : [];
 
 /*
 |--------------------------------------------------------------------------
@@ -28,10 +30,10 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
         // APIs that are more appropriate for specific usage of data.
         Route::prefix('module')->group(function () use ($modules) {
             foreach ($modules as $module) {
-                $Controller = ucfirst($module) . "Controller";
+                $Controller = ucfirst($module)."Controller";
                 // generate the API route.
-                Route:: get($module . "/list", $Controller . "@list")->name("api.{$module}.list");
-                Route:: get($module . "/report", $Controller . "@report")->name("api.{$module}.report");
+                Route:: get($module."/list", $Controller."@list")->name("api.{$module}.list");
+                Route:: get($module."/report", $Controller."@report")->name("api.{$module}.report");
                 Route::resource($module, $Controller); // for some reason this resource route needs be placed at the bottom otherwise it does work.
             }
         });
@@ -45,21 +47,15 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
         Route::middleware(['auth.bearer'])->group(function () use ($modules, $modulegroups) {
             Route::prefix('user')->group(function () {
 
-                // Profile + logout
-
-
+                // Profile
                 Route::get('profile', 'Api\UserApiController@getUserProfile')->name('api.user.profile');
-
                 Route::get('logout', 'Auth\LoginController@logout')->name('api.user.logout');
-                Route::post('uploads', 'Api\UserApiController@uplaodsStore')->name('api.user.uploads-store');
-                Route::delete('uploads/avatar', 'Api\UserApiController@uplaodsDeleteAvatar')->name('api.user.uploads-delete-avatar');
-                //task url
-                //get all task of users
-                Route::get('tasks', 'Api\UserApiController@userTasks')->name('api.user.tasks');
-                //get assigned tasks of user
-                Route::get('assignedtasks', 'Api\UserApiController@userAssignedTasks')->name('api.userassigned.tasks');
-                //create a task
-                Route::post('createtasks', 'Api\UserApiController@createTask')->name('api.create.tasks');
+                Route::post('uploads', 'Api\UserApiController@uploadsStore')->name('api.user.uploads-store');
+                Route::delete('uploads/avatar', 'Api\UserApiController@uploadsDeleteAvatar')->name('api.user.uploads-delete-avatar');
+
+                // Tasks
+                Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
+                Route::post('tasks/create', 'Api\UserApiController@tasksCreate')->name('api.user.tasks.create');
             });
         });
 

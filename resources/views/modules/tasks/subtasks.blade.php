@@ -7,7 +7,7 @@
         <th>Edit</th>
     </tr>
     </thead>
-    @foreach($task->subtTasks()->orderBy('seq','ASC')->get() as $subtask)
+    @foreach($task->subtasks()->orderBy('seq','ASC')->get() as $subtask)
         <?php
         /** @var $subtask \App\Task */
         ?>
