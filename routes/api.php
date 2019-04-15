@@ -55,7 +55,6 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
 
                 // Tasks
                 Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
-                Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
                 Route::post('tasks/create', 'Api\UserApiController@tasksCreate')->name('api.user.tasks.create');
             });
         });

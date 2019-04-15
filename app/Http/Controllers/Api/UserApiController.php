@@ -6,7 +6,6 @@ use Request;
 use App\Task;
 use Response;
 use App\Http\Controllers\UsersController;
-use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UploadsController;
 
 class UserApiController extends ApiController
@@ -70,19 +69,11 @@ class UserApiController extends ApiController
      */
     public function tasks()
     {
-        $tasks = Task::where('created_by', $this->user()->id)->orWhere('assigned_to', $this->user()->id)->where('is_active', 1)->get();
+        $tasks = Task::with(['subtasks','uploads','assignments'])
+        ->where('created_by', $this->user()->id)
+            ->orWhere('assigned_to', $this->user()->id)->where('is_active', 1)->get();
         $ret   = ret('success', "User Task List", ['data' => $tasks]);
         return Response::json($ret);
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function createTask()
-    {
-        Request::merge(['sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
-        return app(TasksController::class)->list();
     }
 
     /**
