@@ -128,6 +128,7 @@ class UserApiController extends ApiController
      */
     public function tasksUpload($id)
     {
+
         Request::merge([
             'module_id' => 29, // 29=users module
             'element_id' => $id,
