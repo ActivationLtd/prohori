@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use Request;
 use App\Task;
 use Response;
+use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UploadsController;
+use App\Http\Controllers\RecommendurlsController;
 
 class UserApiController extends ApiController
 {
@@ -65,18 +67,6 @@ class UserApiController extends ApiController
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function tasks()
-    {
-        $tasks = Task::with(['subtasks', 'uploads', 'assignments'])
-            ->where('created_by', $this->user()->id)
-            ->orWhere('assigned_to', $this->user()->id)->where('is_active', 1)->get();
-        $ret   = ret('success', "User Task List", ['data' => $tasks]);
-        return Response::json($ret);
-    }
-
-    /**
      * @return mixed
      */
     public function summary()
@@ -91,5 +81,35 @@ class UserApiController extends ApiController
         ];
         $ret  = ret('success', "User Task List", ['data' => $data]);
         return Response::json($ret);
+    }
+
+    /**
+     * Get a list of tasks
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function tasks()
+    {
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments'])
+            ->where('created_by', $this->user()->id)
+            ->orWhere('assigned_to', $this->user()->id)->where('is_active', 1)->get();
+        $ret   = ret('success', "User Task List", ['data' => $tasks]);
+        return Response::json($ret);
+    }
+
+    public function tasksCreate()
+    {
+        Request::merge(['created_by' => $this->user()->id]);
+        return app(TasksController::class)->store();
+    }
+
+    /**
+     * Create a recommendation url
+     * @param $id
+     * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function tasksPatch($id)
+    {
+        Request::merge(['updated_by' => $this->user()->id]);
+        return app(TasksController::class)->update($id);
     }
 }
