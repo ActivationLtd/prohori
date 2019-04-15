@@ -370,7 +370,7 @@ class ModulebaseController extends Controller
         $q->where('is_active', 1);
 
         // Construct query based on filter param
-        $q = self::filterQueryConstructor($q);
+        $q = $this->filterQueryConstructor($q);
 
         // Get total count with out offset and limit.
         $total = $q->count();
@@ -396,10 +396,8 @@ class ModulebaseController extends Controller
 
         //set limit
         $limit = $max_limit = 20;
-        if (Request::has('limit')) {
-            if (Request::get('limit') <= $max_limit) {
-                $limit = Request::get('limit');
-            }
+        if (Request::has('limit') && Request::get('limit') <= $max_limit) {
+            $limit = Request::get('limit');
         }
         // Limit override - Force all data with no limit.
         if (Request::get('force_all_data') === 'true') {
@@ -463,14 +461,19 @@ class ModulebaseController extends Controller
                         $q = $q->whereIn($name, $temp);
                     }
                 } else {
-                    if (strlen($val) && strstr($val, ',')) {
+                    if (strlen($val) && strpos($val, ',') !== false) {
                         $q = $q->whereIn($name, explode(',', $val));
                     } else {
                         if (strlen($val)) {
-                            if (in_array($name, $text_fields)) {
-                                $q = $q->where($name, 'LIKE', "%$val%"); // For select2
+
+                            if ($val == 'null') {
+                                $q = $q->whereNull($name, $val); // Before select2
                             } else {
-                                $q = $q->where($name, $val); // Before select2
+                                if (in_array($name, $text_fields)) {
+                                    $q = $q->where($name, 'LIKE', "%$val%"); // For select2
+                                } else {
+                                    $q = $q->where($name, $val); // Before select2
+                                }
                             }
                         }
                     }
