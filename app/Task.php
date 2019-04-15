@@ -3,13 +3,11 @@
 namespace App;
 
 use App\Mail\TaskCreated;
-use App\Observers\TaskObserver;
 use App\Traits\Assignable;
-use App\Traits\IsoModule;
+use App\Observers\TaskObserver;
 
 /**
  * Class Task
- *
  * @package App
  * @property int $id
  * @property string|null $uuid
@@ -40,7 +38,6 @@ class Task extends Basemodule
     use Assignable;
     /**
      * Mass assignment fields (White-listed fields)
-     *
      * @var array
      */
     protected $fillable = [
@@ -98,7 +95,6 @@ class Task extends Basemodule
 
     /**
      * The attributes that should be cast to native types.
-     *
      * @var array
      */
     protected $casts = [
@@ -107,7 +103,6 @@ class Task extends Basemodule
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
-     *
      * @var array
      */
     // protected $guarded = [];
@@ -134,22 +129,28 @@ class Task extends Basemodule
 
     /**
      * Date fields
-     *
      * @var array
      */
     // protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    /**
+     * Custom validation messages.
+     * @var array
+     */
+    public static $custom_validation_messages = [
+        //'name.required' => 'Custom message.',
+    ];
 
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
-     *
      * @param       $element
-     * @param array $merge
+     * @param  array  $merge
      * @return array
      */
-    public static function rules($element, $merge = []) {
+    public static function rules($element, $merge = [])
+    {
         $rules = [
-            'name' => 'required|between:1,255|unique:tasks,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'name' => 'required|between:1,255|unique:tasks,name,'.(isset($element->id) ? "$element->id" : 'null').',id,deleted_at,NULL',
             'assigned_to' => 'required',
             'tasktype_id' => 'required',
             'priority' => 'required',
@@ -166,17 +167,7 @@ class Task extends Basemodule
     }
 
     /**
-     * Custom validation messages.
-     *
-     * @var array
-     */
-    public static $custom_validation_messages = [
-        //'name.required' => 'Custom message.',
-    ];
-
-    /**
      * Automatic eager load relation by default (can be expensive)
-     *
      * @var array
      */
     // protected $with = ['relation1', 'relation2'];
@@ -185,7 +176,8 @@ class Task extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
         Task::observe(TaskObserver::class);
 
@@ -202,29 +194,29 @@ class Task extends Basemodule
             if ($valid) {
                 if ($element->client()->exists()) {
                     $element->client_name = $element->client->name;
-                    $element->client_obj = $element->client->toJson();
+                    $element->client_obj  = $element->client->toJson();
                 }
             }
             if ($element->clientlocation()->exists()) {
-                $element->clientlocation_obj = $element->clientlocation->toJson();
+                $element->clientlocation_obj  = $element->clientlocation->toJson();
                 $element->clientlocation_name = $element->clientlocation->name;
 
-                $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
+                $element->clientlocationtype_id   = $element->clientlocation->clientlocationtype_id;
                 $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
 
                 $element->clientlocation_obj = $element->clientlocation->toJson();
 
-                $element->division_id = $element->clientlocation->division_id;
+                $element->division_id   = $element->clientlocation->division_id;
                 $element->division_name = $element->clientlocation->division_name;
 
-                $element->district_id = $element->clientlocation->district_id;
+                $element->district_id   = $element->clientlocation->district_id;
                 $element->district_name = $element->clientlocation->district_name;
 
-                $element->upazila_id = $element->clientlocation->upazila_id;
+                $element->upazila_id   = $element->clientlocation->upazila_id;
                 $element->upazila_name = $element->clientlocation->upazila_name;
 
                 $element->longitude = $element->clientlocation->longitude;
-                $element->latitude = $element->clientlocation->latitude;
+                $element->latitude  = $element->clientlocation->latitude;
             }
             if ($element->tasktype()->exists()) {
                 $element->tasktype_name = $element->tasktype->name;
@@ -244,7 +236,6 @@ class Task extends Basemodule
                     }
                 }
             }
-
 
             return $valid;
         });
@@ -303,7 +294,8 @@ class Task extends Basemodule
             //creating assignement based on changing of assingee
             if (isset($element->assigned_to)) {
                 //taking any existing assignments
-                $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)->where('element_id', $element->id)->first();
+                $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)
+                    ->where('element_id', $element->id)->first();
                 if ($element->getOriginal('assigned_to') != $element->assigned_to) {
                     //if assignment does not exists
                     if (!isset($existing_assignment->id)) {
@@ -315,7 +307,7 @@ class Task extends Basemodule
                             'assigned_by' => user()->id,
                             'assigned_to' => $element->assigned_to,
                         ]);
-                        $valid = setMessage("Assignment created");
+                        $valid      = setMessage("Assignment created");
                         //filling the assignment id in task table
                         $element->assignment_id = $assignment->id;
                     } else {
@@ -363,7 +355,7 @@ class Task extends Basemodule
     ############################################################################################
 
     /**
-     * @param bool|false $setMsgSession setting it false will not store the message in session
+     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -391,7 +383,6 @@ class Task extends Basemodule
     /**
      * Static functions needs to be called using Model::function($id)
      * Inside static function you may need to query and get the element
-     *
      * @param $id
      */
     // public static function someOtherAction($id) { }
@@ -412,8 +403,7 @@ class Task extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isViewable($user_id = null)
@@ -430,8 +420,7 @@ class Task extends Basemodule
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -448,8 +437,7 @@ class Task extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -466,8 +454,7 @@ class Task extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)
@@ -535,7 +522,7 @@ class Task extends Basemodule
 
     public function tasktype() { return $this->belongsTo(\App\Tasktype::class); }
 
-    public function subtTasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
+    public function subtasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
 
     public function assignments() { return $this->hasMany(\App\Assignment::class, 'element_id'); }
 
@@ -559,12 +546,11 @@ class Task extends Basemodule
     // Write accessors and mutators here.
     /**
      * Set partnercategory ids to array
-     *
-     *
-     * @param  array $value
+     * @param  array  $value
      * @return void
      */
-    public function setWatchersAttribute($value) {
+    public function setWatchersAttribute($value)
+    {
         // Original default value
         $this->attributes['watchers'] = $value;
 

@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Classes\Reports\DefaultModuleReport;
-use App\Module;
-use App\Traits\IsoGridDatatable;
-use App\Traits\IsoOutput;
-use App\Upload;
 use DB;
-use Redirect;
+use View;
 use Request;
+use Redirect;
 use Response;
 use Validator;
-use View;
+use App\Module;
+use App\Upload;
+use App\Traits\IsoOutput;
+use App\Traits\IsoGridDatatable;
+use App\Classes\Reports\DefaultModuleReport;
 
 /**
  * Class ModulebaseController
@@ -35,13 +35,12 @@ class ModulebaseController extends Controller
      * grid query and also add tenant context to grid query if applicable. Finally it
      * globally shares a couple of variables $module_name, $mod to all views rendered
      * from this controller
-     *
      */
     public function __construct()
     {
 
         $this->module_name = controllerModule(get_class($this));
-        $this->module = Module::where('name', $this->module_name)->remember(cacheTime('long'))->first();
+        $this->module      = Module::where('name', $this->module_name)->remember(cacheTime('long'))->first();
 
         # Add tenant context Inject tenant context in grid query
         if ($tenant_id = inTenantContext($this->module_name)) {
@@ -59,7 +58,6 @@ class ModulebaseController extends Controller
      * Index/List page to show grid
      * This controller method is responsible for rendering the view that has the default
      * spyr module grid.
-     *
      * @return \App\Http\Controllers\ModulebaseController|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse|\Illuminate\View\View
      */
     public function index()
@@ -69,20 +67,19 @@ class ModulebaseController extends Controller
                 return self::list();
             }
             $view = 'modules.base.grid';
-            if (View::exists('modules.' . $this->module_name . '.grid')) {
-                $view = 'modules.' . $this->module_name . '.grid';
+            if (View::exists('modules.'.$this->module_name.'.grid')) {
+                $view = 'modules.'.$this->module_name.'.grid';
             }
             return view($view)->with('grid_columns', $this->gridColumns());
         }
 
         return View::make('template.blank')
             ->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ " . $this->module_name . ".view-list]");
+            ->with('body', "You don't have permission [ ".$this->module_name.".view-list]");
     }
 
     /**
      * Shows an element create form.
-     *
      * @return \Illuminate\Contracts\View\View|\View
      */
     public function create()
@@ -94,13 +91,12 @@ class ModulebaseController extends Controller
 
         return View::make('template.blank')
             ->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ " . $this->module_name . ".create]");
+            ->with('body', "You don't have permission [ ".$this->module_name.".create]");
     }
 
     /**
      * Store an spyr element. Returns json response if ret=json is sent as url parameter. Otherwise redirects
      * based on the url set in redirect_success|redirect_fail
-     *
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function store()
@@ -109,7 +105,7 @@ class ModulebaseController extends Controller
         /** @var \App\Basemodule $element */
         // init local variables
         $module_name = $this->module_name;
-        $Model = model($this->module_name);
+        $Model       = model($this->module_name);
 
         //$element_name = str_singular($module_name);
         //$ret = ret();
@@ -117,8 +113,8 @@ class ModulebaseController extends Controller
         # Process store while creation
         # --------------------------------------------------------
         $validator = null;
-        $inputs = $this->transformInputs(Request::all());
-        $element = new $Model($inputs);
+        $inputs    = $this->transformInputs(Request::all());
+        $element   = new $Model($inputs);
         if (hasModulePermission($this->module_name, 'create')) { // check module permission
             $validator = Validator::make(Request::all(), $Model::rules($element), $Model::$custom_validation_messages);
 
@@ -127,7 +123,8 @@ class ModulebaseController extends Controller
             // $validator = $element->validateModel();
 
             if ($validator->fails()) {
-                $ret = ret('fail', "Validation error(s) on creating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
+                $ret = ret('fail', "Validation error(s) on creating {$this->module->title}.",
+                    ['validation_errors' => json_decode($validator->messages(), true)]);
             } else {
                 if ($element->isCreatable()) {
                     if ($element->save()) {
@@ -153,7 +150,6 @@ class ModulebaseController extends Controller
     /**
      * Shows an spyr element. Store an spyr element. Returns json response if ret=json is sent as url parameter.
      * Otherwise redirects to edit page where details is visible as filled up edit form.
-     *
      * @param $id
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
@@ -162,7 +158,7 @@ class ModulebaseController extends Controller
         /** @var \App\Basemodule $Model */
         /** @var \App\Basemodule $element */
         $module_name = $this->module_name;
-        $Model = model($this->module_name);
+        $Model       = model($this->module_name);
         //$element_name = str_singular($module_name);
         //$ret = ret(); // load default return values
         # --------------------------------------------------------
@@ -195,7 +191,6 @@ class ModulebaseController extends Controller
 
     /**
      * Show spyr element edit form
-     *
      * @param $id
      * @return $this|\Illuminate\Http\RedirectResponse
      */
@@ -204,8 +199,8 @@ class ModulebaseController extends Controller
         /** @var \App\Basemodule $Model */
         /** @var \App\Basemodule $element */
         // init local variables
-        $module_name = $this->module_name;
-        $Model = model($this->module_name);
+        $module_name  = $this->module_name;
+        $Model        = model($this->module_name);
         $element_name = str_singular($module_name);
         # --------------------------------------------------------
         # Process return/redirect
@@ -234,11 +229,10 @@ class ModulebaseController extends Controller
 
     /**
      * Update handler for spyr element.
-     *
      * @param $id
-     * @var \App\Basemodule $Model
-     * @var \App\Basemodule $element
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @var \App\Basemodule $element
+     * @var \App\Basemodule $Model
      */
     public function update($id)
     {
@@ -247,7 +241,7 @@ class ModulebaseController extends Controller
         /** @var \App\Basemodule $element */
         // init local variables
         $Model = model($this->module_name);
-        $ret = ret(); // load default return values
+        $ret   = ret(); // load default return values
         # --------------------------------------------------------
         # Process update
         # --------------------------------------------------------
@@ -259,7 +253,8 @@ class ModulebaseController extends Controller
                 $validator = $element->validateModel();
 
                 if ($validator->fails()) {
-                    $ret = ret('fail', "Validation error(s) on updating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
+                    $ret = ret('fail', "Validation error(s) on updating {$this->module->title}.",
+                        ['validation_errors' => json_decode($validator->messages(), true)]);
                 } else {
                     if ($element->save()) { // Attempt to update/save.
                         $ret = ret('success', "{$this->module->title} has been updated", ['data' => $element]);
@@ -282,7 +277,6 @@ class ModulebaseController extends Controller
 
     /**
      * Delete spyr element.
-     *
      * @param $id
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
@@ -325,8 +319,9 @@ class ModulebaseController extends Controller
         } else { // Delete successful. Redirect to success path(url)
             // Obtain redirection path based on url param redirect_fail
             // Or, default redirect to back if no param is set.
-            if (Request::has('redirect_success')) $redirect = Redirect::to(Request::get('redirect_success'));
-            else {
+            if (Request::has('redirect_success')) {
+                $redirect = Redirect::to(Request::get('redirect_success'));
+            } else {
                 return View::make('template.blank')
                     ->with('title', 'Delete success!')
                     ->with('body', "The item that you are trying to access does not exist or has been deleted");
@@ -337,8 +332,7 @@ class ModulebaseController extends Controller
 
     /**
      * Restore a soft-deleted.
-     *
-     * @param null $id
+     * @param  null  $id
      * @return $this
      */
     public function restore($id = null)
@@ -351,10 +345,9 @@ class ModulebaseController extends Controller
 
     /**
      * Returns a collection of objects as Json
-     *
-     * @var \App\Basemodule $Model
-     * @var \Illuminate\Database\Eloquent\Builder $q
      * @return \Illuminate\Http\JsonResponse
+     * @var \Illuminate\Database\Eloquent\Builder $q
+     * @var \App\Basemodule $Model
      */
     public function list()
     {
@@ -371,13 +364,13 @@ class ModulebaseController extends Controller
         // Eager load
         if (Request::has('with')) {
             $with = Request::get('with');
-            $q = $q->with(explode(',', $with));
+            $q    = $q->with(explode(',', $with));
         }
         // Force is_active = 1
         $q->where('is_active', 1);
 
         // Construct query based on filter param
-        $q = self::filterQueryConstructor($q);
+        $q = $this->filterQueryConstructor($q);
 
         // Get total count with out offset and limit.
         $total = $q->count();
@@ -398,15 +391,13 @@ class ModulebaseController extends Controller
         $offset = 0;
         if (Request::has('offset')) {
             $offset = Request::get('offset');
-            $q = $q->skip($offset);
+            $q      = $q->skip($offset);
         }
 
         //set limit
         $limit = $max_limit = 20;
-        if (Request::has('limit')) {
-            if (Request::get('limit') <= $max_limit) {
-                $limit = Request::get('limit');
-            }
+        if (Request::has('limit') && Request::get('limit') <= $max_limit) {
+            $limit = Request::get('limit');
         }
         // Limit override - Force all data with no limit.
         if (Request::get('force_all_data') === 'true') {
@@ -418,19 +409,18 @@ class ModulebaseController extends Controller
 
         // $data = $q->remember(cacheTime('none'))->get();
         $data = $q->get();
-        $ret = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
+        $ret  = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
         return Response::json(fillRet($ret));
     }
 
     /**
      * Json return query constructor
-     *
      * @param $q \Illuminate\Database\Query\Builder
      * @return \App\Basemodule
      */
     public function filterQueryConstructor($q)
     {
-        $Model = model($this->module_name);
+        $Model       = model($this->module_name);
         $text_fields = $Model::$text_fields;
         //$module_sys_name = $this->module_name;
 
@@ -443,15 +433,23 @@ class ModulebaseController extends Controller
         }
 
         # Generic API return
-        if (Request::has('updatedSince')) $q = $q->where('updated_at', '>=', Request::get('updatedSince'));
-        if (Request::has('createdSince')) $q = $q->where('created_at', '>=', Request::get('createdSince'));
-        if (Request::has('updatedAt')) $q = $q->whereRaw("DATE(updated_at) = " . "'" . Request::get('updateddAt') . "'");
-        if (Request::has('createdAt')) $q = $q->whereRaw("DATE(created_at) = " . "'" . Request::get('createdAt') . "'");
+        if (Request::has('updatedSince')) {
+            $q = $q->where('updated_at', '>=', Request::get('updatedSince'));
+        }
+        if (Request::has('createdSince')) {
+            $q = $q->where('created_at', '>=', Request::get('createdSince'));
+        }
+        if (Request::has('updatedAt')) {
+            $q = $q->whereRaw("DATE(updated_at) = "."'".Request::get('updateddAt')."'");
+        }
+        if (Request::has('createdAt')) {
+            $q = $q->whereRaw("DATE(created_at) = "."'".Request::get('createdAt')."'");
+        }
 
         if (Request::has('fieldName') && Request::has('fieldValue')) {
-            $fieldName = Request::get('fieldName');
+            $fieldName  = Request::get('fieldName');
             $fieldValue = Request::get('fieldValue');
-            $q = $q->where($fieldName, $fieldValue);
+            $q          = $q->where($fieldName, $fieldValue);
         }
 
         $q_fields = columns($this->module_name);
@@ -459,14 +457,25 @@ class ModulebaseController extends Controller
             if (in_array($name, $q_fields)) {
                 if (is_array($val) && count($val)) {
                     $temp = removeEmptyVals($val);
-                    if (count($temp)) $q = $q->whereIn($name, $temp);
-                } else if (strlen($val) && strstr($val, ',')) {
-                    $q = $q->whereIn($name, explode(',', $val));
-                } else if (strlen($val)) {
-                    if (in_array($name, $text_fields)) {
-                        $q = $q->where($name, 'LIKE', "%$val%"); // For select2
+                    if (count($temp)) {
+                        $q = $q->whereIn($name, $temp);
+                    }
+                } else {
+                    if (strlen($val) && strpos($val, ',') !== false) {
+                        $q = $q->whereIn($name, explode(',', $val));
                     } else {
-                        $q = $q->where($name, $val); // Before select2
+                        if (strlen($val)) {
+
+                            if ($val == 'null') {
+                                $q = $q->whereNull($name, $val); // Before select2
+                            } else {
+                                if (in_array($name, $text_fields)) {
+                                    $q = $q->where($name, 'LIKE', "%$val%"); // For select2
+                                } else {
+                                    $q = $q->where($name, $val); // Before select2
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -478,7 +487,6 @@ class ModulebaseController extends Controller
 
     /**
      * Show all the changes/change logs of an item
-     *
      * @param $id
      * @return \Illuminate\Http\JsonResponse|ModulebaseController
      */
@@ -498,7 +506,7 @@ class ModulebaseController extends Controller
         if ($element = $Model::find($id)) { // Check if the element you are trying to edit exists
             if ($element->isViewable()) { // Check if the element is viewable
                 $changes = $element->changes;
-                $ret = ret('success', "", ['data' => $changes]);
+                $ret     = ret('success', "", ['data' => $changes]);
             } else { // Not viewable by the user. Set error message and return value.
                 $ret = ret('fail', "The element is not view-able by current user.");
                 //return showPermissionErrorPage("The element is not view-able by current user.");
@@ -526,17 +534,15 @@ class ModulebaseController extends Controller
 
     /**
      * Get data source of report
-     *
      * @return null|string
      */
     public function reportDataSource()
     {
-        return $this->report_data_source ?? DB::getTablePrefix() . $this->module_name;
+        return $this->report_data_source ?? DB::getTablePrefix().$this->module_name;
     }
 
     /**
      * Get base directory of blade views
-     *
      * @return string
      */
     public function reportViewBaseDir()
@@ -545,8 +551,8 @@ class ModulebaseController extends Controller
         $base_dir = 'modules.base.report';
 
         // Override default if a module specific report blade exists in location  "{module_name}.report.result"
-        if (View::exists('modules.' . $this->module_name . '.report.results')) {
-            $base_dir = 'modules.' . $this->module_name . '.report';
+        if (View::exists('modules.'.$this->module_name.'.report.results')) {
+            $base_dir = 'modules.'.$this->module_name.'.report';
         }
         return $base_dir;
     }
@@ -557,19 +563,18 @@ class ModulebaseController extends Controller
     public function report()
     {
         if (hasModulePermission($this->module_name, 'report')) {
-            $report = new DefaultModuleReport();
+            $report              = new DefaultModuleReport();
             $report->data_source = $this->reportDataSource();
-            $report->base_dir = $this->reportViewBaseDir();
+            $report->base_dir    = $this->reportViewBaseDir();
             return $report->show();
         }
         return view('template.blank')->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ " . $this->module_name . ".report]");
+            ->with('body', "You don't have permission [ ".$this->module_name.".report]");
     }
 
     /**
      * Transforms inputs to a Model compatible format.
-     *
-     * @param array $inputs
+     * @param  array  $inputs
      * @return array
      */
     public function transformInputs($inputs = [])

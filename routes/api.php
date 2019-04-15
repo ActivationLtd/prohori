@@ -1,9 +1,11 @@
 <?php
 
+use App\Module;
+use App\Modulegroup;
 use Illuminate\Http\Request;
 
-$modules = dbTableExists('modules') ? \App\Module::names() : []; // dbTableExists() was causing issue.
-$modulegroups = dbTableExists('modulegroups') ? \App\Modulegroup::names() : [];
+$modules = dbTableExists('modules') ? Module::names() : []; // dbTableExists() was causing issue.
+$modulegroups = dbTableExists('modulegroups') ? Modulegroup::names() : [];
 
 /*
 |--------------------------------------------------------------------------
@@ -45,45 +47,20 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
         Route::middleware(['auth.bearer'])->group(function () use ($modules, $modulegroups) {
             Route::prefix('user')->group(function () {
 
-                // Profile + logout
-                Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
-
+                // Profile
                 Route::get('profile', 'Api\UserApiController@getUserProfile')->name('api.user.profile');
-
                 Route::get('logout', 'Auth\LoginController@logout')->name('api.user.logout');
-                Route::post('uploads', 'Api\UserApiController@uplaodsStore')->name('api.user.uploads-store');
-                Route::delete('uploads/avatar', 'Api\UserApiController@uplaodsDeleteAvatar')->name('api.user.uploads-delete-avatar');
+                Route::post('uploads', 'Api\UserApiController@uploadsStore')->name('api.user.uploads-store');
+                Route::delete('uploads/avatar', 'Api\UserApiController@uploadsDeleteAvatar')->name('api.user.uploads-delete-avatar');
 
-                // Update user information in users table
-                Route::get('summary', 'Api\UserApiController@recommenderUserSummary')->name('api.user.summary');
+                // Summary
+                Route::get('summary', 'Api\UserApiController@summary')->name('api.user.summary');
 
-                // Update user information in users table
-                Route::get('activities', 'Api\UserApiController@recommenderUserActivities')->name('api.user.activities');
-
-                // Update user information in users table
-                Route::patch('/', 'Api\UserApiController@usersPatch')->name('api.user.users-patch');
-
-                // User brands page
-                Route::get('brands', 'Api\UserApiController@brands')->name('api.user.brands');
-
-                // User charity options
-                Route::get('charities', 'Api\UserApiController@charities')->name('api.user.charities');
-
-                // charity-selections
-                Route::post('charityselections', 'Api\UserApiController@charityselectionsStore')->name('api.user.charityselections-store');
-                Route::get('charityselections', 'Api\UserApiController@charityselectionsList')->name('api.user.charityselections');
-                Route::get('charityselections/latest', 'Api\UserApiController@charityselectionsLatest')->name('api.user.charityselections-latest');
-
-                // aid-declaration
-                Route::post('aiddeclarations', 'Api\UserApiController@aiddeclarationsStore')->name('api.user.aiddeclarations-store');
-                Route::get('aiddeclarations', 'Api\UserApiController@aiddeclarationsList')->name('api.user.aiddeclarations');
-                Route::get('aiddeclarations/latest', 'Api\UserApiController@aiddeclarationsLatest')->name('api.user.aiddeclarations-latest');
-
-                // recommend urls
-                Route::post('recommendurls', 'Api\UserApiController@recommendurlsStore')->name('api.user.recommendurls-store');
-                Route::get('recommendurls', 'Api\UserApiController@recommendurlsList')->name('api.user.recommendurls');
-                //Route::get('aiddeclarations/latest', 'Api\UserApiController@aiddeclarationsLatest')->name('api.user.aiddeclarations-latest');
-
+                // Tasks
+                Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
+                Route::post('tasks/create', 'Api\UserApiController@tasksCreate')->name('api.user.tasks.create');
+                Route::patch('tasks/{id}/update', 'Api\UserApiController@tasksUpdate')->name('api.user.tasks.update');
+                Route::post('tasks/{id}/upload', 'Api\UserApiController@tasksUpload')->name('api.user.tasks.upload');
             });
         });
 
