@@ -71,12 +71,16 @@ class UserApiController extends ApiController
      */
     public function summary()
     {
+        $task_assigned=Task::where('assigned_to',$this->user()->id)->whereIn('status',['To do','In Progress'])->count();
+        $task_completed=Task::where('assigned_to',$this->user()->id)->whereIn('status',['Done','Closed'])->count();
+        $task_inprogress=Task::where('assigned_to',$this->user()->id)->whereIn('status',['In Progress'])->count();
+        $task_due=Task::where('assigned_to',$this->user()->id)->whereNotIn('status',['Done','Closed'])->where('due_date','<',now())->count();
         $data = [
             'tasks' => [
-                'assigned' => 99,
-                'in_progress' => 99,
-                'complete' => 99,
-                'due' => 99,
+                'assigned' => $task_assigned,
+                'in_progress' => $task_completed,
+                'complete' => $task_inprogress,
+                'due' => $task_due,
             ]
         ];
         $ret  = ret('success', "User Task List", ['data' => $data]);
