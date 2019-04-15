@@ -42,7 +42,7 @@ class UserApiController extends ApiController
     }
 
     /**
-     * Make user uplaods
+     * Make user uploads
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadsStore()
@@ -96,6 +96,10 @@ class UserApiController extends ApiController
         return Response::json($ret);
     }
 
+    /**
+     * Create a task
+     * @return mixed
+     */
     public function tasksCreate()
     {
         Request::merge(['created_by' => $this->user()->id]);
@@ -107,9 +111,24 @@ class UserApiController extends ApiController
      * @param $id
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function tasksPatch($id)
+    public function tasksUpdate($id)
     {
         Request::merge(['updated_by' => $this->user()->id]);
         return app(TasksController::class)->update($id);
+    }
+
+    /**
+     * Upload a file under task
+     * @param $id task id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function tasksUpload($id)
+    {
+        Request::merge([
+            'module_id' => 29, // 29=users module
+            'element_id' => $id,
+            'created_by' => $this->user()->id,
+        ]);
+        return app(UploadsController::class)->store();
     }
 }
