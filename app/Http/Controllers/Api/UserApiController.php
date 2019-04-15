@@ -69,8 +69,8 @@ class UserApiController extends ApiController
      */
     public function tasks()
     {
-        $tasks = Task::with(['subtasks','uploads','assignments'])
-        ->where('created_by', $this->user()->id)
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments'])
+            ->where('created_by', $this->user()->id)
             ->orWhere('assigned_to', $this->user()->id)->where('is_active', 1)->get();
         $ret   = ret('success', "User Task List", ['data' => $tasks]);
         return Response::json($ret);
@@ -81,7 +81,14 @@ class UserApiController extends ApiController
      */
     public function summary()
     {
-        $data = [];
+        $data = [
+            'tasks' => [
+                'assigned' => 99,
+                'in_progress' => 99,
+                'complete' => 99,
+                'due' => 99,
+            ]
+        ];
         $ret  = ret('success', "User Task List", ['data' => $data]);
         return Response::json($ret);
     }
