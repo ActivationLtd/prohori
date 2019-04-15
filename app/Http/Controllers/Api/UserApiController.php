@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use Request;
+use App\Task;
+use Response;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UploadsController;
-use App\Http\Controllers\UsersController;
-use App\Task;
-use Request;
-use Response;
 
 class UserApiController extends ApiController
 {
     /**
      * Resolve user based on logged_user. This is set in middleware CheckBearerToken.
-     *
      * @return \App\User
      */
     public function user()
@@ -24,7 +23,6 @@ class UserApiController extends ApiController
 
     /**
      * Gets user app users profile and summary data.
-     *
      * @return string
      */
     public function getUserProfile()
@@ -35,7 +33,6 @@ class UserApiController extends ApiController
 
     /**
      * Update a recommendation url
-     *
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function usersPatch()
@@ -45,10 +42,9 @@ class UserApiController extends ApiController
 
     /**
      * Make user uplaods
-     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function uplaodsStore()
+    public function uploadsStore()
     {
         Request::merge([
             'module_id' => 4, // 4=users module
@@ -59,10 +55,9 @@ class UserApiController extends ApiController
 
     /**
      * Delete avatar
-     *
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function uplaodsDeleteAvatar()
+    public function uploadsDeleteAvatar()
     {
         $this->user()->update(['avatar_url' => null]);
         $this->user()->uploads()->where('type', 'Avatar')->delete();
@@ -73,21 +68,30 @@ class UserApiController extends ApiController
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function userTasks()
+    public function tasks()
     {
-        $usertasks=Task::where('created_by',$this->user()->id)->orWhere('assigned_to',$this->user()->id)->where('is_active',1)->get();
-        $ret = ret('success', "User Task List", ['data' => $usertasks]);
-        //Request::merge(['assigned_to'=>$this->user()->id,'created_by'=>$this->user()->id,'sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
+        $tasks = Task::where('created_by', $this->user()->id)->orWhere('assigned_to', $this->user()->id)->where('is_active', 1)->get();
+        $ret   = ret('success', "User Task List", ['data' => $tasks]);
         return Response::json($ret);
     }
-    public function userAssignedTasks()
-    {
-        Request::merge(['assigned_to'=>$this->user()->id,'sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
-        return app(TasksController::class)->list();
-    }
+
+
+    /**
+     * @return mixed
+     */
     public function createTask()
     {
-        Request::merge([ 'sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
+        Request::merge(['sort_by' => 'created_at', 'sort_order' => 'desc', 'with' => 'assignments']);
         return app(TasksController::class)->list();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function summary()
+    {
+        $data = [];
+        $ret  = ret('success', "User Task List", ['data' => $data]);
+        return Response::json($ret);
     }
 }
