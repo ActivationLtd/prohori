@@ -53,6 +53,9 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::post('uploads', 'Api\UserApiController@uploadsStore')->name('api.user.uploads-store');
                 Route::delete('uploads/avatar', 'Api\UserApiController@uploadsDeleteAvatar')->name('api.user.uploads-delete-avatar');
 
+                // Summary
+                Route::get('summary', 'Api\UserApiController@summary')->name('api.user.summary');
+
                 // Tasks
                 Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
                 Route::post('tasks/create', 'Api\UserApiController@tasksCreate')->name('api.user.tasks.create');
