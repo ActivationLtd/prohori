@@ -32,6 +32,7 @@
 
     </div>
 @endif
+<p id="demo"></p>
 <div class="clearfix"></div>
 @include('form.textarea',['var'=>['name'=>'desc','label'=>'Description', 'container_class'=>'col-sm-6']])
 {{--@include('form.is_active')--}}
@@ -97,6 +98,21 @@
         /*******************************************************************/
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
+
+        getLocation()
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                $('input[name=latitude]').val("Geolocation is not supported by this browser.");
+                $('input[name=longitude]').val("Geolocation is not supported by this browser.");
+            }
+        }
+        function showPosition(position) {
+            $('input[name=latitude]').val(position.coords.latitude).attr('readonly', true);;
+            $('input[name=longitude]').val(position.coords.longitude).attr('readonly', true);;
+        }
 
         /*******************************************************************/
         // List of functions
