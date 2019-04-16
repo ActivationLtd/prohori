@@ -98,9 +98,10 @@
         /*******************************************************************/
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
-
+        //get a go location when creating a new entry
+        @if(!isset($upload))
         getLocation()
-
+        @endif
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition);
