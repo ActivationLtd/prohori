@@ -86,6 +86,8 @@ class Upload extends Basemodule
         'description',
         'module_id',
         'element_id',
+        'latitude',
+        'longitude',
         'element_uuid',
         'is_active',
         'created_by',

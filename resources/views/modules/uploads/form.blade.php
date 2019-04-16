@@ -18,6 +18,8 @@
 @include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
 {{--@include('form.select-model',['var'=>['name'=>'uploadtype_id','label'=>'Type', 'table'=>'uploadtypes', 'container_class'=>'col-sm-3']])--}}
 @include('form.input-text',['var'=>['name'=>'order','label'=>'Order', 'container_class'=>'col-sm-2']])
+@include('form.input-text',['var'=>['name'=>'latitude','label'=>'Latitude', 'container_class'=>'col-sm-2']])
+@include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude', 'container_class'=>'col-sm-2']])
 
 @if(isset($upload))
     <div class="clearfix"></div>
