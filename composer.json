@@ -8,11 +8,11 @@
   "license": "MIT",
   "type": "project",
   "require": {
-    "php": "^7.1.3",
+    "php": "~7.2.0",
     "barryvdh/laravel-cors": "^0.11.2",
     "barryvdh/laravel-ide-helper": "^2.4",
+    "benwilkins/laravel-fcm-notification": "dev-master",
     "doctrine/dbal": "~2.3",
-    "drawmyattention/xerolaravel": "1.0.*",
     "fideloper/proxy": "^4.0",
     "guzzlehttp/guzzle": "6.*",
     "laravel/framework": "5.8.*",
