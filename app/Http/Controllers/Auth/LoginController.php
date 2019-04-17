@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Traits\IsoOutput;
 use App\User;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Validator;
+use App\Traits\IsoOutput;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
@@ -28,14 +28,12 @@ class LoginController extends Controller
 
     /**
      * Where to redirect users after login.
-     *
      * @var string
      */
     protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
-     *
      */
     public function __construct()
     {
@@ -44,7 +42,6 @@ class LoginController extends Controller
 
     /**
      * Show the application's login form.
-     *
      * @return \Illuminate\Http\Response
      */
     public function showLoginForm()
@@ -57,8 +54,7 @@ class LoginController extends Controller
 
     /**
      * Handle a login request to the application.
-     *
-     * @param \App\Http\Controllers\Auth\Request|\Illuminate\Http\Request $request
+     * @param  \App\Http\Controllers\Auth\Request|\Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response|void
      */
 
@@ -94,8 +90,7 @@ class LoginController extends Controller
 
     /**
      * Send the response after the user was authenticated.
-     *
-     * @param \App\Http\Controllers\Auth\Request|\Illuminate\Http\Request $request
+     * @param  \App\Http\Controllers\Auth\Request|\Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     // protected function sendLoginResponse(Request $request)
@@ -112,10 +107,8 @@ class LoginController extends Controller
 
     /**
      * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return void
-     *
      * @throws \Illuminate\Validation\ValidationException
      */
     protected function validateLogin(Request $request)
@@ -136,10 +129,8 @@ class LoginController extends Controller
 
     /**
      * Get the failed login response instance.
-     *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
-     *
      * @throws \Illuminate\Validation\ValidationException
      */
     protected function sendFailedLoginResponse(Request $request)
@@ -157,8 +148,7 @@ class LoginController extends Controller
 
     /**
      * Redirect the user after determining they are locked out.
-     *
-     * @param  \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -181,8 +171,7 @@ class LoginController extends Controller
 
     /**
      * The user has been authenticated.
-     *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @param $user
      * @return \Illuminate\Http\JsonResponse
      */
@@ -191,7 +180,7 @@ class LoginController extends Controller
         $user = \Auth::user();
 
         // Generate auth_token for this login
-        if(!strlen($user->auth_token)) {
+        if (!strlen($user->auth_token)) {
             $user->auth_token = $user->generateAuthToken();
         }
 
@@ -212,8 +201,7 @@ class LoginController extends Controller
 
     /**
      * The user has logged out of the application.
-     *
-     * @param \Illuminate\Http\Request|\Request $request
+     * @param  \Illuminate\Http\Request|\Request  $request
      * @return mixed
      */
     // protected function loggedOut(Request $request)
@@ -230,8 +218,7 @@ class LoginController extends Controller
 
     /**
      * Social login
-     *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
     public function socialLogin(Request $request)
@@ -251,7 +238,7 @@ class LoginController extends Controller
         else {
             // First check if a user with same email already exists.
             $email = trim(strtolower($request->get('email')));
-            $user = User::where('email', $email)->first();
+            $user  = User::where('email', $email)->first();
 
             // If user with same email already exists than only update the fields.
             if ($user) {
@@ -259,8 +246,8 @@ class LoginController extends Controller
                 $user->email = $email;
 
             } else { // If users do not exist then create the user
-                $user = new User($request->all());
-                $user->password = randomString();
+                $user                 = new User($request->all());
+                $user->password       = randomString();
                 $user->first_login_at = now();
             }
 
@@ -270,20 +257,19 @@ class LoginController extends Controller
             // Breakdown name to first and last name
             $name_parts = explode(' ', $request->get('name'));
 
-            if(isset($user->first_name)) {
+            if (isset($user->first_name)) {
                 $user->first_name = $name_parts[0] ?? '';
             }
 
-            if(!isset($user->last_name)) {
+            if (!isset($user->last_name)) {
                 $user->last_name = str_replace($user->first_name, '', $user->name);
             }
             $user->full_name = $user->name;
 
-
             // dd($user);
             if ($user->save()) {
                 $user = User::find($user->id);
-                $ret = ret('success', "Login success", ['data' => $user]);
+                $ret  = ret('success', "Login success", ['data' => $user]);
             } else {
                 $ret = ret('fail', "Login not successful");
             }
