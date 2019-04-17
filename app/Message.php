@@ -31,6 +31,32 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Message newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Message newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Message query()
+ * @property int|null $module_id
+ * @property int|null $element_id
+ * @property string|null $element_uuid
+ * @property string|null $type
+ * @property string|null $body
+ * @property string|null $recipients
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereBody($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereElementId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereElementUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereModuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereRecipients($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereTenantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereUuid($value)
  */
 class Message extends Basemodule
 {

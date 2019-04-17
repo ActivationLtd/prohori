@@ -3,11 +3,9 @@
 namespace App;
 
 use App\Observers\UpazilaObserver;
-use App\Traits\IsoModule;
 
 /**
  * Class Upazila
- *
  * @package App
  * @property int $id
  * @property string|null $uuid
@@ -37,37 +35,40 @@ class Upazila extends Basemodule
     //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
-     *
      * @var array
      */
     protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
-     *
      * @var array
      */
     // protected $guarded = [];
 
     /**
      * Date fields
-     *
      * @var array
      */
     // protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    /**
+     * Custom validation messages.
+     * @var array
+     */
+    public static $custom_validation_messages = [
+        //'name.required' => 'Custom message.',
+    ];
 
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
-     *
      * @param       $element
-     * @param array $merge
+     * @param  array  $merge
      * @return array
      */
     public static function rules($element, $merge = [])
     {
         $rules = [
-            'name' => 'required|between:1,255|unique:upazilas,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'name' => 'required|between:1,255|unique:upazilas,name,'.(isset($element->id) ? "$element->id" : 'null').',id,deleted_at,NULL',
             'name_BN' => 'between:1,255',
             'code' => 'required|digits_between:2,2',
             'latitude' => 'numeric|between:20.661913,26.635695',
@@ -83,17 +84,7 @@ class Upazila extends Basemodule
     }
 
     /**
-     * Custom validation messages.
-     *
-     * @var array
-     */
-    public static $custom_validation_messages = [
-        //'name.required' => 'Custom message.',
-    ];
-
-    /**
      * Automatic eager load relation by default (can be expensive)
-     *
      * @var array
      */
     // protected $with = ['relation1', 'relation2'];
@@ -181,7 +172,7 @@ class Upazila extends Basemodule
     ############################################################################################
 
     /**
-     * @param bool|false $setMsgSession setting it false will not store the message in session
+     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -209,7 +200,6 @@ class Upazila extends Basemodule
     /**
      * Static functions needs to be called using Model::function($id)
      * Inside static function you may need to query and get the element
-     *
      * @param $id
      */
     // public static function someOtherAction($id) { }
@@ -230,8 +220,7 @@ class Upazila extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isViewable($user_id = null)
@@ -248,8 +237,7 @@ class Upazila extends Basemodule
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -266,8 +254,7 @@ class Upazila extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -284,8 +271,7 @@ class Upazila extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)

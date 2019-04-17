@@ -2,8 +2,8 @@
 
 namespace App\Traits;
 
-use Redirect;
 use Request;
+use Redirect;
 use Response;
 
 trait IsoOutput
@@ -11,13 +11,12 @@ trait IsoOutput
 
     /**
      * Returns JSON or Redirects to another route based on Request parameters.
-     *
      * @param $ret
-     * @param \App\Basemodule|null $element
-     * @param \Validator $validator
+     * @param  \App\Basemodule|null  $element
+     * @param  \Validator  $validator
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function jsonOrRedirect($ret, $validator = null, $element = null )
+    public function jsonOrRedirect($ret, $validator = null, $element = null)
     {
 
         /*
@@ -28,7 +27,7 @@ trait IsoOutput
         if ($element) {
             if ($ret['status'] === 'success' && Request::has('redirect_success')) {
                 if (Request::get('redirect_success') === '#new') {
-                    $success_route = route($element->module()->name . ".edit", $element->id);
+                    $success_route = route($element->module()->name.".edit", $element->id);
                 } else {
                     $success_route = Request::get('redirect_success');
                 }
@@ -43,7 +42,9 @@ trait IsoOutput
             // fill with session values(messages, errors, success etc) and redirect
             $ret = fillRet($ret);
             // Json return only return a single redirect destination route.
-            if ($success_route) $ret['redirect'] = $success_route;
+            if ($success_route) {
+                $ret['redirect'] = $success_route;
+            }
 
             return Response::json($ret);
 

@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Observers\ClientObserver;
-use App\Traits\IsoModule;
 
 /**
  * Class Client
@@ -31,42 +30,86 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client query()
+ * @property int|null $code
+ * @property string|null $description
+ * @property string|null $address1
+ * @property string|null $address2
+ * @property string|null $city
+ * @property string|null $county
+ * @property int|null $country_id
+ * @property string|null $country_name
+ * @property string|null $zip_code
+ * @property string|null $phone
+ * @property string|null $mobile
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Country|null $country
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Clientlocation[] $locations
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereAddress1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereAddress2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereCity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereCountryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereCountryName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereCounty($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereMobile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereZipCode($value)
  */
 class Client extends Basemodule
 {
     //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
-     *
      * @var array
      */
-    protected $fillable = ['uuid', 'name','code','description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = [
+        'uuid', 'name', 'code', 'description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile', 'is_active', 'created_by',
+        'updated_by', 'deleted_by'
+    ];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
-     *
      * @var array
      */
     // protected $guarded = [];
 
     /**
      * Date fields
-     *
      * @var array
      */
     // protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    /**
+     * Custom validation messages.
+     * @var array
+     */
+    public static $custom_validation_messages = [
+        //'name.required' => 'Custom message.',
+    ];
 
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
-     *
      * @param       $element
-     * @param array $merge
+     * @param  array  $merge
      * @return array
      */
-    public static function rules($element, $merge = []) {
+    public static function rules($element, $merge = [])
+    {
         $rules = [
-            'name' => 'required|between:1,255|unique:clients,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'name' => 'required|between:1,255|unique:clients,name,'.(isset($element->id) ? "$element->id" : 'null').',id,deleted_at,NULL',
             'address1' => 'required',
             'phone' => 'numeric',
             'mobile' => 'required|numeric|digits:11',
@@ -80,17 +123,7 @@ class Client extends Basemodule
     }
 
     /**
-     * Custom validation messages.
-     *
-     * @var array
-     */
-    public static $custom_validation_messages = [
-        //'name.required' => 'Custom message.',
-    ];
-
-    /**
      * Automatic eager load relation by default (can be expensive)
-     *
      * @var array
      */
     // protected $with = ['relation1', 'relation2'];
@@ -99,7 +132,9 @@ class Client extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot() {
+
+    public static function boot()
+    {
         parent::boot();
         Client::observe(ClientObserver::class);
 
@@ -182,7 +217,7 @@ class Client extends Basemodule
     ############################################################################################
 
     /**
-     * @param bool|false $setMsgSession setting it false will not store the message in session
+     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -210,7 +245,6 @@ class Client extends Basemodule
     /**
      * Static functions needs to be called using Model::function($id)
      * Inside static function you may need to query and get the element
-     *
      * @param $id
      */
     // public static function someOtherAction($id) { }
@@ -231,8 +265,7 @@ class Client extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isViewable($user_id = null)
@@ -249,8 +282,7 @@ class Client extends Basemodule
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -267,8 +299,7 @@ class Client extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -285,8 +316,7 @@ class Client extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)

@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
  * App\User
+ *
  * @property int $id
  * @property string|null $uuid
  * @property int|null $tenant_id
@@ -191,6 +192,22 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereGiftAidChecked($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereSocialAccountId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereSocialAccountType($value)
+ * @property string|null $email_verification_code
+ * @property array|null $group_ids
+ * @property int|null $employee_id
+ * @property int|null $designation_id
+ * @property string|null $designation_name
+ * @property int|null $department_id
+ * @property string|null $department_name
+ * @property-read \App\Department|null $department
+ * @property-read \App\Designation|null $designation
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDesignationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDesignationName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerificationCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereGroupIds($value)
  */
 class User extends Authenticatable implements MustVerifyEmail
 {

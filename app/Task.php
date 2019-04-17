@@ -8,6 +8,7 @@ use App\Observers\TaskObserver;
 
 /**
  * Class Task
+ *
  * @package App
  * @property int $id
  * @property string|null $uuid
@@ -31,6 +32,112 @@ use App\Observers\TaskObserver;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task query()
+ * @property string|null $name_ext
+ * @property int|null $parent_id
+ * @property int|null $priority
+ * @property int|null $seq
+ * @property int|null $client_id
+ * @property string|null $client_name
+ * @property string|null $client_obj
+ * @property int|null $clientlocation_id
+ * @property string|null $clientlocation_name
+ * @property string|null $clientlocation_obj
+ * @property int|null $clientlocationtype_id
+ * @property string|null $clientlocationtype_name
+ * @property int|null $division_id
+ * @property string|null $division_name
+ * @property int|null $district_id
+ * @property string|null $district_name
+ * @property int|null $upazila_id
+ * @property string|null $upazila_name
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property string|null $description
+ * @property int|null $tasktype_id
+ * @property string|null $tasktype_name
+ * @property int|null $assignment_id
+ * @property int|null $assigned_to
+ * @property array|null $watchers
+ * @property string|null $status
+ * @property string|null $previous_status
+ * @property string|null $due_date
+ * @property string|null $days_open
+ * @property int|null $is_closed
+ * @property int|null $closed_by
+ * @property string|null $closing_note
+ * @property int|null $is_resolved
+ * @property int|null $resolved_by
+ * @property string|null $resolve_note
+ * @property int|null $is_verified
+ * @property int|null $verified_by
+ * @property string|null $verify_note
+ * @property int|null $is_flagged
+ * @property int|null $flagged_by
+ * @property string|null $flag_note
+ * @property string|null $tags
+ * @property-read \App\User|null $assignee
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Assignment[] $assignments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Client|null $client
+ * @property-read \App\Clientlocation|null $clientlocation
+ * @property-read \App\Assignment $latestAssignment
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Task[] $subtasks
+ * @property-read \App\Tasktype|null $tasktype
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereAssignedTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereAssignmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientObj($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationObj($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationtypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationtypeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClosedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClosingNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDaysOpen($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDistrictId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDistrictName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDivisionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDivisionName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereFlagNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereFlaggedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsClosed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsFlagged($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsResolved($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsVerified($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereLongitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereNameExt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task wherePreviousStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereResolveNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereResolvedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereSeq($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereTags($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereTasktypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereTasktypeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpazilaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpazilaName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifiedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifyNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereWatchers($value)
  */
 class Task extends Basemodule
 {

@@ -31,6 +31,20 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype query()
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereTenantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocationtype whereUuid($value)
  */
 class Clientlocationtype extends Basemodule
 {

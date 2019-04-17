@@ -31,6 +31,54 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation query()
+ * @property int|null $division_id
+ * @property string|null $division_name
+ * @property int|null $district_id
+ * @property string|null $district_name
+ * @property int|null $upazila_id
+ * @property string|null $upazila_name
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property int|null $client_id
+ * @property string|null $client_name
+ * @property int|null $operatingarea_id
+ * @property string|null $operatingarea_name
+ * @property int|null $clientlocationtype_id
+ * @property string|null $clientlocationtype_name
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Client|null $client
+ * @property-read \App\Clientlocationtype|null $clientlocationtype
+ * @property-read \App\District|null $district
+ * @property-read \App\Division|null $division
+ * @property-read \App\Upload $latestUpload
+ * @property-read \App\Operatingarea|null $operatingarea
+ * @property-read \App\Upazila|null $upazila
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereClientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereClientName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereClientlocationtypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereClientlocationtypeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereDistrictId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereDistrictName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereDivisionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereDivisionName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereLongitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereOperatingareaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereOperatingareaName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereTenantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereUpazilaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereUpazilaName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Clientlocation whereUuid($value)
  */
 class Clientlocation extends Basemodule
 {
