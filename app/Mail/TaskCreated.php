@@ -28,6 +28,6 @@ class TaskCreated extends Mailable
      * @return $this
      */
     public function build() {
-        return $this->markdown('emails.task-created');
+        return $this->subject($this->task->name . "-" . $this->task->tasktype_name)->markdown('emails.task-created');
     }
 }
