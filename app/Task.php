@@ -149,7 +149,7 @@ class Task extends Basemodule
      */
     public static function rules($element, $merge = []) {
         $rules = [
-            'name' => 'required|between:1,255|unique:tasks,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'name' => 'required|between:1,255',
             'assigned_to' => 'required',
             'tasktype_id' => 'required',
             'priority' => 'required',
