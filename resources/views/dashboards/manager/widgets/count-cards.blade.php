@@ -54,7 +54,6 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
         <div class="small-box bg-red">
             <div class="inner">
                 <h3>{{$task_due}}</h3>
-
                 <p>Due</p>
             </div>
             <div class="icon">
