@@ -266,38 +266,38 @@ class UploadsController extends ModulebaseController
         }
     }
 
-    public function destroy($id){
-        $module_name = $this->module_name;
-        $Model = model($this->module_name);
-        $element = new $Model(Request::all());
-        $user = Request::get('users');
-        if(isset($user->uploads[0]['id'])){
-            $uploads = $user->uploads[0];
-            $image_path =$uploads['path']; 
-            if (env('APP_ENV') != 'local') {
-                if(Storage::disk('s3')->exists($image_path)) {
-                    $delete_image  = Storage::disk('s3')->delete($image_path);
-                }else{
-                    $delete_image = 0;
-                }
-            } else {
-                if(\File::exists(public_path($image_path))){
-                    $delete_image = \File::delete(public_path($image_path));
-                }else{
-                    $delete_image = 0;
-                }
-            }
-            if($delete_image == 1){
-                $delete = $element->find($id);
-                $delete->delete();
-                $ret = ret('success', "Profile Pic deleted successfully");
-            }else{
-                $ret = ret('fail', "Profile Pic could not be deleted for some reason.");
-            }
-        }else{
-            $ret = ret('fail', "No Profile Pic exists.");
-        }
-        $ret = fillRet($ret); // fill with session values(messages, errors, success etc) and redirect
-        return Response::json($ret);
-    }
+    // public function destroy($id){
+    //     $module_name = $this->module_name;
+    //     $Model = model($this->module_name);
+    //     $element = new $Model(Request::all());
+    //     $user = Request::get('users');
+    //     if(isset($user->uploads[0]['id'])){
+    //         $uploads = $user->uploads[0];
+    //         $image_path =$uploads['path'];
+    //         if (env('APP_ENV') != 'local') {
+    //             if(Storage::disk('s3')->exists($image_path)) {
+    //                 $delete_image  = Storage::disk('s3')->delete($image_path);
+    //             }else{
+    //                 $delete_image = 0;
+    //             }
+    //         } else {
+    //             if(\File::exists(public_path($image_path))){
+    //                 $delete_image = \File::delete(public_path($image_path));
+    //             }else{
+    //                 $delete_image = 0;
+    //             }
+    //         }
+    //         if($delete_image == 1){
+    //             $delete = $element->find($id);
+    //             $delete->delete();
+    //             $ret = ret('success', "Profile Pic deleted successfully");
+    //         }else{
+    //             $ret = ret('fail', "Profile Pic could not be deleted for some reason.");
+    //         }
+    //     }else{
+    //         $ret = ret('fail', "No Profile Pic exists.");
+    //     }
+    //     $ret = fillRet($ret); // fill with session values(messages, errors, success etc) and redirect
+    //     return Response::json($ret);
+    // }
 }

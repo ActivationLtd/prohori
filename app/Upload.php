@@ -86,6 +86,8 @@ class Upload extends Basemodule
         'description',
         'module_id',
         'element_id',
+        'latitude',
+        'longitude',
         'element_uuid',
         'is_active',
         'created_by',
@@ -108,7 +110,7 @@ class Upload extends Basemodule
      *
      * @var array
      */
-    public static $types = ['Profile photo', 'Logo'];
+    public static $types = ['Profile photo', 'Logo', 'Task file','Evidence'];
     /**
      * Disallow from mass assignment. (Black-listed fields)
      *
@@ -139,6 +141,8 @@ class Upload extends Basemodule
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
             // 'updated_by' => 'exists:users,id,is_active,1',
+            'latitude' => 'numeric|between:20.661913,26.635695',
+            'longitude' => 'numeric|between:88.002548,92.675171',
             'type' => 'in:' . implode(',', Upload::$types),
 
         ];

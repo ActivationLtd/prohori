@@ -51,6 +51,7 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::get('profile', 'Api\UserApiController@getUserProfile')->name('api.user.profile');
                 Route::get('logout', 'Auth\LoginController@logout')->name('api.user.logout');
                 Route::post('uploads', 'Api\UserApiController@uploadsStore')->name('api.user.uploads-store');
+                Route::patch('update', 'Api\UserApiController@usersPatch')->name('api.user.usersPatch');
                 Route::delete('uploads/avatar', 'Api\UserApiController@uploadsDeleteAvatar')->name('api.user.uploads-delete-avatar');
 
                 // Summary
