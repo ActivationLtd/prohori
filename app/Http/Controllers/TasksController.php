@@ -28,6 +28,7 @@ class TasksController extends ModulebaseController
             ["{$this->module_name}.due_date", "due_date", "Due Date"],
             ["{$this->module_name}.priority", "priority", "Priority"],
             ["{$this->module_name}.status", "status", "Status"],
+            ["assigned.name", "assigned_name", "Assigned"],
             ["updater.name", "user_name", "Updater"],
             ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
             ["{$this->module_name}.is_active", "is_active", "Active"]
@@ -56,7 +57,8 @@ class TasksController extends ModulebaseController
     public function sourceTables()
     {
         return DB::table($this->module_name)
-            ->leftJoin('users as updater', $this->module_name . '.updated_by', 'updater.id');
+            ->leftJoin('users as updater', $this->module_name . '.updated_by', 'updater.id')
+            ->leftJoin('users as assigned',$this->module_name. '.assigned_to','assigned.id');
     }
 
     /**
@@ -76,6 +78,8 @@ class TasksController extends ModulebaseController
             $query = $query->where('tasks.created_by' , user()->id)->orWhere('tasks.assigned_to',user()->id);
 
         }
+        // Construct query based on filter param
+        $query = self::filterQueryConstructor($query);
         // Exclude deleted rows
         $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
 

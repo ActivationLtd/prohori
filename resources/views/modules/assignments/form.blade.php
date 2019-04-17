@@ -40,6 +40,25 @@
  * app/views/spyr/modules/base/form.blade.php
  */
 ?>
+@if(isset($assignment,$assignment->task->id))
+    <h2>Task Information</h2>
+    {{--tasktype_id--}}
+    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>'Task type','query'=> new \App\Tasktype(),'container_class'=>'col-md-3','editable'=>false,'value'=>$assignment->task->tasktype_id]])
+    {{--priority--}}
+    @include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3','editable'=>false,'value'=>$assignment->task->priority]])
+    {{--seq--}}
+    @include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-md-3','editable'=>false,'value'=>$assignment->task->seq]])
+    <div class="clearfix"></div>
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-2','editable'=>false,'value'=>$assignment->task->due_date]])
+    {{--days_open--}}
+    @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2','editable'=>false,'value'=>$assignment->task->days_open]])
+    @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-3','editable'=>false,'value'=>$assignment->task->status]])
+    <div class="col-md-8 no-padding">
+        {{--description--}}
+        @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12','editable'=>false,'value'=>$assignment->task->description]])
+    </div>
+@endif
+<div class="clearfix"></div>
 {{-- ******************* Form starts ********************* --}}
 {{--assigned_to--}}
 @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','query'=> new \App\User,'container_class'=>'col-md-4']])
@@ -50,7 +69,6 @@
 <div class="clearfix"></div>
 {{--note--}}
 @include('form.textarea',['var'=>['name'=>'note','label'=>'Note','container_class'=>'col-md-6']])
-
 @if(isset($assignment) && in_array($assignment->task->status,['Closed','Done']))
     {{--is_resolved--}}
     {{--@include('form.select-array',['var'=>['name'=>'is_resolved','label'=>'Is Resolved','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
@@ -59,25 +77,8 @@
     {{--is_closed--}}
     @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4','value'=>$assignment->is_closed]])
 @endif
-<div class="clearfix"></div>
-@if(isset($assignment,$assignment->task->id))
-    <h2>Task Information</h2>
-    {{--tasktype_id--}}
-    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>'Task type','query'=> new \App\Tasktype(),'container_class'=>'col-md-4','value'=>$assignment->task->tasktype_id]])
-    {{--priority--}}
-    @include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>\App\Task::$priorities,'container_class'=>'col-md-4','value'=>$assignment->task->priority]])
-    {{--seq--}}
-    @include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-md-3','value'=>$assignment->task->seq]])
-    <div class="clearfix"></div>
-    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','value'=>$assignment->task->due_date]])
-    {{--days_open--}}
-    @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2','value'=>$assignment->task->days_open]])
-    @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-3','value'=>$assignment->task->status]])
-    <div class="col-md-8 no-padding">
-        {{--description--}}
-        @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12','value'=>$assignment->task->description]])
-    </div>
-@endif
+
+
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 

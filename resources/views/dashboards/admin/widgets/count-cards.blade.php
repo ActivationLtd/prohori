@@ -1,6 +1,6 @@
 <div class="row">
 
-    <div class="col-md-12"><b>Task summary</b></div>
+    <div class="col-md-12"><h4>Task summary</h4></div>
     <div class="clearfix"></div>
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->

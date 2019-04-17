@@ -191,7 +191,9 @@ class LoginController extends Controller
         $user = \Auth::user();
 
         // Generate auth_token for this login
-        $user->auth_token = $user->generateAuthToken();
+        if(!strlen($user->auth_token)) {
+            $user->auth_token = $user->generateAuthToken();
+        }
 
         // For first login send email
         if (is_null($user->first_login_at)) {
