@@ -251,21 +251,19 @@ class Task extends Basemodule
         /************************************************************/
         static::created(function (Task $element) {
             if ($element->assignee()->exists()) {
+                if(isset($element->watchers)){
+                    $emails=[];
+                    foreach($element->watchers as $user_id)
+                    {
+                        $emails[]=User::find($user_id)->email;
+                    }
+                }
                 //send mail to the assignee when task is created
-                \Mail::to($element->assignee->email)->send(
+                \Mail::to($element->assignee->email)
+                    ->cc($emails)->send(
                     new TaskCreated($element)
                 );
             }
-            // if(isset($element->assigned_to)){
-            //     Assignment::create([
-            //         'name' => $element->name,
-            //         'type' => $element->tasktype_id,
-            //         'module_id' => '29',
-            //         'element_id' => $element->id,
-            //         'assigned_by' => user()->id,
-            //         'assigned_to' => $element->assigned_to,
-            //     ]);
-            // }
 
             $element->status = 'To do'; // Set initial status to draft.
 
