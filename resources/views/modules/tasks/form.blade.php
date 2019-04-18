@@ -180,7 +180,8 @@
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
             $("input[name=name]").addClass('validate[required]');
-            $('select[name=assigned_to]').addClass('validate[required]');
+            $('input[name=due_date]').addClass('validate[required]');
+
         }
     </script>
     @if(!isset($$element))
