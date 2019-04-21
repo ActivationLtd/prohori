@@ -63,6 +63,7 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::get('tasks/{id}/getUploads', 'Api\UserApiController@getUploads')->name('api.user.tasks.uploads');
                 Route::get('tasks/{id}/getSubtasks', 'Api\UserApiController@getSubtasks')->name('api.user.tasks.subtasks');
                 Route::get('tasks/{id}/getAssignments', 'Api\UserApiController@getAssignments')->name('api.user.tasks.assignments');
+                Route::get('tasks/{id}/getMessages', 'Api\UserApiController@getMessages')->name('api.user.tasks.messages');
 
 
             });

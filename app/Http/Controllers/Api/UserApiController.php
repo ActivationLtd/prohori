@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\AssignmentsController;
+use App\Http\Controllers\MessagesController;
 use Request;
 use App\Task;
 use App\User;
@@ -174,5 +175,12 @@ class UserApiController extends ApiController
     public function getAssignments($id){
         Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
         return app(AssignmentsController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getMessages($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(MessagesController::class)->list();
     }
 }
