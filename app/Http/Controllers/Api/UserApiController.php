@@ -107,8 +107,9 @@ class UserApiController extends ApiController
                 {
                     $emails[]=User::find($user_id)->email;
                 }
+                $task->setAttribute('watcher_emails', $emails);
             }
-            $task->setAttribute('watcher_emails', $emails);
+
         }
 
         $ret   = ret('success', "User Task List", ['data' => $tasks]);
