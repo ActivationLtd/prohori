@@ -31,6 +31,25 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype query()
+ * @property int|null $parent_id
+ * @property int|null $sla_days
+ * @property int|null $sla_hours
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereSlaDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereSlaHours($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Tasktype whereUuid($value)
  */
 class Tasktype extends Basemodule
 {

@@ -2,14 +2,14 @@
 
 namespace App;
 
-use App\Observers\UserObserver;
+use Request;
 use App\Traits\IsoModule;
-use App\Traits\IsoUserPermission;
+use App\Observers\UserObserver;
 use App\Traits\ProhoriUserTrait;
+use App\Traits\IsoUserPermission;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Request;
 
 /**
  * App\User
@@ -182,24 +182,32 @@ use Request;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCharityUuid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerifiedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePartnerUuid($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Aiddeclaration[] $aiddeclarations
- * @property-read \App\Charity|null $charity
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Charityselection[] $charityselctions
  * @property-read \App\Country|null $country
- * @property-read \App\Aiddeclaration $currentAiddeclaration
- * @property-read \App\Charityselection $currentCharityselction
  * @property-read \App\Upload $latestUpload
- * @property-read \App\Partner|null $partner
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCurrency($value)
  * @property string|null $social_account_id
  * @property string|null $social_account_type
  * @property int|null $gift_aid_checked
- * @property-read \App\Charityselection $currentCharityselection
  * @property-read mixed $avatar
- * @property-read \App\Invoice $lastInvoice
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereGiftAidChecked($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereSocialAccountId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereSocialAccountType($value)
+ * @property string|null $email_verification_code
+ * @property array|null $group_ids
+ * @property int|null $employee_id
+ * @property int|null $designation_id
+ * @property string|null $designation_name
+ * @property int|null $department_id
+ * @property string|null $department_name
+ * @property-read \App\Department|null $department
+ * @property-read \App\Designation|null $designation
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDesignationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDesignationName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerificationCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereGroupIds($value)
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -212,7 +220,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * The attributes that are mass assignable.
-     *
      * @var array
      */
     protected $fillable = [
@@ -270,7 +277,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * The attributes that should be cast to native types.
-     *
      * @var array
      */
     protected $casts = [
@@ -279,27 +285,41 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * List of appended attribute. This attributes will be loaded in each Model
-     *
      * @var array
      */
     protected $appends = ['avatar'];
 
     /**
      * The attributes that should be hidden for arrays.
-     *
      * @var array
      */
-    protected $hidden = [
+    protected     $hidden                     = [
         'password',
         'remember_token',
     ];
+    public static $custom_validation_messages = [
+        //'name.required' => 'Custom message.',
+    ];
+    /**
+     * Allowed permissions values.
+     * Possible options:
+     *   -1 => Deny (adds to array, but denies regardless of user's group).
+     *    0 => Remove.
+     *    1 => Add.
+     * @var array
+     */
+    protected $allowedPermissionsValues = [-1, 0, 1];
+    /**
+     * Automatic eager load relation by default (can be expensive)
+     * @var array
+     */
+    protected $with = ['groups'];
 
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
-     *
      * @param       $element
-     * @param array $merge
+     * @param  array  $merge
      * @return array
      */
     public static function rules($element, $merge = [])
@@ -307,7 +327,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $rules = [
             //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
             //'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . (isset($element->id) ? $element->id : 'null'). ',id,deleted_at,NULL',
+            'email' => 'required|email|unique:users,email,'.(isset($element->id) ? $element->id : 'null').',id,deleted_at,NULL',
             //'employee_id' =>'integer',
             // 'address1' => 'between:0,512',
             // 'address2' => 'between:0,512',
@@ -325,41 +345,21 @@ class User extends Authenticatable implements MustVerifyEmail
             $rules = array_merge($rules, [
                 'password' => 'required|min:6|confirmed',
             ]);
-        } else if (Request::get('password')) {
-            $rules = array_merge($rules, [
-                'password' => 'min:6|confirmed',
-            ]);
+        } else {
+            if (Request::get('password')) {
+                $rules = array_merge($rules, [
+                    'password' => 'min:6|confirmed',
+                ]);
+            }
         }
 
         return array_merge($rules, $merge);
     }
 
-    public static $custom_validation_messages = [
-        //'name.required' => 'Custom message.',
-    ];
-
-    /**
-     * Allowed permissions values.
-     *
-     * Possible options:
-     *   -1 => Deny (adds to array, but denies regardless of user's group).
-     *    0 => Remove.
-     *    1 => Add.
-     *
-     * @var array
-     */
-    protected $allowedPermissionsValues = [-1, 0, 1];
-
-    /**
-     * Automatic eager load relation by default (can be expensive)
-     *
-     * @var array
-     */
-    protected $with = ['groups'];
-
     ############################################################################################
     # Model events
     ############################################################################################
+
     public static function boot()
     {
         /**
@@ -407,7 +407,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // Execute codes during saving (both creating and updating)
         /************************************************************/
         static::saving(function (User $element) {
-            $valid = true;
+            $valid   = true;
             $element = $element->resolveName();
 
             // Generate new api token
@@ -416,7 +416,7 @@ class User extends Authenticatable implements MustVerifyEmail
             }
 
             if (is_array($element->group_ids)) {
-                $group_ids = $element->group_ids;
+                $group_ids          = $element->group_ids;
                 $element->group_ids = json_encode($element->group_ids);
             } else {
                 $group_ids = json_decode($element->group_ids);
@@ -428,7 +428,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $valid = setError("You can assign only {$max_groups} group.");
             }
             if (is_array($group_ids) && count($group_ids)) {
-                $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
+                $element->group_ids_csv    = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
                 $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
 
@@ -437,13 +437,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
                 if ($element->country()->exists()) {
                     $element->country_name = $element->country->name;
-                    $element->currency = $element->country->currency();
+                    $element->currency     = $element->country->currency();
                 }
 
-                if($element->designation()->exists()){
+                if ($element->designation()->exists()) {
                     $element->designation_name = $element->designation->name;
                 }
-                if($element->department()->exists()){
+                if ($element->department()->exists()) {
                     $element->department_name = $element->department->name;
                 }
 
@@ -454,8 +454,8 @@ class User extends Authenticatable implements MustVerifyEmail
                 if ($element->is_active && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
                 }
-                if(isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)){
-                    $element->full_name=$element->first_name.$element->last_name;
+                if (isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)) {
+                    $element->full_name = $element->first_name.$element->last_name;
                 }
             }
 
@@ -502,7 +502,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ############################################################################################
 
     /**
-     * @param bool|false $setMsgSession setting it false will not store the message in session
+     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -534,8 +534,8 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         // No 'name' field is
         if (!isset($this->name)) {
-            $this->full_name = $this->first_name . " " . $this->last_name;
-            $this->name = $this->full_name;
+            $this->full_name = $this->first_name." ".$this->last_name;
+            $this->name      = $this->full_name;
         }
 
         return $this;
@@ -546,14 +546,14 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function avatar()
     {
-        if ($this->uploads()->exists())
+        if ($this->uploads()->exists()) {
             return $this->uploads->where('type', 'Avatar')->first();
+        }
         return null;
     }
 
     /**
      * Construct address
-     *
      * @return string
      */
     public function address()
@@ -571,7 +571,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         foreach ($fields as $field) {
             if (strlen($this->$field)) {
-                $str .= $this->$field . ', ';
+                $str .= $this->$field.', ';
             }
         }
 
@@ -580,7 +580,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Find user based on bearer token(auth_token)
-     *
      * @param $bearer_token
      * @return mixed|null
      */
@@ -606,12 +605,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Generates auth_token (bearer token) for this user.
-     *
      * @return bool|string
      */
     public function generateAuthToken()
     {
-        return substr(bcrypt($this->email . '|' . $this->password . '|' . date("Y-m-d H:i:s")), 10, 32);
+        return substr(bcrypt($this->email.'|'.$this->password.'|'.date("Y-m-d H:i:s")), 10, 32);
     }
 
     /**
@@ -632,7 +630,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Send the email verification notification.
-     *
      * @return void
      */
     public function sendEmailVerificationNotification()
@@ -643,8 +640,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Send the password reset notification.
-     *
-     * @param  string $token
+     * @param  string  $token
      */
     public function sendPasswordResetNotification($token)
     {
@@ -667,7 +663,6 @@ class User extends Authenticatable implements MustVerifyEmail
      * Checks if user belongs to super admin group.
      * This function is created with an idea so that some more admin groups i.e. LB-admin, LB-accounts
      * etc can be covered/included in this same group.
-     *
      * @return bool
      */
     public function ofSuperadminGroup()
@@ -680,9 +675,8 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
-     * @param bool $set_msg
+     * @param  null  $user_id
+     * @param  bool  $set_msg
      * @return bool
      */
     public function isViewable($user_id = null, $set_msg = false)
@@ -704,8 +698,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -722,8 +715,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -740,8 +732,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)
@@ -838,8 +829,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Mutator for giving permissions.
-     *
-     * @param  mixed $permissions
+     * @param  mixed  $permissions
      * @return array  $_permissions
      */
     public function getPermissionsAttribute($permissions)
@@ -861,8 +851,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Mutator for taking permissions.
-     *
-     * @param  array $permissions
+     * @param  array  $permissions
      * @return string
      */
     public function setPermissionsAttribute(array $permissions)
@@ -873,7 +862,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // Loop through and adjust permissions as needed
         foreach ($permissions as $permission => &$value) {
             // Lets make sure there is a valid permission value
-            if (!in_array($value = (int)$value, $this->allowedPermissionsValues)) {
+            if (!in_array($value = (int) $value, $this->allowedPermissionsValues)) {
                 throw new \InvalidArgumentException("Invalid value [$value] for permission [$permission] given.");
             }
 
@@ -890,15 +879,15 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function getAvatarAttribute()
     {
-        if ($this->avatar()) return $this->avatar()->url;
+        if ($this->avatar()) {
+            return $this->avatar()->url;
+        }
         return null;
     }
 
     /**
      * Set partnercategory ids to array
-     *
-     *
-     * @param  array $value
+     * @param  array  $value
      * @return void
      */
     public function setGroupIdsAttribute($value)

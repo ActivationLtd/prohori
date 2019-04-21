@@ -20,7 +20,9 @@ class ValidateXAuthToken
         $api_token = $request->header('X-Auth-Token');
         // resolve client_id
         $client_id = null;
-        if (\Request::has('client-id')) $client_id = \Request::get('client-id');
+        if ($request->has('client-id')){
+            $client_id = $request->get('client-id');
+        }
         else $client_id = $request->header('client-id');
 
         /** @var User $user */

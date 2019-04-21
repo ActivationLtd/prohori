@@ -150,7 +150,7 @@
 
         <h4>Evidences</h4>
         {{--<small>Upload one or more files</small>--}}
-        @include('modules.base.include.uploads',['var'=>['type'=>'Evidences','limit'=>10]])
+        @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
 
         @if(isset($task) && !in_array($task->status,['Closed','Done']) )
             <h4>Sub-tasks</h4>
@@ -180,7 +180,8 @@
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
             $("input[name=name]").addClass('validate[required]');
-            $('select[name=assigned_to]').addClass('validate[required]');
+            $('input[name=due_date]').addClass('validate[required]');
+
         }
     </script>
     @if(!isset($$element))

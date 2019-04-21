@@ -31,6 +31,48 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment query()
+ * @property string|null $type
+ * @property string|null $note
+ * @property int|null $module_id
+ * @property int|null $element_id
+ * @property string|null $element_uuid
+ * @property int|null $assigned_by
+ * @property int|null $assigned_to
+ * @property int|null $assigned_for_days
+ * @property int|null $previous_id
+ * @property int|null $next_id
+ * @property int|null $is_resolved
+ * @property int|null $is_verified
+ * @property int|null $is_closed
+ * @property-read \App\User|null $assignee
+ * @property-read \App\User|null $assigner
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Upload $latestUpload
+ * @property-read \App\Task|null $task
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereAssignedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereAssignedForDays($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereAssignedTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereElementId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereElementUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereIsClosed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereIsResolved($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereIsVerified($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereModuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereNextId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment wherePreviousId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Assignment whereUuid($value)
  */
 class Assignment extends Basemodule
 {

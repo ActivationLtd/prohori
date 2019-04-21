@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Observers\StatusupdateObserver;
-use App\Traits\IsoModule;
 
 /**
  * Class Statusupdate
@@ -31,13 +30,50 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate query()
+ * @property string|null $type
+ * @property string|null $note
+ * @property int|null $module_id
+ * @property int|null $element_id
+ * @property string|null $element_uuid
+ * @property string|null $status
+ * @property int|null $previous_id
+ * @property string|null $previous_status
+ * @property int|null $next_id
+ * @property string|null $next_status
+ * @property int|null $diff_secs
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Upload $latestUpload
+ * @property-read \App\Statusupdate|null $to
+ * @property-read \App\Statusupdate|null $from
+ * @property-read \App\Task|null $task
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereDiffSecs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereElementId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereElementUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereModuleId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereNextId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereNextStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate wherePreviousId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate wherePreviousStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Statusupdate whereUuid($value)
  */
 class Statusupdate extends Basemodule
 {
     //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
-     *
      * @var array
      */
     protected $fillable = [
@@ -62,27 +98,32 @@ class Statusupdate extends Basemodule
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
-     *
      * @var array
      */
     // protected $guarded = [];
 
     /**
      * Date fields
-     *
      * @var array
      */
     // protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    /**
+     * Custom validation messages.
+     * @var array
+     */
+    public static $custom_validation_messages = [
+        //'name.required' => 'Custom message.',
+    ];
 
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
-     *
      * @param       $element
-     * @param array $merge
+     * @param  array  $merge
      * @return array
      */
-    public static function rules($element, $merge = []) {
+    public static function rules($element, $merge = [])
+    {
         $rules = [
             //'name' => 'required|between:1,255|unique:statusupdates,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
@@ -95,17 +136,7 @@ class Statusupdate extends Basemodule
     }
 
     /**
-     * Custom validation messages.
-     *
-     * @var array
-     */
-    public static $custom_validation_messages = [
-        //'name.required' => 'Custom message.',
-    ];
-
-    /**
      * Automatic eager load relation by default (can be expensive)
-     *
      * @var array
      */
     // protected $with = ['relation1', 'relation2'];
@@ -114,7 +145,8 @@ class Statusupdate extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
         Statusupdate::observe(StatusupdateObserver::class);
 
@@ -133,7 +165,9 @@ class Statusupdate extends Basemodule
             /************************************************************/
             $previous_status_entry = $element->previous();
             if ($previous_status_entry) {
-                if ($previous_status_entry->status == $element->status) $valid = false;
+                if ($previous_status_entry->status == $element->status) {
+                    $valid = false;
+                }
             }
 
             //status_id_field,previous_status_id, status_id - These fields will be used for storing status ids where status options are saved in a table and have id,code,name.
@@ -143,9 +177,9 @@ class Statusupdate extends Basemodule
             // last current previous entry's statusupdate id
             /************************************************************/
             if ($valid && $previous_status_entry) {
-                $element->previous_id = $previous_status_entry->id;
+                $element->previous_id     = $previous_status_entry->id;
                 $element->previous_status = $previous_status_entry->status;
-                $element->type = "Update";
+                $element->type            = "Update";
             }
             if ($valid) {
                 $element->is_active = 1; //Auto fill
@@ -226,7 +260,7 @@ class Statusupdate extends Basemodule
     ############################################################################################
 
     /**
-     * @param bool|false $setMsgSession setting it false will not store the message in session
+     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -254,16 +288,15 @@ class Statusupdate extends Basemodule
     /**
      * Static functions needs to be called using Model::function($id)
      * Inside static function you may need to query and get the element
-     *
      * @param $id
      */
     // public static function someOtherAction($id) { }
     /**
      * Get the previous status-update
-     *
      * @return \Illuminate\Database\Eloquent\Model|mixed|null|static
      */
-    public function previous() {
+    public function previous()
+    {
         return Statusupdate::where('module_id', $this->module_id)->where('element_id', $this->element_id)
             ->where('created_at', '<', $this->created_at)->orderBy('created_at', 'DESC')->first();
 
@@ -271,23 +304,24 @@ class Statusupdate extends Basemodule
 
     /**
      * Get the next status-update
-     *
      * @return \Illuminate\Database\Eloquent\Model|mixed|null|static
      */
-    public function next() {
+    public function next()
+    {
         return Statusupdate::where('module_id', $this->module_id)->where('element_id', $this->element_id)
             ->where('created_at', '>', $this->created_at)->orderBy('created_at', 'ASC')->first();
     }
 
     /**
      * If a status-update is created it will return that newly created object, otherwise it will return null/false
-     * @param Basemodule $element
-     * @param array $vals
+     * @param  Basemodule  $element
+     * @param  array  $vals
      * @return \Illuminate\Database\Eloquent\Model|static
      */
-    public static function log(Basemodule $element, $vals = []) {
+    public static function log(Basemodule $element, $vals = [])
+    {
         return Statusupdate::create([
-            "name" => get_class($element) . " ID-" . $element->id,
+            "name" => get_class($element)." ID-".$element->id,
             "module_id" => $element->module()->id,
             "element_id" => $element->id,
             "element_uuid" => $element->uuid,
@@ -315,8 +349,7 @@ class Statusupdate extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isViewable($user_id = null)
@@ -333,8 +366,7 @@ class Statusupdate extends Basemodule
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -351,8 +383,7 @@ class Statusupdate extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -369,8 +400,7 @@ class Statusupdate extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)
@@ -433,20 +463,25 @@ class Statusupdate extends Basemodule
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function previousStatusupdate() {
+    public function from()
+    {
         return $this->belongsTo(\App\Statusupdate::class, 'previous_id');
     }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function nextStatusupdate() {
+    public function to()
+    {
         return $this->belongsTo(\App\Statusupdate::class, 'next_id');
     }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function linkedElement() {
-        return $this->belongsTo(modelNameFromModuleId($this->module_id), 'element_id');
+    public function task()
+    {
+        return $this->belongsTo(Task::class, 'element_id');
     }
     ############################################################################################
     # Accessors & Mutators

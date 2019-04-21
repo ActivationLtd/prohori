@@ -1,7 +1,7 @@
 @extends('emails.templates.prohori-default')
 
 @section('email-content-header')
-    A new task- <b>{{$task->name}}</b> created
+    A new task- <b>{{$task->tasktype_name}}</b> created
 @endsection
 
 @section('email-content')

@@ -8,6 +8,7 @@ use App\Observers\TaskObserver;
 
 /**
  * Class Task
+ *
  * @package App
  * @property int $id
  * @property string|null $uuid
@@ -31,6 +32,112 @@ use App\Observers\TaskObserver;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task query()
+ * @property string|null $name_ext
+ * @property int|null $parent_id
+ * @property int|null $priority
+ * @property int|null $seq
+ * @property int|null $client_id
+ * @property string|null $client_name
+ * @property string|null $client_obj
+ * @property int|null $clientlocation_id
+ * @property string|null $clientlocation_name
+ * @property string|null $clientlocation_obj
+ * @property int|null $clientlocationtype_id
+ * @property string|null $clientlocationtype_name
+ * @property int|null $division_id
+ * @property string|null $division_name
+ * @property int|null $district_id
+ * @property string|null $district_name
+ * @property int|null $upazila_id
+ * @property string|null $upazila_name
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property string|null $description
+ * @property int|null $tasktype_id
+ * @property string|null $tasktype_name
+ * @property int|null $assignment_id
+ * @property int|null $assigned_to
+ * @property array|null $watchers
+ * @property string|null $status
+ * @property string|null $previous_status
+ * @property string|null $due_date
+ * @property string|null $days_open
+ * @property int|null $is_closed
+ * @property int|null $closed_by
+ * @property string|null $closing_note
+ * @property int|null $is_resolved
+ * @property int|null $resolved_by
+ * @property string|null $resolve_note
+ * @property int|null $is_verified
+ * @property int|null $verified_by
+ * @property string|null $verify_note
+ * @property int|null $is_flagged
+ * @property int|null $flagged_by
+ * @property string|null $flag_note
+ * @property string|null $tags
+ * @property-read \App\User|null $assignee
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Assignment[] $assignments
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Client|null $client
+ * @property-read \App\Clientlocation|null $clientlocation
+ * @property-read \App\Assignment $latestAssignment
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Task[] $subtasks
+ * @property-read \App\Tasktype|null $tasktype
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereAssignedTo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereAssignmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientObj($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationObj($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationtypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClientlocationtypeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClosedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereClosingNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDaysOpen($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDistrictId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDistrictName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDivisionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDivisionName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereDueDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereFlagNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereFlaggedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsClosed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsFlagged($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsResolved($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereIsVerified($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereLongitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereNameExt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereParentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task wherePreviousStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereResolveNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereResolvedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereSeq($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereTags($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereTasktypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereTasktypeName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpazilaId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpazilaName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifiedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifyNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereWatchers($value)
  */
 class Task extends Basemodule
 {
@@ -144,13 +251,12 @@ class Task extends Basemodule
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
      * @param       $element
-     * @param  array  $merge
+     * @param  array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
-            'name' => 'required|between:1,255|unique:tasks,name,'.(isset($element->id) ? "$element->id" : 'null').',id,deleted_at,NULL',
+            'name' => 'required|between:1,255',
             'assigned_to' => 'required',
             'tasktype_id' => 'required',
             'priority' => 'required',
@@ -176,8 +282,7 @@ class Task extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Task::observe(TaskObserver::class);
 
@@ -194,29 +299,29 @@ class Task extends Basemodule
             if ($valid) {
                 if ($element->client()->exists()) {
                     $element->client_name = $element->client->name;
-                    $element->client_obj  = $element->client->toJson();
+                    $element->client_obj = $element->client->toJson();
                 }
             }
             if ($element->clientlocation()->exists()) {
-                $element->clientlocation_obj  = $element->clientlocation->toJson();
+                $element->clientlocation_obj = $element->clientlocation->toJson();
                 $element->clientlocation_name = $element->clientlocation->name;
 
-                $element->clientlocationtype_id   = $element->clientlocation->clientlocationtype_id;
+                $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
                 $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
 
                 $element->clientlocation_obj = $element->clientlocation->toJson();
 
-                $element->division_id   = $element->clientlocation->division_id;
+                $element->division_id = $element->clientlocation->division_id;
                 $element->division_name = $element->clientlocation->division_name;
 
-                $element->district_id   = $element->clientlocation->district_id;
+                $element->district_id = $element->clientlocation->district_id;
                 $element->district_name = $element->clientlocation->district_name;
 
-                $element->upazila_id   = $element->clientlocation->upazila_id;
+                $element->upazila_id = $element->clientlocation->upazila_id;
                 $element->upazila_name = $element->clientlocation->upazila_name;
 
                 $element->longitude = $element->clientlocation->longitude;
-                $element->latitude  = $element->clientlocation->latitude;
+                $element->latitude = $element->clientlocation->latitude;
             }
             if ($element->tasktype()->exists()) {
                 $element->tasktype_name = $element->tasktype->name;
@@ -253,21 +358,19 @@ class Task extends Basemodule
         /************************************************************/
         static::created(function (Task $element) {
             if ($element->assignee()->exists()) {
+                if(isset($element->watchers)){
+                    $emails=[];
+                    foreach($element->watchers as $user_id)
+                    {
+                        $emails[]=User::find($user_id)->email;
+                    }
+                }
                 //send mail to the assignee when task is created
-                \Mail::to($element->assignee->email)->send(
+                \Mail::to($element->assignee->email)
+                    ->cc($emails)->send(
                     new TaskCreated($element)
                 );
             }
-            // if(isset($element->assigned_to)){
-            //     Assignment::create([
-            //         'name' => $element->name,
-            //         'type' => $element->tasktype_id,
-            //         'module_id' => '29',
-            //         'element_id' => $element->id,
-            //         'assigned_by' => user()->id,
-            //         'assigned_to' => $element->assigned_to,
-            //     ]);
-            // }
 
             $element->status = 'To do'; // Set initial status to draft.
 
@@ -293,30 +396,20 @@ class Task extends Basemodule
             $valid = true;
             //creating assignement based on changing of assingee
             if (isset($element->assigned_to)) {
-                //taking any existing assignments
-                $existing_assignment = Assignment::where('assigned_to', $element->assigned_to)->where('type', $element->tasktype_id)
-                    ->where('element_id', $element->id)->first();
                 if ($element->getOriginal('assigned_to') != $element->assigned_to) {
                     //if assignment does not exists
-                    if (!isset($existing_assignment->id)) {
-                        $assignment = Assignment::create([
-                            'name' => $element->name,
-                            'type' => $element->tasktype_id,
-                            'module_id' => '29',
-                            'element_id' => $element->id,
-                            'assigned_by' => user()->id,
-                            'assigned_to' => $element->assigned_to,
-                        ]);
-                        $valid      = setMessage("Assignment created");
-                        //filling the assignment id in task table
-                        $element->assignment_id = $assignment->id;
-                    } else {
-                        $valid = setMessage("Assignment exists");
-                        //filling the assignment id in task table
-                        $element->assignment_id = $existing_assignment->id;
-                    }
+                    $assignment = Assignment::create([
+                        'name' => $element->name,
+                        'type' => $element->tasktype_id,
+                        'module_id' => '29',
+                        'element_id' => $element->id,
+                        'assigned_by' => user()->id,
+                        'assigned_to' => $element->assigned_to,
+                    ]);
+                    //filling the assignment id in task table
+                    $element->assignment_id = $assignment->id;
+                    $valid = setMessage("Assignment created");
                 }
-
             }
             Statusupdate::log($element, [
                 'status' => $element->status,
@@ -355,7 +448,7 @@ class Task extends Basemodule
     ############################################################################################
 
     /**
-     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
+     * @param  bool|false $setMsgSession setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -403,24 +496,32 @@ class Task extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
-    //    public function isViewable($user_id = null)
-    //    {
-    //        $valid = false;
-    //        if ($valid = spyrElementViewable($this, $user_id)) {
-    //            //if ($valid && somethingElse()) $valid = false;
-    //        }
-    //        return $valid;
-    //    }
+    public function isViewable($user_id = null, $set_msg = false) {
+
+        $valid = false;
+        if ($valid = spyrElementViewable($this, $user_id)) {
+            $valid = false;
+            if ($this->created_by == User()->id) {
+                $valid = true;
+            } else if ($this->assigned_to == User()->id) {
+                $valid = true;
+            } else if (User()->isSuperUser()) {
+                $valid = true;
+            }
+            //if ($valid && somethingElse()) $valid = false;
+        }
+        return $valid;
+    }
 
     /**
      * Checks if the $module is editable by current or any user passed as parameter.
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -437,7 +538,7 @@ class Task extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -454,7 +555,7 @@ class Task extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)
@@ -516,17 +617,35 @@ class Task extends Basemodule
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function assignee() { return $this->belongsTo(\App\User::class, 'assigned_to'); }
+    public
+    function assignee() {
+        return $this->belongsTo(\App\User::class, 'assigned_to');
+    }
 
-    public function clientlocation() { return $this->belongsTo(\App\Clientlocation::class); }
+    public
+    function clientlocation() {
+        return $this->belongsTo(\App\Clientlocation::class);
+    }
 
-    public function tasktype() { return $this->belongsTo(\App\Tasktype::class); }
+    public
+    function tasktype() {
+        return $this->belongsTo(\App\Tasktype::class);
+    }
 
-    public function subtasks() { return $this->hasMany(\App\Task::class, 'parent_id'); }
+    public
+    function subtasks() {
+        return $this->hasMany(\App\Task::class, 'parent_id');
+    }
 
-    public function assignments() { return $this->hasMany(\App\Assignment::class, 'element_id'); }
+    public
+    function assignments() {
+        return $this->hasMany(\App\Assignment::class, 'element_id');
+    }
 
-    public function client() { return $this->belongsTo(\App\Client::class); }
+    public
+    function client() {
+        return $this->belongsTo(\App\Client::class);
+    }
 
     // Write new relationships below this line
 
@@ -546,11 +665,11 @@ class Task extends Basemodule
     // Write accessors and mutators here.
     /**
      * Set partnercategory ids to array
-     * @param  array  $value
+     * @param  array $value
      * @return void
      */
-    public function setWatchersAttribute($value)
-    {
+    public
+    function setWatchersAttribute($value) {
         // Original default value
         $this->attributes['watchers'] = $value;
 

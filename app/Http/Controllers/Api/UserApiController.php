@@ -60,9 +60,9 @@ class UserApiController extends ApiController
      */
     public function uploadsDeleteAvatar()
     {
-        $this->user()->update(['avatar_url' => null]);
-        $this->user()->uploads()->where('type', 'Avatar')->delete();
-        $ret = ret('success', "Avatar deleted");
+        $this->user()->update(['profile_pic_url' => null]);
+        $this->user()->uploads()->where('type', 'Profile photo')->delete();
+        $ret = ret('success', "Profile photo deleted");
         return Response::json(fillRet($ret));
     }
 
@@ -128,6 +128,7 @@ class UserApiController extends ApiController
      */
     public function tasksUpload($id)
     {
+
         Request::merge([
             'module_id' => 29, // 29=users module
             'element_id' => $id,
