@@ -60,6 +60,11 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::post('tasks/create', 'Api\UserApiController@tasksCreate')->name('api.user.tasks.create');
                 Route::patch('tasks/{id}/update', 'Api\UserApiController@tasksUpdate')->name('api.user.tasks.update');
                 Route::post('tasks/{id}/upload', 'Api\UserApiController@tasksUpload')->name('api.user.tasks.upload');
+                Route::get('tasks/{id}/getUploads', 'Api\UserApiController@getUploads')->name('api.user.tasks.uploads');
+                Route::get('tasks/{id}/getSubtasks', 'Api\UserApiController@getSubtasks')->name('api.user.tasks.subtasks');
+                Route::get('tasks/{id}/getAssignments', 'Api\UserApiController@getAssignments')->name('api.user.tasks.assignments');
+
+
             });
         });
 

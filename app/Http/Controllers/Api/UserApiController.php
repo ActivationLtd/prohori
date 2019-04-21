@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\AssignmentsController;
 use Request;
 use App\Task;
 use App\User;
@@ -151,5 +152,27 @@ class UserApiController extends ApiController
             'created_by' => $this->user()->id,
         ]);
         return app(UploadsController::class)->store();
+    }
+
+    /**
+     * @param $id
+     */
+    public function getUploads($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(UploadsController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getSubtasks($id){
+        Request::merge(['parent_id' => $id, 'sort_by' => 'created_at', 'sort_order' => 'desc']);
+        return app(TasksController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getAssignments($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(AssignmentsController::class)->list();
     }
 }
