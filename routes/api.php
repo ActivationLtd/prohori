@@ -1,11 +1,9 @@
 <?php
 
-use App\Module;
-use App\Modulegroup;
 use Illuminate\Http\Request;
 
-$modules = dbTableExists('modules') ? Module::names() : []; // dbTableExists() was causing issue.
-$modulegroups = dbTableExists('modulegroups') ? Modulegroup::names() : [];
+$modules      = dbTableExists('modules') ? \App\Module::names() : []; // dbTableExists() was causing issue.
+$modulegroups = dbTableExists('modulegroups') ? \App\Modulegroup::names() : [];
 
 /*
 |--------------------------------------------------------------------------
@@ -30,10 +28,10 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
         // APIs that are more appropriate for specific usage of data.
         Route::prefix('module')->group(function () use ($modules) {
             foreach ($modules as $module) {
-                $Controller = ucfirst($module) . "Controller";
+                $Controller = ucfirst($module)."Controller";
                 // generate the API route.
-                Route:: get($module . "/list", $Controller . "@list")->name("api.{$module}.list");
-                Route:: get($module . "/report", $Controller . "@report")->name("api.{$module}.report");
+                Route:: get($module."/list", $Controller."@list")->name("api.{$module}.list");
+                Route:: get($module."/report", $Controller."@report")->name("api.{$module}.report");
                 Route::resource($module, $Controller); // for some reason this resource route needs be placed at the bottom otherwise it does work.
             }
         });

@@ -31,6 +31,25 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation query()
+ * @property string|null $code
+ * @property string|null $description
+ * @property int|null $level
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Designation whereUuid($value)
  */
 class Designation extends Basemodule
 {

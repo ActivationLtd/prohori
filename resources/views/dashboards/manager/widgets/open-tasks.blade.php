@@ -3,7 +3,7 @@ $tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWh
 ?>
 
 <b>Currently assigned</b>
-<table class="table shadow">
+<table class="table shadow datatable min">
     <tbody>
     <!--  loop through array for creating rows in a table -->
     @foreach($tasks as $task)
@@ -32,3 +32,4 @@ $tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWh
     @endforeach
     </tbody>
 </table>
+

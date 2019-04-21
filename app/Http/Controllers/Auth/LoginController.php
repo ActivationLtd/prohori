@@ -69,6 +69,7 @@ class LoginController extends Controller
 
         $this->validateLogin($request);
 
+
         if ($user = User::where($this->username(), $request->get($this->username()))->first()) {
             if (is_null($user->email_verified_at)) {
                 return $this->sendFailedLoginResponse($request, 'Email not verified');
@@ -111,6 +112,8 @@ class LoginController extends Controller
             $this->username() => 'required|string',
             'password' => 'required|string',
         ]);
+
+
 
     }
 
@@ -170,7 +173,7 @@ class LoginController extends Controller
             $user->auth_token = $user->generateAuthToken();
         }
 
-        // For first login send email
+        // // For first login send email
         // if ($user->first_login_at === null) {
         //     $user->first_login_at = now();
         //     if ($user->social_account_id !== null) {

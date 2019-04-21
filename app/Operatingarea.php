@@ -31,6 +31,20 @@ use App\Traits\IsoModule;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea query()
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
+ * @property-read \App\Upload $latestUpload
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereDeletedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereTenantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Operatingarea whereUuid($value)
  */
 class Operatingarea extends Basemodule
 {
