@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\AssignmentsController;
+use App\Http\Controllers\MessagesController;
 use Request;
 use App\Task;
 use App\User;
@@ -107,8 +109,9 @@ class UserApiController extends ApiController
                 {
                     $emails[]=User::find($user_id)->email;
                 }
+                $task->setAttribute('watcher_emails', $emails);
             }
-            $task->setAttribute('watcher_emails', $emails);
+
         }
 
         $ret   = ret('success', "User Task List", ['data' => $tasks]);
@@ -150,5 +153,34 @@ class UserApiController extends ApiController
             'created_by' => $this->user()->id,
         ]);
         return app(UploadsController::class)->store();
+    }
+
+    /**
+     * @param $id
+     */
+    public function getUploads($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(UploadsController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getSubtasks($id){
+        Request::merge(['parent_id' => $id, 'sort_by' => 'created_at', 'sort_order' => 'desc']);
+        return app(TasksController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getAssignments($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(AssignmentsController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getMessages($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(MessagesController::class)->list();
     }
 }
