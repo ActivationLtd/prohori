@@ -90,7 +90,7 @@
     {{--previous_status--}}
     {{--due_date--}}
     {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
-    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-6','params'=>['id'=>'datetimepicker1']]])
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-6','params'=>['id'=>'datetimepicker']]])
     {{--days_open--}}
     @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2']])
 </div>
@@ -177,7 +177,7 @@
     @parent
     <script type="text/javascript">
         $(function () {
-            $('#datetimepicker1').datetimepicker({
+            $('#datetimepicker').datetimepicker({
                 format: 'YYYY-MM-DD HH:mm'
             });
         });
