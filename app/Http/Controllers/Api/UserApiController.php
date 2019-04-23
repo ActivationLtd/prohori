@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\AssignmentsController;
+use App\Http\Controllers\MessagesController;
 use Request;
 use App\Task;
+use App\User;
 use Response;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UsersController;
@@ -93,9 +96,24 @@ class UserApiController extends ApiController
      */
     public function tasks()
     {
-        $tasks = Task::with(['subtasks', 'uploads', 'assignments'])
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments','assignee','flagger','verifier','resolver','closer',])
             ->where('created_by', $this->user()->id)
-            ->orWhere('assigned_to', $this->user()->id)->where('is_active', 1)->get();
+            ->orWhere('assigned_to', $this->user()->id)
+            ->where('is_active', 1)
+            //->whereIn('status', ['to do','In progress','Verify'])
+            ->get();
+        foreach($tasks as $task){
+            if(isset($task->watchers)){
+                $emails=[];
+                foreach($task->watchers as $user_id)
+                {
+                    $emails[]=User::find($user_id)->email;
+                }
+                $task->setAttribute('watcher_emails', $emails);
+            }
+
+        }
+
         $ret   = ret('success', "User Task List", ['data' => $tasks]);
         return Response::json($ret);
     }
@@ -135,5 +153,34 @@ class UserApiController extends ApiController
             'created_by' => $this->user()->id,
         ]);
         return app(UploadsController::class)->store();
+    }
+
+    /**
+     * @param $id
+     */
+    public function getUploads($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(UploadsController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getSubtasks($id){
+        Request::merge(['parent_id' => $id, 'sort_by' => 'created_at', 'sort_order' => 'desc']);
+        return app(TasksController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getAssignments($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(AssignmentsController::class)->list();
+    }
+    /**
+     * @param $id
+     */
+    public function getMessages($id){
+        Request::merge(['element_id' => $id, 'module_id' =>29, 'sort_order' => 'desc']);
+        return app(MessagesController::class)->list();
     }
 }

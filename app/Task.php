@@ -358,18 +358,17 @@ class Task extends Basemodule
         /************************************************************/
         static::created(function (Task $element) {
             if ($element->assignee()->exists()) {
-                if(isset($element->watchers)){
-                    $emails=[];
-                    foreach($element->watchers as $user_id)
-                    {
-                        $emails[]=User::find($user_id)->email;
+                if (isset($element->watchers)) {
+                    $emails = [];
+                    foreach ($element->watchers as $user_id) {
+                        $emails[] = User::find($user_id)->email;
                     }
                 }
                 //send mail to the assignee when task is created
                 \Mail::to($element->assignee->email)
                     ->cc($emails)->send(
-                    new TaskCreated($element)
-                );
+                        new TaskCreated($element)
+                    );
             }
 
             $element->status = 'To do'; // Set initial status to draft.
@@ -617,33 +616,43 @@ class Task extends Basemodule
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public
-    function assignee() {
+    public function assignee() {
         return $this->belongsTo(\App\User::class, 'assigned_to');
     }
 
-    public
-    function clientlocation() {
+    public function flagger() {
+        return $this->belongsTo(\App\User::class, 'flagged_by');
+    }
+
+    public function verifier() {
+        return $this->belongsTo(\App\User::class, 'verified_by');
+    }
+
+    public function resolver() {
+        return $this->belongsTo(\App\User::class, 'resolved_by');
+    }
+
+    public function closer() {
+        return $this->belongsTo(\App\User::class, 'closed_by');
+    }
+
+    public function clientlocation() {
         return $this->belongsTo(\App\Clientlocation::class);
     }
 
-    public
-    function tasktype() {
+    public function tasktype() {
         return $this->belongsTo(\App\Tasktype::class);
     }
 
-    public
-    function subtasks() {
+    public function subtasks() {
         return $this->hasMany(\App\Task::class, 'parent_id');
     }
 
-    public
-    function assignments() {
+    public function assignments() {
         return $this->hasMany(\App\Assignment::class, 'element_id');
     }
 
-    public
-    function client() {
+    public function client() {
         return $this->belongsTo(\App\Client::class);
     }
 
@@ -668,8 +677,7 @@ class Task extends Basemodule
      * @param  array $value
      * @return void
      */
-    public
-    function setWatchersAttribute($value) {
+    public function setWatchersAttribute($value) {
         // Original default value
         $this->attributes['watchers'] = $value;
 

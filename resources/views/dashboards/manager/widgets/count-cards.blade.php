@@ -23,20 +23,6 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
     <!-- ./col -->
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
-        <div class="small-box bg-green">
-            <div class="inner">
-                <h3>{{$task_completed}}</h3>
-                <p>Completed</p>
-            </div>
-            <div class="icon">
-                <i class="ion ion-stats-bars"></i>
-            </div>
-            <a href={{route('home').'/tasks?status=Done'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
-        </div>
-    </div>
-    <!-- ./col -->
-    <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
         <div class="small-box bg-orange-active">
             <div class="inner">
                 <h3>{{$task_inprogress}}</h3>
@@ -46,6 +32,20 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
                 <i class="ion ion-person-add"></i>
             </div>
             <a href={{route('home').'/tasks?status=In%20progress'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-xs-6">
+        <!-- small box -->
+        <div class="small-box bg-green">
+            <div class="inner">
+                <h3>{{$task_completed}}</h3>
+                <p>Completed</p>
+            </div>
+            <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+            </div>
+            <a href={{route('home').'/tasks?status=Done'}} class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
     <!-- ./col -->
@@ -64,3 +64,17 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
     </div>
     <!-- ./col -->
 </div>
+<table class="table shadow">
+    <tbody>
+    <tr>
+        @foreach(App\Task::$statuses as $status)
+            <td><b>{{$status}}</b></td>
+        @endforeach
+    </tr>
+    <tr>
+        @foreach(App\Task::$statuses as $status)
+            <td>{{App\Task::where('status',$status)->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->count()}}</td>
+        @endforeach
+    </tr>
+    </tbody>
+</table>
