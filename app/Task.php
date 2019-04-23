@@ -358,8 +358,8 @@ class Task extends Basemodule
         /************************************************************/
         static::created(function (Task $element) {
             if ($element->assignee()->exists()) {
+                $emails = [];
                 if (isset($element->watchers)) {
-                    $emails = [];
                     foreach ($element->watchers as $user_id) {
                         $emails[] = User::find($user_id)->email;
                     }
