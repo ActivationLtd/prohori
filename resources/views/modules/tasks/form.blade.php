@@ -89,7 +89,8 @@
     {{--status--}}
     {{--previous_status--}}
     {{--due_date--}}
-    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])
+    {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-6','params'=>['id'=>'datetimepicker1']]])
     {{--days_open--}}
     @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2']])
 </div>
@@ -99,7 +100,7 @@
 </div>
 <div class="clearfix"></div>
 @if(isset($task) && in_array($task->status,['Closed','Done']))
-    <div class="col-md-6 no-padding " >
+    <div class="col-md-6 no-padding ">
         {{--is_flagged--}}
         @include('form.select-array',['var'=>['name'=>'is_flagged','label'=>'Is Flagged','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
         {{--flagged_by--}}
@@ -167,12 +168,20 @@
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.messages')
     </div>
+    <div class="clearfix"></div>
 @endsection
 
 
 {{-- JS starts: javascript codes go here.--}}
 @section('js')
     @parent
+    <script type="text/javascript">
+        $(function () {
+            $('#datetimepicker1').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm'
+            });
+        });
+    </script>
     <script type="text/javascript">
         /*******************************************************************/
         // List of functions

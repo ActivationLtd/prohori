@@ -14,6 +14,8 @@ $script_paths = [
     'templates/admin-lte/plugins/knob/jquery.knob.js',
     'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js',
     'templates/admin-lte/plugins/datepicker/bootstrap-datepicker.js',
+    'templates/admin-lte/plugins/datetimepicker/bootstrap-datetimepicker.js',
+    'templates/admin-lte/plugins/datetimepicker/bootstrap-datetimepicker.min.js',
     'templates/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js',
     'templates/admin-lte/plugins/fastclick/fastclick.js',
     'templates/admin-lte/plugins/iCheck/icheck.min.js',
