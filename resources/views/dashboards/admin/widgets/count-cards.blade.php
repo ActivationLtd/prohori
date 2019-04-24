@@ -9,7 +9,7 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
     <div class="col-md-12"><h4>Task summary</h4></div>
     <div class="clearfix"></div>
     <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-blue-gradient">
+        <div class="small-box bg-blue">
             <div class="inner">
                 <h3>{{$task_assigned}}</h3>
                 <p><b>Assigned</b></p>
