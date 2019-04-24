@@ -9,16 +9,16 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
     <div class="col-md-12"><h4>Task summary</h4></div>
     <div class="clearfix"></div>
     <div class="col-lg-3 col-xs-6">
-        <div class="small-box bg-grey">
+        <div class="small-box bg-blue-gradient">
             <div class="inner">
                 <h3>{{$task_assigned}}</h3>
-                <p>Assigned</p>
+                <p><b>Assigned</b></p>
             </div>
             <div class="icon">
-                <i class="fa fa-check-square"></i>
+                <i class="fa fa-check-circle"></i>
             </div>
             <a href="{{route('home').'/tasks?status=to%20do'}}" class="small-box-footer">
-                <i class="fa fa-arrow-circle-right "></i>
+                <i class="fa fa-arrow-circle-right"></i>
             </a>
         </div>
     </div>
@@ -26,10 +26,10 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
         <div class="small-box bg-orange-active">
             <div class="inner">
                 <h3>{{$task_inprogress}}</h3>
-                <p>In progress</p>
+                <p><b>In progress</b></p>
             </div>
             <div class="icon">
-                <i class="ion ion-person-add"></i>
+                <i class="fa fa-calendar-check-o"></i>
             </div>
 
             <a href="{{route('home').'/tasks?status=In%20progress'}}" class="small-box-footer"><i
@@ -40,10 +40,10 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
         <div class="small-box bg-green">
             <div class="inner">
                 <h3>{{$task_completed}}</h3>
-                <p>Completed</p>
+                <p><b>Completed</b></p>
             </div>
             <div class="icon">
-                <i class="ion ion-stats-bars"></i>
+                <i class="fa fa-check"></i>
             </div>
 
             <a href="{{route('home').'/tasks?status=Done'}}" class="small-box-footer"><i
@@ -55,10 +55,10 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
         <div class="small-box bg-red">
             <div class="inner">
                 <h3>{{$task_due}}</h3>
-                <p>Due</p>
+                <p><b>Due</b></p>
             </div>
             <div class="icon">
-                <i class="ion ion-pie-graph"></i>
+                <i class="fa fa-info-circle"></i>
             </div>
             <a href="{{route('home').'/tasks'}}" class="small-box-footer"><i
                         class="fa fa-arrow-circle-right"></i></a>
