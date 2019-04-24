@@ -76,7 +76,7 @@
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
     <div class="clearfix"></div>
-    @include('form.is_active')
+{{--    @include('form.is_active')--}}
 </div>
 
 <div class="col-md-6 no-padding-l">
