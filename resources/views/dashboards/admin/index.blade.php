@@ -2,6 +2,7 @@
 
 
 @section('css')
+    @parent
     <style>
         .content-header {
             padding: 0;
@@ -17,7 +18,6 @@
     @if(Auth::check())
         <div class="row">
             <div id="area-1" class="col-md-6 pull-left ">
-
                 {{-- Widget area one --}}
                 @include('dashboards.admin.widgets.count-cards')
                 <div class="clearfix"></div>
@@ -25,7 +25,6 @@
                 @include('dashboards.admin.widgets.map')
 
             </div>
-
 
             <div id="area-3" class="col-md-6 pull-left">
                 @include('dashboards.admin.widgets.open-tasks')

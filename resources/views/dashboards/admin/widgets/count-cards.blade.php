@@ -9,7 +9,6 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
     <div class="col-md-12"><h4>Task summary</h4></div>
     <div class="clearfix"></div>
     <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
         <div class="small-box bg-grey">
             <div class="inner">
                 <h3>{{$task_assigned}}</h3>
@@ -23,9 +22,7 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
             </a>
         </div>
     </div>
-    <!-- ./col -->
     <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
         <div class="small-box bg-orange-active">
             <div class="inner">
                 <h3>{{$task_inprogress}}</h3>
@@ -55,7 +52,6 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
     </div>
 
     <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
         <div class="small-box bg-red">
             <div class="inner">
                 <h3>{{$task_due}}</h3>
@@ -70,3 +66,4 @@ $task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('du
     </div>
 
 </div>
+<div class='clearfix'></div>
