@@ -76,7 +76,7 @@
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
     <div class="clearfix"></div>
-{{--    @include('form.is_active')--}}
+    {{--    @include('form.is_active')--}}
 </div>
 
 <div class="col-md-6 no-padding-l">
@@ -99,7 +99,8 @@
     @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
 </div>
 <div class="clearfix"></div>
-@if(isset($task) && in_array($task->status,['Closed','Done']))
+{{--@if(isset($task) && in_array($task->status,['Closed','Done']))--}}
+@if(isset($task) && in_array($task->status,['xxxx']))
     <div class="col-md-6 no-padding ">
         {{--is_flagged--}}
         @include('form.select-array',['var'=>['name'=>'is_flagged','label'=>'Is Flagged','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
@@ -147,6 +148,7 @@
 @section('content-bottom')
     @parent
     <div class="col-md-6 no-padding-l">
+        <h4>File upload section</h4>
         <b>Task files</b>
         <small>Share task related files with assignee.</small>
         {{--<small>Upload one or more files</small>--}}
@@ -157,16 +159,17 @@
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
 
-        @if(isset($task) && !in_array($task->status,['Closed','Done']) )
-            <b>Sub-tasks</b>
+        @if(isset($task))
+            <h4>Sub-tasks</h4>
             @include('modules.tasks.subtasks')
         @endif
-        <div class="clearfix"></div>
+        <hr/>
         @if(isset($task) && count($task->assignments))
-            <b>Task Related Assignments</b>
+            <h4>Assignment History</h4>
             @include('modules.tasks.taskassignments')
         @endif
     </div>
+
     <div class="col-md-6 no-padding">
         <h4>Messages</h4>
         {{--<small>Upload one or more files</small>--}}
