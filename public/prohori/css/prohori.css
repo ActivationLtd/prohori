@@ -11,7 +11,8 @@
 /*.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6,*/
 /*.content-header h4,*/
 .main-header .logo, .logo-mini, .logo-lg {
-    font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;!important
+    font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;
+!important
 }
 
 .lb-font {
@@ -87,5 +88,9 @@ body, html,
 
 .module-base-form label {
     font-weight: bold;
+    margin-bottom: 0;
+}
+
+.login-logo, .register-logo {
     margin-bottom: 0;
 }

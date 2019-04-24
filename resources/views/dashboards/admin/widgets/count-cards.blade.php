@@ -1,8 +1,8 @@
 <?php
-$task_assigned = App\Task::whereIn('status', ['To do', 'In Progress'])->count();
-$task_completed = App\Task::whereIn('status', ['Done', 'Closed'])->count();
+$task_assigned   = App\Task::whereIn('status', ['To do', 'In Progress'])->count();
+$task_completed  = App\Task::whereIn('status', ['Done', 'Closed'])->count();
 $task_inprogress = App\Task::whereIn('status', ['In Progress'])->count();
-$task_due = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+$task_due        = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
 ?>
 <div class="row">
 
@@ -18,8 +18,9 @@ $task_due = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('due_date'
             <div class="icon">
                 <i class="fa fa-check-square"></i>
             </div>
-            <a href={{route('home').'/tasks?status=to%20do'}} class="small-box-footer">More info <i
-                        class="fa fa-arrow-circle-right"></i></a>
+            <a href="{{route('home').'/tasks?status=to%20do'}}" class="small-box-footer">
+                <i class="fa fa-arrow-circle-right "></i>
+            </a>
         </div>
     </div>
     <!-- ./col -->
@@ -34,13 +35,11 @@ $task_due = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('due_date'
                 <i class="ion ion-person-add"></i>
             </div>
 
-            <a href={{route('home').'/tasks?status=In%20progress'}} class="small-box-footer">More info <i
+            <a href="{{route('home').'/tasks?status=In%20progress'}}" class="small-box-footer"><i
                         class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
-    <!-- ./col -->
     <div class="col-lg-3 col-xs-6">
-        <!-- small box -->
         <div class="small-box bg-green">
             <div class="inner">
                 <h3>{{$task_completed}}</h3>
@@ -50,12 +49,11 @@ $task_due = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('due_date'
                 <i class="ion ion-stats-bars"></i>
             </div>
 
-            <a href={{route('home').'/tasks?status=Done'}} class="small-box-footer">More info <i
+            <a href="{{route('home').'/tasks?status=Done'}}" class="small-box-footer"><i
                         class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
 
-    <!-- ./col -->
     <div class="col-lg-3 col-xs-6">
         <!-- small box -->
         <div class="small-box bg-red">
@@ -66,24 +64,9 @@ $task_due = App\Task::whereNotIn('status', ['Done', 'Closed'])->where('due_date'
             <div class="icon">
                 <i class="ion ion-pie-graph"></i>
             </div>
-            <a href={{route('home').'/tasks'}} class="small-box-footer">More info <i
+            <a href="{{route('home').'/tasks'}}" class="small-box-footer"><i
                         class="fa fa-arrow-circle-right"></i></a>
         </div>
     </div>
-    <!-- ./col -->
 
 </div>
-<table class="table shadow">
-    <tbody>
-    <tr>
-        @foreach(App\Task::$statuses as $status)
-            <td><b>{{$status}}</b></td>
-        @endforeach
-    </tr>
-    <tr>
-        @foreach(App\Task::$statuses as $status)
-            <td>{{App\Task::where('status',$status)->count()}}</td>
-        @endforeach
-    </tr>
-    </tbody>
-</table>
