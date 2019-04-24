@@ -35,7 +35,7 @@ if ((isset($element) && isset($$element))) {
 ?>
 
 {{-- message div + form --}}
-<div class="{{$var['container_class']}}">
+<div class="{{$var['container_class']}} no-padding">
     @if(hasModulePermission($mod->name,'create') || hasModulePermission($mod->name,'edit'))
         {{-- A form where values are stored that are later posted with attached file --}}
         {{-- initmessageer gets these values and post to uplaod route  --}}

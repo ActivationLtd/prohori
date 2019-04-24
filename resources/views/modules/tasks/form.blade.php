@@ -94,7 +94,7 @@
     {{--days_open--}}
     @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2']])
 </div>
-<div class="col-md-8 no-padding">
+<div class="col-md-6 no-padding">
     {{--description--}}
     @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
 </div>
@@ -140,30 +140,34 @@
     </div>
 @endif
 
+<hr/>
+
 {{-- ******************* Form ends *********************** --}}
 
 @section('content-bottom')
     @parent
     <div class="col-md-6 no-padding-l">
-        <h4>Task files</h4>
+        <b>Task files</b>
+        <small>Share task related files with assignee.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Task file','limit'=>10]])
 
-        <h4>Evidences</h4>
+        <b>Evidences</b>
+        <small>For assignee to upload image as proof of the task completion.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
 
         @if(isset($task) && !in_array($task->status,['Closed','Done']) )
-            <h4>Sub-tasks</h4>
+            <b>Sub-tasks</b>
             @include('modules.tasks.subtasks')
         @endif
         <div class="clearfix"></div>
         @if(isset($task) && count($task->assignments))
-            <h4>Task Related Assignments</h4>
+            <b>Task Related Assignments</b>
             @include('modules.tasks.taskassignments')
         @endif
     </div>
-    <div class="col-md-6 no-padding-l">
+    <div class="col-md-6 no-padding">
         <h4>Messages</h4>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.messages')
