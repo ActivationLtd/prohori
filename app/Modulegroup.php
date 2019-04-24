@@ -266,7 +266,7 @@ class Modulegroup extends Basemodule
             else
                 $list[] = ['type' => 'modulegroup', 'item' => $modulegroup, 'children' => []];
         }
-        $modules = Module::whereModulegroupId(0)->whereIsActive(1)->orderBy('order')->remember(cacheTime('long'))->get();
+        $modules = Module::whereModulegroupId(0)->whereIsActive(1)->orderBy('order','DESC')->remember(cacheTime('long'))->get();
         if (count($modules)) {
             foreach ($modules as $module) {
                 $list[] = ['type' => 'module', 'item' => $module];
