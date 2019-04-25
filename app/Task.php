@@ -266,7 +266,7 @@ class Task extends Basemodule
             'client_id' => 'required',
             'clientlocation_id' => 'required',
             'due_date' => 'required',
-            'is_active' => 'required|in:1,0',
+            //'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
             // 'updated_by' => 'exists:users,id,is_active,1',
