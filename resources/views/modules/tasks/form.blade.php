@@ -76,7 +76,7 @@
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
     <div class="clearfix"></div>
-{{--    @include('form.is_active')--}}
+    {{--    @include('form.is_active')--}}
 </div>
 
 <div class="col-md-6 no-padding-l">
@@ -168,9 +168,11 @@
         @endif
     </div>
     <div class="col-md-6 no-padding">
-        <h4>Messages</h4>
-        {{--<small>Upload one or more files</small>--}}
-        @include('modules.base.include.messages')
+        @if(isset($task->id))
+            <h4>Messages</h4>
+            {{--<small>Upload one or more files</small>--}}
+            @include('modules.base.include.messages')
+        @endif
     </div>
     <div class="clearfix"></div>
 @endsection

@@ -64,17 +64,3 @@ $task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done'
     </div>
     <!-- ./col -->
 </div>
-<table class="table shadow">
-    <tbody>
-    <tr>
-        @foreach(App\Task::$statuses as $status)
-            <td><b>{{$status}}</b></td>
-        @endforeach
-    </tr>
-    <tr>
-        @foreach(App\Task::$statuses as $status)
-            <td>{{App\Task::where('status',$status)->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->count()}}</td>
-        @endforeach
-    </tr>
-    </tbody>
-</table>
