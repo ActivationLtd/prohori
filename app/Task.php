@@ -724,7 +724,7 @@ class Task extends Basemodule
                 return 'High';
             }
         }
-
+        return null;
     }
 
 }
