@@ -375,7 +375,7 @@ class Task extends Basemodule
                         new TaskCreated($element)
                     );
             }
-
+            $element->days_open = 0;
             $element->status = 'To do'; // Set initial status to draft.
 
         });

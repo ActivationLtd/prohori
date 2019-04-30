@@ -1,5 +1,5 @@
 <?php
-$tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->orderBy('created_at', 'desc')->get();
+$tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->orderBy('created_at', 'asc')->get();
 ?>
 
 <b>Currently assigned</b>
@@ -26,7 +26,7 @@ $tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWh
                 <code>{{ $task->status }}</code>
             </td>
             <td>
-                {{ $task->created_at->diffForHumans() }}
+                {{ $task->created_at }}
             </td>
         </tr>
     @endforeach

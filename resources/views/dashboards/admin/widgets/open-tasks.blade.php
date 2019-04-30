@@ -1,7 +1,7 @@
 <?php
 use App\Task;
 
-$tasks = Task::where('is_active', 1)->orderBy('created_at', 'desc')->get();
+$tasks = Task::where('is_active', 1)->orderBy('created_at', 'asc')->get();
 ?>
 
 <div class="col-md-12"><h4>Current tasks</h4></div>
@@ -37,10 +37,9 @@ $tasks = Task::where('is_active', 1)->orderBy('created_at', 'desc')->get();
                 <code>{{ $task->status }}</code>
             </td>
             <td>
-                {{ $task->created_at->diffForHumans() }}
+                {{ $task->created_at }}
             </td>
         </tr>
     @endforeach
     </tbody>
 </table>
- 
