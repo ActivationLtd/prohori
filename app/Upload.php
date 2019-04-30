@@ -241,7 +241,11 @@ class Upload extends Basemodule
         // Following code block executes - after an element is
         // successfully deleted.
         /************************************************************/
-        // static::deleted(function (Upload $element) {});
+         static::deleted(function (Upload $element) {
+             if($element->type == 'Profile photo' && $element->module_id == 4){
+                 User::where('id',$element->element_id)->update(['profile_pic_url'=>null]);
+             }
+         });
 
         /************************************************************/
         // Following code block executes - when an already deleted element

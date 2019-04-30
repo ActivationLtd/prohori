@@ -5,14 +5,14 @@ $tasks = Task::where('is_active', 1)->orderBy('created_at', 'desc')->get();
 ?>
 
 <div class="col-md-12"><h4>Current tasks</h4></div>
-<table class="table shadow datatable-min">
+<table class="table datatable-min">
     <thead>
     <tr>
         <th style="width: 30px;"></th>
         <th>Task</th>
         <th>Assignee</th>
         <th>Status</th>
-        <th>Time</th>
+        <th>Created</th>
     </tr>
     </thead>
     <tbody>
@@ -23,7 +23,7 @@ $tasks = Task::where('is_active', 1)->orderBy('created_at', 'desc')->get();
         ?>
         <tr>
             <td>
-            <span style="height: 40px; overflow: hidden">
+            <span style="height: 40px; width: 40px; overflow: hidden; float: left">
                 <img style="width: 100%" src="{{asset($task->assignee->profile_pic_url)}}" alt="#"/>
             </span>
             </td>

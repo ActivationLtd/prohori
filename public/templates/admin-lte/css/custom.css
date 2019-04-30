@@ -9,7 +9,7 @@
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6,
 .content-header h4,
 .main-header .logo, .logo-mini, .logo-lg {
-    /*font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;*/
+    font-family: 'Ruda', 'Ubuntu', sans-serif, cursive;
 !important;
 }
 
@@ -365,13 +365,14 @@ pre.sf-dump, pre.sf-dump .sf-dump-default {
     color: rgba(0, 0, 0, 0.15);
 }
 
-.small-box p{
+.small-box p {
     font-size: 14px;
 }
 
-.small-box:hover .icon{
+.small-box:hover .icon {
     font-size: inherit;
 }
-.small-box:hover{
+
+.small-box:hover {
     color: #666666;
 }

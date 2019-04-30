@@ -16,10 +16,8 @@
 <div class="login-box shadow">
     <div class="login-logo">
         <a href="{{route('home')}}">
-            <h3 style="padding: 20px;">Prohori</h3>
-            <img style="width: 200px; padding-top: 10px;" src="{{asset("prohori/images/logo-ev.png")}}"
+            <img style="padding-top: 20px;" src="{{asset("prohori/images/logo-blue.png")}}"
                  alt="{{setting('app-name')}}" title="{{setting('app-name')}}"/>
-
         </a>
     </div>
     <div class="login-box-body">
@@ -77,6 +75,12 @@
             {{-- content-bottom section --}}
             {{-- ++++++++++++++++++++++ --}}
         @show
+        <div class="row">
+            <div class="col-md-6 pull-right">
+                <img style="width: 100px; " src="{{asset("prohori/images/logo-ev.png")}}" class="pull-right"
+                     alt="{{setting('app-name')}}" title="{{setting('app-name')}}"/>
+            </div>
+        </div>
     </div>
 </div>
 

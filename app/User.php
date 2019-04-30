@@ -432,6 +432,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
 
+
             // fill common fields, null-fill, trim blanks from Request
             if ($valid) {
 
@@ -456,6 +457,14 @@ class User extends Authenticatable implements MustVerifyEmail
                 }
                 if (isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)) {
                     $element->full_name = $element->first_name.$element->last_name;
+                }
+                if(!isset($element->profile_pic_url)){
+                    $element->profile_pic_url='/files/male.png';
+                    if(isset($element->gender)){
+                        if($element->gender==="female"){
+                            $element->profile_pic_url='/files/female.png';
+                        }
+                    }
                 }
             }
 
