@@ -150,6 +150,70 @@ class UserApiController extends ApiController
     }
 
     /**
+     * Get a list of tasks for Dashboard
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function dashboardTasks() {
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer',])
+            ->where('is_active', 1)->whereIn('status',['To do','In progress','Verify']);
+        //checking if user is a manager
+        if ($this->user()->inGroupId('5')) {
+            $tasks = $tasks->where('created_by', $this->user()->id)
+                ->orWhere('assigned_to', $this->user()->id);
+        }
+        /**
+         * Construct WHERE clauses based on URL/API inputs
+         *******************************************************************/
+        $q_fields = columns('tasks');
+        foreach (Request::all() as $name => $val) {
+            if (in_array($name, $q_fields)) {
+                if (is_array($val) && count($val)) {
+                    $temp = removeEmptyVals($val);
+                    if (count($temp)) {
+                        $tasks = $tasks->whereIn($name, $temp);
+                    }
+                } else {
+                    if (strlen($val) && strpos($val, ',') !== false) {
+                        $tasks = $tasks->whereIn($name, explode(',', $val));
+                    } else {
+                        if (strlen($val)) {
+                            if ($val == 'null') {
+                                $tasks = $tasks->whereNull($name, $val); // Before select2
+                            } else {
+                                $tasks = $tasks->where($name, $val); // Before select2
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        # Get total count with out offset and limit.
+        $total = $tasks->count();
+
+        # Sort by and roder
+        $sort_by = Request::has('sort_by') ? Request::get('sort_by') : 'created_at';
+        $sort_order = Request::has('sort_order') ? Request::get('sort_order') : 'desc';
+        $tasks = $tasks->orderBy($sort_by, $sort_order);
+
+        # Skip
+        $offset = Request::has('offset') ? Request::get('offset') : 0;
+        $tasks = $tasks->skip($offset);
+
+        # Limit
+        $max_limit = 20;
+        $limit = (Request::has('limit') && Request::get('limit') <= $max_limit) ? Request::get('limit') : $max_limit;
+        # Limit override
+        $limit = (Request::get('force_all_data') === 'true') ? $tasks->remember(cacheTime('none'))->count() : $limit;
+        $tasks = $tasks->take($limit);
+
+        /*********** Query construction ends ********************/
+
+        $data = $tasks->remember(cacheTime('none'))->get();
+        $ret = ret('success', "User Task List", compact('data', 'total', 'offset', 'limit'));
+        return Response::json($ret);
+    }
+
+    /**
      * Create a task
      * @return mixed
      */
