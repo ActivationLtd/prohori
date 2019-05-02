@@ -1,5 +1,5 @@
 <?php
-$tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->orderBy('created_at', 'asc')->get();
+$tasks = \App\Task::where('is_active', 1)->whereIn('status',['To do','In progress','Verify'])->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->orderBy('created_at', 'asc')->get();
 $status_map=[
     'To do' => 'todo',
     'In progress'=>'inprogress',
