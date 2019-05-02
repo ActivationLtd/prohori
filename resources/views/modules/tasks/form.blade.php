@@ -79,11 +79,12 @@
     {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
     @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-2','params'=>['id'=>'datetimepicker']]])
     @if(isset($task))
-    {{--days_open--}}
-    @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2','params'=>['readonly'=>true]]])
+        {{--days_open--}}
+        @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-1','params'=>['readonly'=>true]]])
+        {{--seq--}}
+        @include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-md-1','params'=>['readonly'=>true]]])
     @endif
-    {{--seq--}}
-    @include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-md-2']])
+
 </div>
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding">
