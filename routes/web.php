@@ -59,6 +59,9 @@ Route::middleware(['auth'])->group(function () use ($modules, $modulegroups) {
     Route::post('update_upload', 'UploadsController@updateExistingUpload')->name('uploads.update_last_upload');
     Route::get('download/{uuid}', 'UploadsController@download')->name('get.download');
 
+    #Route for updating sequence in subtasks
+    Route::post('subtasks/save-sequence', ['as' => 'subtasks.save-sequence', 'uses' => 'TasksController@postSaveSequence']);
+
 });
 
 Route::get('test', 'MiscController@test')->name('misc.test');
