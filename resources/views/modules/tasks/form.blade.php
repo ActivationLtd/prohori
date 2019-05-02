@@ -151,7 +151,7 @@
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
 
-        @if(isset($task) && !in_array($task->status,['Closed','Done']) )
+        @if(isset($task))
             <b>Sub-tasks</b>
             @include('modules.tasks.subtasks')
         @endif

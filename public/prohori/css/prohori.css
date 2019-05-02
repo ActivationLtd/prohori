@@ -94,3 +94,18 @@ body, html,
 .login-logo, .register-logo {
     margin-bottom: 0;
 }
+.status-todo{
+    background-color: #ffcccc;
+}
+.status-inprogress{
+    background-color: #ffff99;
+}
+.status-verify{
+    background-color: #E6E6E6;
+}
+.status-done{
+    background-color: #ccff99;
+}
+.status-closed{
+    background-color: #ccff99;
+}

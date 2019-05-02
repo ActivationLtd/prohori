@@ -2,6 +2,14 @@
 use App\Task;
 
 $tasks = Task::where('is_active', 1)->orderBy('created_at', 'asc')->get();
+
+$status_map=[
+    'To do' => 'todo',
+    'In progress'=>'inprogress',
+    'Verify'=>'verify',
+    'Done'=>'done',
+    'Closed'=>'closed'
+]
 ?>
 
 <div class="col-md-12"><h4>Current tasks</h4></div>
@@ -31,10 +39,12 @@ $tasks = Task::where('is_active', 1)->orderBy('created_at', 'asc')->get();
                 <b><a href="{{route('tasks.edit',$task->id)}}">{{ $task->tasktype->name }}</a></b>
             </td>
             <td>
+                {{ $task->assignee->full_name }}
+                <br>
                 {{ $task->assignee->email }}
             </td>
             <td>
-                <code>{{ $task->status }}</code>
+                <code class="status-{{$status_map[$task->status]}}"> {{ $task->status }}</code>
             </td>
             <td>
                 {{ $task->created_at }}
