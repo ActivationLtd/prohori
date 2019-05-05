@@ -20,6 +20,8 @@ Route::post('register-partner', 'Auth\RegisterPartnerController@register')->name
 
 Route::get('/', 'HomeController@index')->name('home')->middleware(['verified']);
 
+Route::get('lang/{lang}', ['as' => 'lang.switch', 'uses' => 'LanguageController@switchLang']);
+
 /*
  *
  * Isotone Resources / RESTful routes.

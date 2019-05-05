@@ -16,6 +16,7 @@
 
 @section('content')
     @if(Auth::check())
+        {{Lang::get('messages.welcome')}}
         <div class="row">
             <div id="area-1" class="col-md-6 pull-left ">
                 {{-- Widget area one --}}
