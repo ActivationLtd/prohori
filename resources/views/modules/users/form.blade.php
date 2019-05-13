@@ -13,6 +13,7 @@
  * @var $element_editable      boolean
  * @var $uuid                  string '1709c091-8114-4ba4-8fd8-91f0ba0b63e8'
  */
+
 ?>
 
 @section('head')
@@ -54,6 +55,24 @@
 @include('form.select-model',['var'=>['name'=>'department_id','label'=>'Department','table'=>'departments','container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'employee_id','label'=>'Employee Id','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
+<?php
+$var = [
+    'name' => 'watchers',
+    'label' => 'Watchers',
+    'query' => new \App\User,
+    'container_class' => 'col-md-6',
+];
+?>
+@include('form.select-model-multiple', ['var'=>$var])
+<?php
+$var = [
+    'name' => 'operating_area_ids',
+    'label' => 'Operating Areas',
+    'query' => new \App\Operatingarea(),
+    'container_class' => 'col-md-6',
+];
+?>
+@include('form.select-model-multiple', ['var'=>$var])
 
 <div class="clearfix"></div>
 @if(user()->isSuperUser())

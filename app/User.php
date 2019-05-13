@@ -267,6 +267,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active',
         'designation_id',
         'department_id',
+        'watchers',
+        'operating_area_ids',
         'created_by',
         'updated_by',
         'created_at',
@@ -281,13 +283,15 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'group_ids' => 'array',
+        'watchers' => 'array',
+        'operating_area_ids' => 'array',
     ];
 
     /**
      * List of appended attribute. This attributes will be loaded in each Model
      * @var array
      */
-    protected $appends = ['avatar'];
+    protected $appends = ['avatar','watcher_objs','operating_area_ids_objects'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -914,4 +918,51 @@ class User extends Authenticatable implements MustVerifyEmail
         // }
 
     }
+    /**
+     * Set partnercategory ids to array
+     * @param  array $value
+     * @return void
+     */
+    public function setWatchersAttribute($value) {
+        // Original default value
+        $this->attributes['watchers'] = $value;
+
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['watchers'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
+    }
+    /**
+     * @return mixed
+     */
+    public function getWatcherObjsAttribute() {
+        if (isset($this->watchers))
+            return User::whereIn('id', $this->watchers)->remember(cacheTime('long'))->get();
+        return null;
+    }
+    public function setOperatingAreaIdsAttribute($value) {
+        // Original default value
+        $this->attributes['operating_area_ids'] = $value;
+
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['operating_area_ids'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
+    }
+    public function getOperatingAreaIdsObjectsAttribute() {
+        if (isset($this->operating_area_ids))
+            return Operatingarea::whereIn('id', $this->operating_area_ids)->remember(cacheTime('long'))->get();
+        return null;
+    }
+
 }

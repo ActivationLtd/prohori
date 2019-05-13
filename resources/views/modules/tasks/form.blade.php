@@ -43,58 +43,53 @@
 {{-- ******************* Form starts ********************* --}}
 
 <div class="col-md-6 no-padding-l">
-    {{--parent_id--}}
-    @include('form.select-ajax',['var'=>['label' => 'Parent task', 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-12',]])
-    <div class="clearfix"></div>
-
-    {{--name--}}
-    @include('form.input-text',['var'=>['name'=>'name','label'=>'Task title', 'container_class'=>'col-md-12']])
-    <div class="clearfix"></div>
-
-    {{--tasktype_id--}}
-    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>'Task type','query'=> new \App\Tasktype(),'container_class'=>'col-md-6']])
-
-    {{--priority--}}
-    @include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>\App\Task::$priorities,'container_class'=>'col-md-4']])
-    {{--seq--}}
-    @include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-md-2']])
-
-    <div class="clearfix"></div>
-    {{--client_id--}}
-    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>'Client','query'=> new \App\Client,'container_class'=>'col-md-6']])
-    {{-- clientlocation_id --}}
-    {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
-    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>'Location','query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
+    {{--assigned_to--}}
+    @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','query'=> new \App\User,'container_class'=>'col-md-3']])
     {{--watchers--}}
     <?php
     $var = [
         'name' => 'watchers',
         'label' => 'Watchers',
         'query' => new \App\User,
-        'container_class' => 'col-md-12',
+        'container_class' => 'col-md-6',
     ];
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
-    <div class="clearfix"></div>
-{{--    @include('form.is_active')--}}
+    {{--status--}}
+    @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-3']])
 </div>
-
+<div class="clearfix"></div>
 <div class="col-md-6 no-padding-l">
-    {{--status--}}
-    @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-6']])
-    {{--assigned_to--}}
-    @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','query'=> new \App\User,'container_class'=>'col-md-6']])
+    {{--client_id--}}
+    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>'Client','query'=> new \App\Client,'container_class'=>'col-md-6']])
+    {{-- clientlocation_id --}}
+    {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
+    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>'Location','query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
 
-    {{--assignment_id--}}
-    {{--status--}}
-    {{--previous_status--}}
-    {{--due_date--}}
-    {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
-    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-6','params'=>['id'=>'datetimepicker']]])
-    {{--days_open--}}
-    @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-2']])
 </div>
+<div class="clearfix"></div>
+<div class="col-md-12 no-padding-l">
+    {{--parent_id--}}
+    @include('form.select-ajax',['var'=>['label' => 'Parent task', 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-6',]])
+    <div class="clearfix"></div>
+    {{--tasktype_id--}}
+    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>'Task type','query'=> new \App\Tasktype(),'container_class'=>'col-md-3']])
+    {{--priority--}}
+    @include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3']])
+    {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-2','params'=>['id'=>'datetimepicker']]])
+    @if(isset($task))
+        {{--days_open--}}
+        @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-1','params'=>['readonly'=>true]]])
+        {{--seq--}}
+        @include('form.input-text',['var'=>['name'=>'seq','label'=>'Sequence', 'container_class'=>'col-md-1','params'=>['readonly'=>true]]])
+    @endif
+
+</div>
+<div class="clearfix"></div>
 <div class="col-md-6 no-padding">
+    {{--name--}}
+    @include('form.input-text',['var'=>['name'=>'name','label'=>'Task title', 'container_class'=>'col-md-12']])
     {{--description--}}
     @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
 </div>
@@ -157,7 +152,7 @@
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
 
-        @if(isset($task) && !in_array($task->status,['Closed','Done']) )
+        @if(isset($task))
             <b>Sub-tasks</b>
             @include('modules.tasks.subtasks')
         @endif
@@ -168,9 +163,11 @@
         @endif
     </div>
     <div class="col-md-6 no-padding">
-        <h4>Messages</h4>
-        {{--<small>Upload one or more files</small>--}}
-        @include('modules.base.include.messages')
+        @if(isset($task->id))
+            <h4>Messages</h4>
+            {{--<small>Upload one or more files</small>--}}
+            @include('modules.base.include.messages')
+        @endif
     </div>
     <div class="clearfix"></div>
 @endsection

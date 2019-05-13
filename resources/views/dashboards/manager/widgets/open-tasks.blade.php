@@ -1,5 +1,12 @@
 <?php
-$tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->orderBy('created_at', 'desc')->get();
+$tasks = \App\Task::where('is_active', 1)->whereIn('status',['To do','In progress','Verify'])->where('assigned_to',user()->id)->orWhere('created_by',user()->id)->orderBy('created_at', 'asc')->get();
+$status_map=[
+    'To do' => 'todo',
+    'In progress'=>'inprogress',
+    'Verify'=>'verify',
+    'Done'=>'done',
+    'Closed'=>'closed'
+]
 ?>
 
 <b>Currently assigned</b>
@@ -20,13 +27,13 @@ $tasks = \App\Task::where('is_active', 1)->where('assigned_to',user()->id)->orWh
                 <b><a href="{{route('tasks.edit',$task->id)}}">{{ $task->tasktype->name }}</a></b>
             </td>
             <td>
-                {{ $task->assignee->email }}
+                {{$task->assignee->email }}
             </td>
             <td>
-                <code>{{ $task->status }}</code>
+                <code class="status-{{$status_map[$task->status]}}"> {{ $task->status }}</code>
             </td>
             <td>
-                {{ $task->created_at->diffForHumans() }}
+                {{ $task->created_at }}
             </td>
         </tr>
     @endforeach

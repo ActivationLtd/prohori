@@ -76,7 +76,7 @@ class Client extends Basemodule
      * @var array
      */
     protected $fillable = [
-        'uuid', 'name', 'code', 'description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile', 'is_active', 'created_by',
+        'uuid', 'name', 'code', 'description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile', 'operating_area_ids','is_active', 'created_by',
         'updated_by', 'deleted_by'
     ];
 
@@ -86,6 +86,15 @@ class Client extends Basemodule
      */
     // protected $guarded = [];
 
+    protected $casts = [
+        'operating_area_ids' => 'array'
+    ];
+
+    /**
+     * List of appended attribute. This attributes will be loaded in each Model
+     * @var array
+     */
+    protected $appends = ['operating_area_ids_objects'];
     /**
      * Date fields
      * @var array
@@ -401,5 +410,24 @@ class Client extends Basemodule
     ############################################################################################
 
     // Write accessors and mutators here.
+    public function setOperatingAreaIdsAttribute($value) {
+        // Original default value
+        $this->attributes['operating_area_ids'] = $value;
+
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['operating_area_ids'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
+    }
+    public function getOperatingAreaIdsObjectsAttribute() {
+        if (isset($this->operating_area_ids))
+            return Operatingarea::whereIn('id', $this->operating_area_ids)->remember(cacheTime('long'))->get();
+        return null;
+    }
 
 }
