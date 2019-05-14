@@ -40,6 +40,7 @@ $subtasks = $task->subtasks()->orderBy('seq', 'ASC')->get();
        href="{{route('tasks.create')}}?parent_id={{$task->id}}&redirect_success={{URL::full()}}">Create</a>
 @endif
 @section('js')
+    @parent
     <script>
         enableAjaxQuestionSort();
 

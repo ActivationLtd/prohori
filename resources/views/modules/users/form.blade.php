@@ -208,6 +208,17 @@ $var = [
 @section('js')
     @parent
     <script type="text/javascript">
+        /*******************************************************************/
+        // List of functions
+        /*******************************************************************/
+        // Assigns validation rules during saving (both creating and updating)
+        function addValidationRulesForSaving() {
+            //$("input[name=name]").addClass('validate[required]');
+           // $('input[name=due_date]').addClass('validate[required]');
+
+        }
+    </script>
+    <script type="text/javascript">
         @if(!isset($user))
         /*******************************************************************/
         // Creating :
@@ -220,6 +231,7 @@ $var = [
         // your functions go here
         // function1();
         // function2();
+
         @elseif(isset($user))
         /*******************************************************************/
         // Updating :

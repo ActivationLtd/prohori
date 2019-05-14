@@ -78,24 +78,21 @@ if ((isset($element) && isset($$element))) {
 {{-- js --}}
 @section('js')
     @parent
-    <script>
-        getLocation();
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);;
-            } else {
-                latitude ="Geolocation is not supported by this browser.";
-                longitude ="Geolocation is not supported by this browser.";
-            }
-            function showPosition(position) {
-                $('input[name=latitude]').val(position.coords.latitude);
-                $('input[name=longitude]').val(position.coords.longitude);
-            }
-        }
-
-    </script>
     @if(hasModulePermission($mod->name,'create') || hasModulePermission($mod->name,'edit'))
-        <script>
+        <script type="text/javascript">
+            getLocation();
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);;
+                } else {
+                    latitude ="Geolocation is not supported by this browser.";
+                    longitude ="Geolocation is not supported by this browser.";
+                }
+                function showPosition(position) {
+                    $('input[name=latitude]').val(position.coords.latitude);
+                    $('input[name=longitude]').val(position.coords.longitude);
+                }
+            }
             initUploader("{{$var['upload_container_id']}}", "{{ route('uploads.store')}}"); // init initially
         </script>
     @endif

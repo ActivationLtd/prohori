@@ -77,7 +77,7 @@
     {{--priority--}}
     @include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3']])
     {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
-    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-2','params'=>['id'=>'datetimepicker']]])
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-2','params'=>['id'=>'due_date']]])
     @if(isset($task))
         {{--days_open--}}
         @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-1','params'=>['readonly'=>true]]])
@@ -177,13 +177,6 @@
 @section('js')
     @parent
     <script type="text/javascript">
-        $(function () {
-            $('#datetimepicker').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm'
-            });
-        });
-    </script>
-    <script type="text/javascript">
         /*******************************************************************/
         // List of functions
         /*******************************************************************/
@@ -193,6 +186,31 @@
             $('input[name=due_date]').addClass('validate[required]');
 
         }
+
+        function addDateTimePicker() {
+            $('#due_date').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm'
+            });
+        }
+
+        function checkdistance(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+            var dLon = deg2rad(lon2 - lon1);
+            var a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+            ;
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var d = R * c *1000; // Distance in m
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180)
+        }
+
     </script>
     @if(!isset($$element))
         <script type="text/javascript">
@@ -245,5 +263,11 @@
         /*******************************************************************/
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
+        addDateTimePicker();//enabling date time picker
+        navigator.geolocation.getCurrentPosition(function(location){
+            console.log(checkdistance(location.coords.latitude,location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}}));
+        });
+
+
     </script>
 @endsection
