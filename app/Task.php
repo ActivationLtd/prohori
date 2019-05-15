@@ -330,9 +330,9 @@ class Task extends Basemodule
                 $element->tasktype_name = $element->tasktype->name;
             }
             //checking assignee user location and client user location
-            if(isset($element->assignee->operating_area_ids,$element->client->operating_area_ids)){
-                if(count(array_intersect($element->assignee->operating_area_ids,$element->client->operating_area_ids))<1){
-                    $valid=setError("Assignee and Client Operating Area does not match");
+            if (isset($element->assignee->operating_area_ids, $element->client->operating_area_ids)) {
+                if (count(array_intersect($element->assignee->operating_area_ids, $element->client->operating_area_ids)) < 1) {
+                    $valid = setError("Assignee and Client Operating Area does not match");
                 }
             }
             //storing previous status
@@ -382,6 +382,10 @@ class Task extends Basemodule
                     );
             }
             $element->days_open = 0;
+            $element->is_closed = 0;
+            $element->is_resolved = 0;
+            $element->is_verified = 0;
+            $element->is_flagged = 0;
             $element->status = 'To do'; // Set initial status to draft.
 
         });
@@ -661,6 +665,10 @@ class Task extends Basemodule
 
     public function subtasks() {
         return $this->hasMany(\App\Task::class, 'parent_id');
+    }
+
+    public function parenttask() {
+        return $this->belongsTo(\App\Task::class, 'parent_id');
     }
 
     public function assignments() {
