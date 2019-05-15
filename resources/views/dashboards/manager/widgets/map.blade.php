@@ -7,7 +7,7 @@
 ?>
 
 
-<h4>See task in map</h4>
+<h4>{{Lang::get('messages.See-task-in-map')}}</h4>
 <div id="mapid" style="width: 100%; height: 400px;"></div>
 
 
