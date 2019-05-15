@@ -51,15 +51,6 @@
 @include('form.input-text',['var'=>['name'=>'zip_code','label'=>'Zip Code', 'container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'phone','label'=>'Phone', 'container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'mobile','label'=>'Mobile', 'container_class'=>'col-sm-3']])
-<?php
-$var = [
-    'name' => 'operating_area_ids',
-    'label' => 'Operating Areas',
-    'query' => new \App\Operatingarea(),
-    'container_class' => 'col-md-6',
-];
-?>
-@include('form.select-model-multiple', ['var'=>$var])
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 
