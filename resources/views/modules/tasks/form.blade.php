@@ -242,6 +242,9 @@
             // your functions go here
             // function1();
             // function2();
+            navigator.geolocation.getCurrentPosition(function(location){
+                console.log(checkdistance(location.coords.latitude,location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}}));
+            });
         </script>
     @endif
     <script type="text/javascript">
@@ -264,10 +267,30 @@
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         addDateTimePicker();//enabling date time picker
-        navigator.geolocation.getCurrentPosition(function(location){
-            console.log(checkdistance(location.coords.latitude,location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}}));
+
+
+
+    </script>
+    <script type="text/javascript">
+        $('select[name=client_id]').change(function(){ // change function of listbox
+            var id = $('select[name=client_id]').select2('val');
+            $("select[name=clientlocation_id]").select2("val", "");// Remove the existing options
+            $("select[name=clientlocation_id]").empty();// Remove the existing options
+            console.log(id);
+            $.ajax({
+                type: "get",
+                datatype:'json',
+                url: '{{route('custom.client-location')}}',
+                data:{id:id} ,
+                success:function(jsonArray) {
+                    console.log(jsonArray);
+                    var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
+                    $.each(jsonObject, function (i, obj) {
+                        $("select[name=clientlocation_id]").append("<option value=" + obj.id +">"+obj.name+"</option>");
+                    });
+                },
+            });
+
         });
-
-
     </script>
 @endsection
