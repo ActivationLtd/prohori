@@ -329,6 +329,12 @@ class Task extends Basemodule
             if ($element->tasktype()->exists()) {
                 $element->tasktype_name = $element->tasktype->name;
             }
+            //checking assignee user location and client user location
+            if(isset($element->assignee->operating_area_ids,$element->client->operating_area_ids)){
+                if(count(array_intersect($element->assignee->operating_area_ids,$element->client->operating_area_ids))<1){
+                    $valid=setError("Assignee and Client Operating Area does not match");
+                }
+            }
             //storing previous status
             if ($element->getOriginal('status') != $element->status) {
                 $element->previous_status = $element->getOriginal('status');
