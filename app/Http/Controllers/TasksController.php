@@ -5,6 +5,7 @@ use DB;
 use Request;
 use App\Task;
 use Response;
+use Lang;
 class TasksController extends ModulebaseController
 {
 
@@ -22,18 +23,18 @@ class TasksController extends ModulebaseController
     {
         return [
             //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
-            ["{$this->module_name}.id", "id", "ID"],
-            ["{$this->module_name}.name", "name", "Name"],
-            ["{$this->module_name}.tasktype_name", "tasktype_name", "Type"],
-            ["{$this->module_name}.client_name", "client_name", "Client"],
-            ["{$this->module_name}.clientlocation_name", "clientlocation_name", "client location"],
-            ["{$this->module_name}.due_date", "due_date", "Due Date"],
-            ["{$this->module_name}.priority", "priority", "Priority"],
-            ["{$this->module_name}.status", "status", "Status"],
-            ["assigned.name", "assigned_name", "Assigned"],
-            ["updater.name", "user_name", "Updater"],
-            ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
-            ["{$this->module_name}.is_active", "is_active", "Active"]
+            ["{$this->module_name}.id", "id", Lang::get('messages.Id')],
+            ["{$this->module_name}.name", "name", Lang::get('messages.Name')],
+            ["{$this->module_name}.tasktype_name", "tasktype_name", Lang::get('messages.Type')],
+            ["{$this->module_name}.client_name", "client_name",Lang::get('messages.Client')],
+            ["{$this->module_name}.clientlocation_name", "clientlocation_name", Lang::get('messages.Client-location')],
+            ["{$this->module_name}.due_date", "due_date", Lang::get('messages.Due-date')],
+            ["{$this->module_name}.priority", "priority", Lang::get('messages.Priority')],
+            ["{$this->module_name}.status", "status", Lang::get('messages.Status')],
+            ["assigned.name", "assigned_name", Lang::get('messages.Assigned')],
+            ["updater.name", "user_name",Lang::get('messages.Updater')],
+            ["{$this->module_name}.updated_at", "updated_at", Lang::get('messages.Updated-at')],
+            ["{$this->module_name}.is_active", "is_active", Lang::get('messages.Active')]
         ];
     }
 

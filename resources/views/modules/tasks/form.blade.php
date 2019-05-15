@@ -44,40 +44,40 @@
 
 <div class="col-md-6 no-padding-l">
     {{--assigned_to--}}
-    @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>'Assigned to','query'=> new \App\User,'container_class'=>'col-md-3']])
+    @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>Lang::get('messages.Assigned-to'),'query'=> new \App\User,'container_class'=>'']])
     {{--watchers--}}
     <?php
     $var = [
         'name' => 'watchers',
-        'label' => 'Watchers',
+        'label' => Lang::get('messages.Watchers'),
         'query' => new \App\User,
         'container_class' => 'col-md-6',
     ];
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
     {{--status--}}
-    @include('form.select-array',['var'=>['name'=>'status','label'=>'Status', 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-3']])
+    @include('form.select-array',['var'=>['name'=>'status','label'=>Lang::get('messages.Status'), 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-4']])
 </div>
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding-l">
     {{--client_id--}}
-    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>'Client','query'=> new \App\Client,'container_class'=>'col-md-6']])
+    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-6']])
     {{-- clientlocation_id --}}
     {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
-    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>'Location','query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
+    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
 
 </div>
 <div class="clearfix"></div>
 <div class="col-md-12 no-padding-l">
     {{--parent_id--}}
-    @include('form.select-ajax',['var'=>['label' => 'Parent task', 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-6',]])
+    @include('form.select-ajax',['var'=>['label' => Lang::get('messages.Parent-task'), 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-6',]])
     <div class="clearfix"></div>
     {{--tasktype_id--}}
-    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>'Task type','query'=> new \App\Tasktype(),'container_class'=>'col-md-3']])
+    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>Lang::get('messages.Task-type'),'query'=> new \App\Tasktype(),'container_class'=>'col-md-3']])
     {{--priority--}}
-    @include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3']])
+    @include('form.select-array',['var'=>['name'=>'priority','label'=>Lang::get('messages.Priority'), 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3']])
     {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
-    @include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-2','params'=>['id'=>'datetimepicker']]])
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>Lang::get('messages.Due-date'), 'container_class'=>'col-sm-2','params'=>['id'=>'datetimepicker']]])
     @if(isset($task))
         {{--days_open--}}
         @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-1','params'=>['readonly'=>true]]])
@@ -89,9 +89,9 @@
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding">
     {{--name--}}
-    @include('form.input-text',['var'=>['name'=>'name','label'=>'Task title', 'container_class'=>'col-md-12']])
+    @include('form.input-text',['var'=>['name'=>'name','label'=>Lang::get('messages.Task-title'), 'container_class'=>'col-md-12']])
     {{--description--}}
-    @include('form.textarea',['var'=>['name'=>'description','label'=>'Task details','container_class'=>'col-md-12']])
+    @include('form.textarea',['var'=>['name'=>'description','label'=>Lang::get('messages.Task-details'),'container_class'=>'col-md-12']])
 </div>
 <div class="clearfix"></div>
 @if(isset($task) && in_array($task->status,['Closed','Done']))
@@ -142,12 +142,12 @@
 @section('content-bottom')
     @parent
     <div class="col-md-6 no-padding-l">
-        <b>Task files</b>
+        <b>{{Lang::get('messages.Task-files')}}</b>
         <small>Share task related files with assignee.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Task file','limit'=>10]])
 
-        <b>Evidences</b>
+        <b>{{Lang::get('messages.Evidences')}}</b>
         <small>For assignee to upload image as proof of the task completion.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
@@ -164,7 +164,7 @@
     </div>
     <div class="col-md-6 no-padding">
         @if(isset($task->id))
-            <h4>Messages</h4>
+            <h4>{{Lang::get('messages.Message')}}</h4>
             {{--<small>Upload one or more files</small>--}}
             @include('modules.base.include.messages')
         @endif
