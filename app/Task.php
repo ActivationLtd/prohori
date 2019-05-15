@@ -335,6 +335,12 @@ class Task extends Basemodule
                     $valid = setError("Assignee and Client Operating Area does not match");
                 }
             }
+            //checking if parent task is a subtask
+            if(isset($element->parent_id)){
+                if($element->parenttask->parent_id != null){
+                    $valid=setError("The selected parent task is already a sub task, so it can not be a parent task");
+                }
+            }
             //storing previous status
             if ($element->getOriginal('status') != $element->status) {
                 $element->previous_status = $element->getOriginal('status');
