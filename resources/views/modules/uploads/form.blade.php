@@ -63,6 +63,8 @@
         // your functions go here
         // function1();
         // function2();
+        //get a go location when creating a new entry
+        getLocation();
         @elseif(isset($$element))
         /*******************************************************************/
         // Updating :
@@ -77,6 +79,8 @@
         // your functions go here
         // function1();
         // function2();
+        $('input[name=latitude]').attr('readonly', true);
+        $('input[name=longitude]').attr('readonly', true);
         @endif
 
 
@@ -98,10 +102,8 @@
         /*******************************************************************/
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
-        //get a go location when creating a new entry
-        @if(!isset($upload))
-        getLocation()
-        @endif
+
+
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition);
@@ -111,8 +113,8 @@
             }
         }
         function showPosition(position) {
-            $('input[name=latitude]').val(position.coords.latitude).attr('readonly', true);;
-            $('input[name=longitude]').val(position.coords.longitude).attr('readonly', true);;
+            $('input[name=latitude]').val(position.coords.latitude).attr('readonly', true);
+            $('input[name=longitude]').val(position.coords.longitude).attr('readonly', true);
         }
 
         /*******************************************************************/

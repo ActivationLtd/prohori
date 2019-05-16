@@ -14,6 +14,7 @@
 @section('title')
     @parent
     {{str_singular($mod->title)}}
+    {{--{{Lang::get('messages.'.$mod->title)}}--}}
     @if(hasModulePermission($module_name,"create"))
         <a class="btn btn-xs" href="{{route("$module_name.create")}}" data-toggle="tooltip"
            title="Create a new {{lcfirst(str_singular($mod->title))}}"><i class="fa fa-plus"></i></a>

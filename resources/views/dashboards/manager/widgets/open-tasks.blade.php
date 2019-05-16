@@ -9,7 +9,7 @@ $status_map=[
 ]
 ?>
 
-<b>Currently assigned</b>
+<b>{{Lang::get('messages.Currently-assigned')}}</b>
 <table class="table shadow datatable min">
     <tbody>
     <!--  loop through array for creating rows in a table -->

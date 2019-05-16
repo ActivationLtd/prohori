@@ -33,7 +33,6 @@ if ((isset($element) && isset($$element))) {
 }
 
 ?>
-
 {{-- upload div + form --}}
 <div class="{{$var['container_class']}}">
     @if(hasModulePermission($mod->name,'create') || hasModulePermission($mod->name,'edit'))
@@ -47,6 +46,8 @@ if ((isset($element) && isset($$element))) {
                 <input type="hidden" name="module_id" value="{{$var['module_id']}}"/>
                 <input type="hidden" name="element_id" value="{{$var['element_id']}}"/>
                 <input type="hidden" name="element_uuid" value="{{$var['element_uuid']}}"/>
+                <input type="hidden" name="latitude"/>
+                <input type="hidden" name="longitude"/>
                 @if($var['type'])
                     <input type="hidden" name="type" value="{{$var['type']}}"/>
                 @endif
@@ -78,10 +79,24 @@ if ((isset($element) && isset($$element))) {
 @section('js')
     @parent
     @if(hasModulePermission($mod->name,'create') || hasModulePermission($mod->name,'edit'))
-        <script>
+        <script type="text/javascript">
+            getLocation();
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition);;
+                } else {
+                    latitude ="Geolocation is not supported by this browser.";
+                    longitude ="Geolocation is not supported by this browser.";
+                }
+                function showPosition(position) {
+                    $('input[name=latitude]').val(position.coords.latitude);
+                    $('input[name=longitude]').val(position.coords.longitude);
+                }
+            }
             initUploader("{{$var['upload_container_id']}}", "{{ route('uploads.store')}}"); // init initially
         </script>
     @endif
+
 @endsection
 
 <?php

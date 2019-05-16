@@ -329,6 +329,18 @@ class Task extends Basemodule
             if ($element->tasktype()->exists()) {
                 $element->tasktype_name = $element->tasktype->name;
             }
+            //checking assignee operating area and client location operating area
+            if (isset($element->assignee->operating_area_ids, $element->clientlocation->operatingarea_id)) {
+                if (!in_array($element->clientlocation->operatingarea_id,$element->assignee->operating_area_ids)) {
+                    $valid = setError("Assignee and Client Operating Area does not match");
+                }
+            }
+            //checking if parent task is a subtask
+            if(isset($element->parent_id)){
+                if($element->parenttask->parent_id != null){
+                    $valid=setError("The selected parent task is already a sub task, so it can not be a parent task");
+                }
+            }
             //storing previous status
             if ($element->getOriginal('status') != $element->status) {
                 $element->previous_status = $element->getOriginal('status');
@@ -344,7 +356,9 @@ class Task extends Basemodule
                     }
                 }
             }
-
+            if(isset($element->watchers,$element->assignee->watchers)){
+                $element->watchers=array_merge($element->watchers,$element->assignee->watchers);
+            }
             $element->is_active = 1;
 
             return $valid;
@@ -355,7 +369,21 @@ class Task extends Basemodule
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-        // static::creating(function (Task $element) { });
+         static::creating(function (Task $element) {
+
+             $emails = [];
+             if (isset($element->watchers)) {
+                 foreach ($element->watchers as $user_id) {
+                     $emails[] = User::find($user_id)->email;
+                 }
+             }
+             $element->days_open = 0;
+             $element->is_closed = 0;
+             $element->is_resolved = 0;
+             $element->is_verified = 0;
+             $element->is_flagged = 0;
+             $element->status = 'To do'; // Set initial status to draft.
+         });
 
         /************************************************************/
         // Following code block executes - after an element is created
@@ -374,9 +402,11 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
+
             }
-            $element->days_open = 0;
-            $element->status = 'To do'; // Set initial status to draft.
+
+
+
 
         });
 
@@ -655,6 +685,10 @@ class Task extends Basemodule
 
     public function subtasks() {
         return $this->hasMany(\App\Task::class, 'parent_id');
+    }
+
+    public function parenttask() {
+        return $this->belongsTo(\App\Task::class, 'parent_id');
     }
 
     public function assignments() {

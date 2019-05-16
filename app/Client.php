@@ -76,7 +76,7 @@ class Client extends Basemodule
      * @var array
      */
     protected $fillable = [
-        'uuid', 'name', 'code', 'description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile', 'is_active', 'created_by',
+        'uuid', 'name', 'code', 'description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile','is_active', 'created_by',
         'updated_by', 'deleted_by'
     ];
 

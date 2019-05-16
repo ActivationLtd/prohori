@@ -49,7 +49,7 @@ $icon_map=[
                     {{--@include('template.include.top-menu.task-menu')--}}
                     <li class="dropdown" style="list-style: none">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                             Current Language: <span class="{{$icon_map[App::getLocale()]}}"></span> {{ Config::get('languages')[App::getLocale()] }}
+                            <span class="{{$icon_map[App::getLocale()]}}"></span> {{ Config::get('languages')[App::getLocale()] }}
                         </a>
                         <ul class="dropdown-menu">
                             @foreach (Config::get('languages') as $lang => $language)

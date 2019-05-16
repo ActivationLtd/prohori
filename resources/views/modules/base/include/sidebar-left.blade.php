@@ -1,7 +1,9 @@
 <ul class="sidebar-menu">
     @if(user())
-        <li><a href="{{route("tasks.create")}}" class="bg-green"><i class="fa fa-plus"></i><span>Create New Task</span></a></li>
-        <li><a href="{{route("home")}}"><i class="fa fa-desktop"></i><span>Dashboard</span></a></li>
+        <li><a href="{{route("tasks.create")}}" class="bg-green"><i class="fa fa-plus"></i><span>{{Lang::get('messages.Create-New-Task')}}</span></a>
+        </li>
+        <li><a href="{{route("home")}}"><i
+                        class="fa fa-desktop"></i><span>{{Lang::get('messages.Dashboard')}}</span></a></li>
 
 
         @if(user()->isSuperUser())
@@ -18,7 +20,7 @@
                 $current_module_name = $mod->name;
                 $breadcrumbs = breadcrumb($mod);
             }
-            renderMenuTree(\App\Modulegroup::tree(), $current_module_name, $breadcrumbs);
+            renderMenuTree(\App\Modulegroup::tree(),$current_module_name,$breadcrumbs);
             ?>
             {{--<li class="header">LABELS</li>--}}
             {{--<li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>--}}
@@ -41,7 +43,8 @@
                     /** @var \App\Module $module */
                     $module = \App\Module::where('name', $name)->remember(cacheTime('long'))->first()?>
                     <li><a href="{{route("{$module->name}.index")}}"><i
-                                    class="{{$module->icon_css}}"></i>{{$module->title}}</a></li>
+                                    class="{{$module->icon_css}}"></i>{{Lang::get('messages.'.$module->title)}}</a>
+                    </li>
                 @endforeach
             @endif
 
