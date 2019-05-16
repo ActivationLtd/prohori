@@ -76,7 +76,7 @@ class TasksController extends ModulebaseController
             $query = injectTenantIdInModelQuery($this->module_name, $query);
         }
         if (in_array('5', user()->groupIds())) {
-            $query = $query->where('tasks.created_by', user()->id)->where('tasks.assigned_to', user()->id);
+            $query = $query->where('tasks.created_by', user()->id)->orWhere('tasks.assigned_to', user()->id);
 
         }
         // Construct query based on filter param
