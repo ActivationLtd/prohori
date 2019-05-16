@@ -356,7 +356,9 @@ class Task extends Basemodule
                     }
                 }
             }
-
+            if(isset($element->watchers,$element->assignee->watchers)){
+                $element->watchers=array_merge($element->watchers,$element->assignee->watchers);
+            }
             $element->is_active = 1;
 
             return $valid;
@@ -367,7 +369,21 @@ class Task extends Basemodule
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-        // static::creating(function (Task $element) { });
+         static::creating(function (Task $element) {
+
+             $emails = [];
+             if (isset($element->watchers)) {
+                 foreach ($element->watchers as $user_id) {
+                     $emails[] = User::find($user_id)->email;
+                 }
+             }
+             $element->days_open = 0;
+             $element->is_closed = 0;
+             $element->is_resolved = 0;
+             $element->is_verified = 0;
+             $element->is_flagged = 0;
+             $element->status = 'To do'; // Set initial status to draft.
+         });
 
         /************************************************************/
         // Following code block executes - after an element is created
@@ -386,13 +402,11 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
+
             }
-            $element->days_open = 0;
-            $element->is_closed = 0;
-            $element->is_resolved = 0;
-            $element->is_verified = 0;
-            $element->is_flagged = 0;
-            $element->status = 'To do'; // Set initial status to draft.
+
+
+
 
         });
 

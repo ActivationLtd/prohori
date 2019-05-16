@@ -65,6 +65,7 @@ Route::middleware(['auth'])->group(function () use ($modules, $modulegroups) {
     Route::post('subtasks/save-sequence', ['as' => 'subtasks.save-sequence', 'uses' => 'TasksController@postSaveSequence']);
     #route for custom list
     Route::get('client-location-ajax',['as'=>'custom.client-location','uses'=>'ClientlocationsController@customClientLocation']);
+    Route::get('watcher-list-ajax',['as'=>'custom.watcher-list','uses'=>'UsersController@customWatcher']);
 });
 
 Route::get('test', 'MiscController@test')->name('misc.test');

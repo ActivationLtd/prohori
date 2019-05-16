@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Upload;
+use App\User;
 use Hash;
 use Request;
 use Session;
@@ -296,5 +297,11 @@ class UsersController extends ModulebaseController
         # --------------------------------------------------------
         return $this->jsonOrRedirect($ret, $validator, $element);
     }
-
+    public function customWatcher(){
+        if(Request::has('id')){
+            $id=Request::get('id');
+            $user=User::find($id);
+            return $user;
+        }
+    }
 }

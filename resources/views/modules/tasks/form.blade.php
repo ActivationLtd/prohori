@@ -192,7 +192,9 @@
                 format: 'YYYY-MM-DD HH:mm'
             });
         }
-
+        /**
+         * function to check distance between two points
+         * */
         function checkdistance(lat1, lon1, lat2, lon2) {
             var R = 6371; // Radius of the earth in km
             var dLat = deg2rad(lat2 - lat1);  // deg2rad below
@@ -209,6 +211,58 @@
 
         function deg2rad(deg) {
             return deg * (Math.PI / 180)
+        }
+        $("select[name=clientlocation_id]").attr('disabled',true);
+
+        /**
+         * dynamic selection of client location based on client selection
+         */
+        function dynamicClientLocation(){
+            $('select[name=client_id]').change(function(){ // change function of listbox
+                var id = $('select[name=client_id]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled',false);// Remove the existing options
+
+                console.log(id);
+                $.ajax({
+                    type: "get",
+                    datatype:'json',
+                    url: '{{route('custom.client-location')}}',
+                    data:{id:id} ,
+                    success:function(jsonArray) {
+                        console.log(jsonArray);
+                        var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
+                        $.each(jsonObject, function (i, obj) {
+                            $("select[name=clientlocation_id]").append("<option value=" + obj.id +">"+obj.name+"</option>");
+                        });
+                    },
+                });
+
+            });
+        }
+        //todo:Need to work on this in future
+        function dynamicWatcher(){
+            $('select[name=assigned_to]').change(function(){ // change function of listbox
+                var id = $('select[name=assigned_to]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                //$("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled',false);// Remove the existing options
+
+                console.log(id);
+                $.ajax({
+                    type: "get",
+                    datatype:'json',
+                    url: '{{route('custom.watcher-list')}}',
+                    data:{id:id} ,
+                    success:function(data) {
+                        console.log(data.watcher_objs);
+                        var jsonObject = data.watcher_objs; //Only if not already an object
+                        $.each(jsonObject, function (i, obj) {
+                            $("select[name=watchers]").append("<option value=" + obj.id +">"+obj.name+"</option>");
+                        });
+                    },
+                });
+
+            });
         }
 
     </script>
@@ -267,30 +321,8 @@
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         addDateTimePicker();//enabling date time picker
+        dynamicClientLocation();
+        //dynamicWatcher();
 
-
-
-    </script>
-    <script type="text/javascript">
-        $('select[name=client_id]').change(function(){ // change function of listbox
-            var id = $('select[name=client_id]').select2('val');
-            $("select[name=clientlocation_id]").select2("val", "");// Remove the existing options
-            $("select[name=clientlocation_id]").empty();// Remove the existing options
-            console.log(id);
-            $.ajax({
-                type: "get",
-                datatype:'json',
-                url: '{{route('custom.client-location')}}',
-                data:{id:id} ,
-                success:function(jsonArray) {
-                    console.log(jsonArray);
-                    var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
-                    $.each(jsonObject, function (i, obj) {
-                        $("select[name=clientlocation_id]").append("<option value=" + obj.id +">"+obj.name+"</option>");
-                    });
-                },
-            });
-
-        });
     </script>
 @endsection
