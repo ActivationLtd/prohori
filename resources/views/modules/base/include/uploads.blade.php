@@ -85,8 +85,8 @@ if ((isset($element) && isset($$element))) {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(showPosition);;
                 } else {
-                    latitude ="Geolocation is not supported by this browser.";
-                    longitude ="Geolocation is not supported by this browser.";
+                    latitude =null;
+                    longitude =null;
                 }
                 function showPosition(position) {
                     $('input[name=latitude]').val(position.coords.latitude);
