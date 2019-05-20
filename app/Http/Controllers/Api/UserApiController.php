@@ -266,13 +266,13 @@ class UserApiController extends ApiController
     /**
      * Delete a task
      */
-    public function tasksDelete($id) {
-
-        $task = Task::where('id', $id)->delete();
-        $ret = ret('success', "Task " . $id . " has been deleted");
-        return Response::json(fillRet($ret));
-
-    }
+    // public function tasksDelete($id) {
+    //
+    //     $task = Task::where('id', $id)->delete();
+    //     $ret = ret('success', "Task " . $id . " has been deleted");
+    //     return Response::json(fillRet($ret));
+    //
+    // }
 
     /**
      * Create a recommendation url
