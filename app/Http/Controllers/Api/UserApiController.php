@@ -141,7 +141,7 @@ class UserApiController extends ApiController
                 }
             }
         }
-        
+
         # Get total count with out offset and limit.
         $total = $tasks->count();
 
