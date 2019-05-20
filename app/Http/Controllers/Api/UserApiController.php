@@ -90,7 +90,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function tasks() {
-        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer','parenttask'])
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
             ->where('is_active', 1);
         //checking if user is a manager
         if ($this->user()->inGroupId('5')) {
@@ -100,6 +100,19 @@ class UserApiController extends ApiController
         /**
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
+        # Generic API return
+        if (Request::has('updatedSince')) {
+            $tasks = $tasks->where('updated_at', '>=', Request::get('updatedSince'));
+        }
+        if (Request::has('createdSince')) {
+            $tasks = $tasks->where('created_at', '>=', Request::get('createdSince'));
+        }
+        if (Request::has('updatedAt')) {
+            $tasks = $tasks->whereRaw("DATE(updated_at) = " . "'" . Request::get('updateddAt') . "'");
+        }
+        if (Request::has('createdAt')) {
+            $tasks = $tasks->whereRaw("DATE(created_at) = " . "'" . Request::get('createdAt') . "'");
+        }
         $q_fields = columns('tasks');
         foreach (Request::all() as $name => $val) {
             if (in_array($name, $q_fields)) {
@@ -115,8 +128,10 @@ class UserApiController extends ApiController
                         if (strlen($val)) {
                             if ($val == 'null') {
                                 $tasks = $tasks->whereNull($name, $val); // Before select2
-                            } else {
+                            } else if (is_int($val)) {
                                 $tasks = $tasks->where($name, $val); // Before select2
+                            } else {
+                                $tasks = $tasks->where($name, 'LIKE', "%$val%"); // Before select2
                             }
                         }
                     }
@@ -154,8 +169,8 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function dashboardTasks() {
-        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer','parenttask'])
-            ->where('is_active', 1)->whereIn('status',['To do','In progress','Verify']);
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
+            ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
         if ($this->user()->inGroupId('5')) {
             $tasks = $tasks->where('created_by', $this->user()->id)
@@ -164,6 +179,20 @@ class UserApiController extends ApiController
         /**
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
+        # Generic API return
+        if (Request::has('updatedSince')) {
+            $tasks = $tasks->where('updated_at', '>=', Request::get('updatedSince'));
+        }
+        if (Request::has('createdSince')) {
+            $tasks = $tasks->where('created_at', '>=', Request::get('createdSince'));
+        }
+        if (Request::has('updatedAt')) {
+            $tasks = $tasks->whereRaw("DATE(updated_at) = " . "'" . Request::get('updateddAt') . "'");
+        }
+        if (Request::has('createdAt')) {
+            $tasks = $tasks->whereRaw("DATE(created_at) = " . "'" . Request::get('createdAt') . "'");
+        }
+
         $q_fields = columns('tasks');
         foreach (Request::all() as $name => $val) {
             if (in_array($name, $q_fields)) {
@@ -179,8 +208,10 @@ class UserApiController extends ApiController
                         if (strlen($val)) {
                             if ($val == 'null') {
                                 $tasks = $tasks->whereNull($name, $val); // Before select2
-                            } else {
+                            } else if (is_int($val)) {
                                 $tasks = $tasks->where($name, $val); // Before select2
+                            } else {
+                                $tasks = $tasks->where($name, 'LIKE', "%$val%"); // Before select2
                             }
                         }
                     }
@@ -221,7 +252,17 @@ class UserApiController extends ApiController
         Request::merge(['created_by' => $this->user()->id]);
         return app(TasksController::class)->store();
     }
+    /**
+     * Delete a task
+     */
+    public function tasksDelete($id) {
 
+         $task=Task::where('id',$id)->delete();
+         $ret = ret('success', "Task ".$id." has been deleted");
+         return Response::json(fillRet($ret));
+
+
+    }
     /**
      * Create a recommendation url
      * @param $id

@@ -318,7 +318,7 @@
         /*******************************************************************/
         // frontend and Ajax hybrid validation
         /*******************************************************************/
-        addValidationRulesForSaving(); // Assign validation classes/rules
+        //addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         addDateTimePicker();//enabling date time picker
         dynamicClientLocation();

@@ -456,7 +456,15 @@ class Task extends Basemodule
         // the process of being deleted. This is good place to
         // put validations for eligibility of deletion.
         /************************************************************/
-        // static::deleting(function (Task $element) {});
+        static::deleting(function (Task $element) {
+            $valid=true;
+            if(!user()->isSuperUser()){
+                if($element->created_by!=user()->id){
+                    $valid=setError("Only superadmin and task creator can delete a task");
+                }
+            }
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - after an element is
