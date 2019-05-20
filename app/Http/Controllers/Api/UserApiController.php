@@ -93,9 +93,9 @@ class UserApiController extends ApiController
         $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
             ->where('is_active', 1);
         //checking if user is a manager
-        if ($this->user()->inGroupId('5')) {
-            $tasks = $tasks->where('created_by', $this->user()->id)
-                ->orWhere('assigned_to', $this->user()->id);
+        if ($this->user()->isManagerUser()) {
+            $tasks = $tasks->where('assigned_to', $this->user()->id)
+                ->orWhere('created_by', $this->user()->id);
         }
         /**
          * Construct WHERE clauses based on URL/API inputs
@@ -172,9 +172,9 @@ class UserApiController extends ApiController
         $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
             ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
-        if ($this->user()->inGroupId('5')) {
-            $tasks = $tasks->where('created_by', $this->user()->id)
-                ->orWhere('assigned_to', $this->user()->id);
+        if ($this->user()->isManagerUser()) {
+            $tasks = $tasks->where('assigned_to', $this->user()->id)
+                ->orWhere('created_by', $this->user()->id);
         }
         /**
          * Construct WHERE clauses based on URL/API inputs
