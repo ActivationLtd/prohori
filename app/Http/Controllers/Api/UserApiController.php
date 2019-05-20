@@ -95,7 +95,7 @@ class UserApiController extends ApiController
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
             $tasks = $tasks->where('assigned_to', $this->user()->id)
-                ->orWhere('created_by', $this->user()->id);
+                ->orWhere('created_by', $this->user()->id)->whereNull('deleted_at');
         }
         /**
          * Construct WHERE clauses based on URL/API inputs
@@ -174,7 +174,7 @@ class UserApiController extends ApiController
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
             $tasks = $tasks->where('assigned_to', $this->user()->id)
-                ->orWhere('created_by', $this->user()->id);
+                ->orWhere('created_by', $this->user()->id)->whereNull('deleted_at');
         }
         /**
          * Construct WHERE clauses based on URL/API inputs
