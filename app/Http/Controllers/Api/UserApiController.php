@@ -101,7 +101,7 @@ class UserApiController extends ApiController
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
                     ->orWhere('created_by', $this->user()->id);
-            })->whereNull('deleted_at');
+            });
         }
         # Generic API return
         if (Request::has('updatedSince')) {
@@ -119,18 +119,21 @@ class UserApiController extends ApiController
         $q_fields = columns('tasks');
         foreach (Request::all() as $name => $val) {
             if (in_array($name, $q_fields)) {
+
                 if (is_array($val) && count($val)) {
                     $temp = removeEmptyVals($val);
                     if (count($temp)) {
                         $tasks = $tasks->whereIn($name, $temp);
+
                     }
                 } else {
                     if (strlen($val) && strpos($val, ',') !== false) {
                         $tasks = $tasks->whereIn($name, explode(',', $val));
                     } else {
                         if (strlen($val)) {
+
                             if ($val == 'null') {
-                                $tasks = $tasks->whereNull($name, $val); // Before select2
+                                $tasks = $tasks->whereNull($name); // Before select2
                             } else if (is_int($val)) {
                                 $tasks = $tasks->where($name, $val); // Before select2
                             } else {
