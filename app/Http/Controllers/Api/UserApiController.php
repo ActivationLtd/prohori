@@ -92,11 +92,7 @@ class UserApiController extends ApiController
     public function tasks() {
         $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
             ->where('is_active', 1);
-        //checking if user is a manager
-        if ($this->user()->isManagerUser()) {
-            $tasks = $tasks->where('assigned_to', $this->user()->id)
-                ->orWhere('created_by', $this->user()->id)->whereNull('deleted_at');
-        }
+
         /**
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
@@ -137,6 +133,11 @@ class UserApiController extends ApiController
                     }
                 }
             }
+        }
+        //checking if user is a manager
+        if ($this->user()->isManagerUser()) {
+            $tasks = $tasks->where('assigned_to', $this->user()->id)
+                ->orWhere('created_by', $this->user()->id)->whereNull('deleted_at');
         }
         # Get total count with out offset and limit.
         $total = $tasks->count();
@@ -171,11 +172,7 @@ class UserApiController extends ApiController
     public function dashboardTasks() {
         $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
             ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify']);
-        //checking if user is a manager
-        if ($this->user()->isManagerUser()) {
-            $tasks = $tasks->where('assigned_to', $this->user()->id)
-                ->orWhere('created_by', $this->user()->id)->whereNull('deleted_at');
-        }
+
         /**
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
@@ -217,6 +214,11 @@ class UserApiController extends ApiController
                     }
                 }
             }
+        }
+        //checking if user is a manager
+        if ($this->user()->isManagerUser()) {
+            $tasks = $tasks->where('assigned_to', $this->user()->id)
+                ->orWhere('created_by', $this->user()->id)->whereNull('deleted_at');
         }
         # Get total count with out offset and limit.
         $total = $tasks->count();
