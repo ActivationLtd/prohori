@@ -7,7 +7,7 @@
 ?>
 
 
-<h4>See task in map</h4>
+<h4>{{Lang::get('messages.See-task-in-map')}}</h4>
 <div id="mapid" style="width: 100%; height: 400px;"></div>
 
 
@@ -53,18 +53,18 @@
 
         mymap.on('click', onMapClick);
 
-        <?php $tasks = \App\Task::with('clientlocation')->where('assigned_to',user()->id)->get(); ?>
+        <?php $tasks = \App\Task::with('clientlocation')->whereIn('status', ['To do', 'In progress', 'Verify'])->where('assigned_to', user()->id)->orWhere('created_by',user()->id)->get(); ?>
 
         @foreach($tasks as $task)
-            @if($task->clientlocation()->exists())
-                @if($task->clientlocation->latitude && $task->clientlocation->longitude)
-                    L.marker([{{$task->clientlocation->latitude}}, {{$task->clientlocation->longitude}}])
-                        .addTo(mymap)
-                        .bindPopup("<img style='width:50px' src='{{asset($task->assignee->profile_pic_url)}}'/><b>{{$task->tasktype->name}}</b> {{$task->status}}")
-                        .openPopup();
+        @if($task->clientlocation()->exists())
+        @if($task->clientlocation->latitude && $task->clientlocation->longitude)
+        L.marker([{{$task->clientlocation->latitude}}, {{$task->clientlocation->longitude}}])
+            .addTo(mymap)
+            .bindPopup("<a href='{{route('tasks.edit',$task->id)}}'><img style='width:50px' src='{{asset($task->assignee->profile_pic_url)}}'/><b>&nbsp{{$task->assignee->name}}&nbsp{{$task->tasktype->name}}&nbsp</b> <br>{{$task->clientlocation->name}}&nbsp<br>{{$task->status}}</a>")
+            .openPopup();
 
-                @endif
-            @endif
+        @endif
+        @endif
         @endforeach
 
     </script>

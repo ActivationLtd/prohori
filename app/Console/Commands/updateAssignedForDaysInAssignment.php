@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Assignment;
+use App\Task;
 use Illuminate\Console\Command;
 
 class updateAssignedForDaysInAssignment extends Command
@@ -38,6 +39,12 @@ class updateAssignedForDaysInAssignment extends Command
      */
     public function handle()
     {
+        //updating due days for tasks
+        $tasks=Task::where('is_active',1)->whereNotIn('status',['Done','Closed'])->get();
+        foreach($tasks as $task){
+            $task->update(['days_open'=>$task->due_days+1]);
+        }
+        //updating assigned for days for assignment
         $assignments=Assignment::where('is_active',1)->whereNull('is_closed')->get();
         foreach($assignments as $assignment){
             $assignment->update(['assigned_for_days'=>$assignment->assigned_for_days+1]);

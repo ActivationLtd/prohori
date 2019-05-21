@@ -15,10 +15,12 @@ use Illuminate\Support\Str;
 
 Auth::routes(['verify' => true]);
 
-Route::get('register-partner', 'Auth\RegisterPartnerController@showRegistrationForm')->name('register.partner');
-Route::post('register-partner', 'Auth\RegisterPartnerController@register')->name('post.partner-registration');
+// Route::get('register-partner', 'Auth\RegisterPartnerController@showRegistrationForm')->name('register.partner');
+// Route::post('register-partner', 'Auth\RegisterPartnerController@register')->name('post.partner-registration');
 
 Route::get('/', 'HomeController@index')->name('home')->middleware(['verified']);
+
+Route::get('lang/{lang}', ['as' => 'lang.switch', 'uses' => 'LanguageController@switchLang']);
 
 /*
  *
@@ -59,9 +61,15 @@ Route::middleware(['auth'])->group(function () use ($modules, $modulegroups) {
     Route::post('update_upload', 'UploadsController@updateExistingUpload')->name('uploads.update_last_upload');
     Route::get('download/{uuid}', 'UploadsController@download')->name('get.download');
 
+    #Route for updating sequence in subtasks
+    Route::post('subtasks/save-sequence', ['as' => 'subtasks.save-sequence', 'uses' => 'TasksController@postSaveSequence']);
+    #route for custom list
+    Route::get('client-location-ajax',['as'=>'custom.client-location','uses'=>'ClientlocationsController@customClientLocation']);
+    Route::get('watcher-list-ajax',['as'=>'custom.watcher-list','uses'=>'UsersController@customWatcher']);
 });
 
 Route::get('test', 'MiscController@test')->name('misc.test');
+
 
 
 

@@ -5,6 +5,7 @@ namespace App;
 use App\Mail\TaskCreated;
 use App\Traits\Assignable;
 use App\Observers\TaskObserver;
+use DB;
 
 /**
  * Class Task
@@ -232,7 +233,10 @@ class Task extends Basemodule
         0 => 'Low',
         2 => 'High',
     ];
-
+    /**
+     * @var array
+     */
+    protected $appends = ['watcher_objs', 'priorities_name'];
     /**
      * Date fields
      * @var array
@@ -250,11 +254,10 @@ class Task extends Basemodule
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
      * @param       $element
-     * @param  array  $merge
+     * @param  array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
             'name' => 'required|between:1,255',
             'assigned_to' => 'required',
@@ -263,7 +266,7 @@ class Task extends Basemodule
             'client_id' => 'required',
             'clientlocation_id' => 'required',
             'due_date' => 'required',
-            'is_active' => 'required|in:1,0',
+            //'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
             // 'updated_by' => 'exists:users,id,is_active,1',
@@ -282,8 +285,7 @@ class Task extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Task::observe(TaskObserver::class);
 
@@ -300,32 +302,44 @@ class Task extends Basemodule
             if ($valid) {
                 if ($element->client()->exists()) {
                     $element->client_name = $element->client->name;
-                    $element->client_obj  = $element->client->toJson();
+                    $element->client_obj = $element->client->toJson();
                 }
             }
             if ($element->clientlocation()->exists()) {
-                $element->clientlocation_obj  = $element->clientlocation->toJson();
+                $element->clientlocation_obj = $element->clientlocation->toJson();
                 $element->clientlocation_name = $element->clientlocation->name;
 
-                $element->clientlocationtype_id   = $element->clientlocation->clientlocationtype_id;
+                $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
                 $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
 
                 $element->clientlocation_obj = $element->clientlocation->toJson();
 
-                $element->division_id   = $element->clientlocation->division_id;
+                $element->division_id = $element->clientlocation->division_id;
                 $element->division_name = $element->clientlocation->division_name;
 
-                $element->district_id   = $element->clientlocation->district_id;
+                $element->district_id = $element->clientlocation->district_id;
                 $element->district_name = $element->clientlocation->district_name;
 
-                $element->upazila_id   = $element->clientlocation->upazila_id;
+                $element->upazila_id = $element->clientlocation->upazila_id;
                 $element->upazila_name = $element->clientlocation->upazila_name;
 
                 $element->longitude = $element->clientlocation->longitude;
-                $element->latitude  = $element->clientlocation->latitude;
+                $element->latitude = $element->clientlocation->latitude;
             }
             if ($element->tasktype()->exists()) {
                 $element->tasktype_name = $element->tasktype->name;
+            }
+            //checking assignee operating area and client location operating area
+            if (isset($element->assignee->operating_area_ids, $element->clientlocation->operatingarea_id)) {
+                if (!in_array($element->clientlocation->operatingarea_id,$element->assignee->operating_area_ids)) {
+                    $valid = setError("Assignee and Client Operating Area does not match");
+                }
+            }
+            //checking if parent task is a subtask
+            if(isset($element->parent_id)){
+                if($element->parenttask->parent_id != null){
+                    $valid=setError("The selected parent task is already a sub task, so it can not be a parent task");
+                }
             }
             //storing previous status
             if ($element->getOriginal('status') != $element->status) {
@@ -342,7 +356,9 @@ class Task extends Basemodule
                     }
                 }
             }
-
+            if(isset($element->watchers,$element->assignee->watchers)){
+                $element->watchers=array_merge($element->watchers,$element->assignee->watchers);
+            }
             $element->is_active = 1;
 
             return $valid;
@@ -353,7 +369,21 @@ class Task extends Basemodule
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-        // static::creating(function (Task $element) { });
+         static::creating(function (Task $element) {
+
+             $emails = [];
+             if (isset($element->watchers)) {
+                 foreach ($element->watchers as $user_id) {
+                     $emails[] = User::find($user_id)->email;
+                 }
+             }
+             $element->days_open = 0;
+             $element->is_closed = 0;
+             $element->is_resolved = 0;
+             $element->is_verified = 0;
+             $element->is_flagged = 0;
+             $element->status = 'To do'; // Set initial status to draft.
+         });
 
         /************************************************************/
         // Following code block executes - after an element is created
@@ -372,9 +402,11 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
+
             }
 
-            $element->status = 'To do'; // Set initial status to draft.
+
+
 
         });
 
@@ -410,7 +442,7 @@ class Task extends Basemodule
                     ]);
                     //filling the assignment id in task table
                     $element->assignment_id = $assignment->id;
-                    $valid                  = setMessage("Assignment created");
+                    $valid = setMessage("Assignment created");
                 }
             }
             Statusupdate::log($element, [
@@ -424,7 +456,15 @@ class Task extends Basemodule
         // the process of being deleted. This is good place to
         // put validations for eligibility of deletion.
         /************************************************************/
-        // static::deleting(function (Task $element) {});
+        static::deleting(function (Task $element) {
+            $valid=true;
+            if(!user()->isSuperUser()){
+                if($element->created_by!=user()->id){
+                    $valid=setError("Only superadmin and task creator can delete a task");
+                }
+            }
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - after an element is
@@ -450,7 +490,7 @@ class Task extends Basemodule
     ############################################################################################
 
     /**
-     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
+     * @param  bool|false $setMsgSession setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -498,11 +538,10 @@ class Task extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
-    public function isViewable($user_id = null, $set_msg = false)
-    {
+    public function isViewable($user_id = null, $set_msg = false) {
 
         $valid = false;
         if ($valid = spyrElementViewable($this, $user_id)) {
@@ -528,7 +567,7 @@ class Task extends Basemodule
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -545,7 +584,7 @@ class Task extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -562,7 +601,7 @@ class Task extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)
@@ -624,55 +663,50 @@ class Task extends Basemodule
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function assignee()
-    {
+    public function assignee() {
         return $this->belongsTo(\App\User::class, 'assigned_to');
     }
 
-    public function flagger()
-    {
+    public function flagger() {
         return $this->belongsTo(\App\User::class, 'flagged_by');
     }
 
-    public function verifier()
-    {
+    public function verifier() {
         return $this->belongsTo(\App\User::class, 'verified_by');
     }
 
-    public function resolver()
-    {
+    public function resolver() {
         return $this->belongsTo(\App\User::class, 'resolved_by');
     }
 
-    public function closer()
-    {
+    public function closer() {
         return $this->belongsTo(\App\User::class, 'closed_by');
     }
 
-    public function clientlocation()
-    {
+    public function clientlocation() {
         return $this->belongsTo(\App\Clientlocation::class);
     }
 
-    public function tasktype()
-    {
+    public function tasktype() {
         return $this->belongsTo(\App\Tasktype::class);
     }
 
-    public function subtasks()
-    {
+    public function subtasks() {
         return $this->hasMany(\App\Task::class, 'parent_id');
     }
 
-    public function assignments()
-    {
+    public function parenttask() {
+        return $this->belongsTo(\App\Task::class, 'parent_id');
+    }
+
+    public function assignments() {
         return $this->hasMany(\App\Assignment::class, 'element_id');
     }
 
-    public function client()
-    {
+    public function client() {
         return $this->belongsTo(\App\Client::class);
     }
+
 
     // Write new relationships below this line
 
@@ -692,11 +726,10 @@ class Task extends Basemodule
     // Write accessors and mutators here.
     /**
      * Set partnercategory ids to array
-     * @param  array  $value
+     * @param  array $value
      * @return void
      */
-    public function setWatchersAttribute($value)
-    {
+    public function setWatchersAttribute($value) {
         // Original default value
         $this->attributes['watchers'] = $value;
 
@@ -710,4 +743,30 @@ class Task extends Basemodule
         // }
 
     }
+
+    /**
+     * @return mixed
+     */
+    public function getWatcherObjsAttribute() {
+        if (isset($this->watchers))
+            return User::whereIn('id', $this->watchers)->remember(cacheTime('long'))->get();
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrioritiesNameAttribute() {
+        if (isset($this->priority)) {
+            if ($this->priority == 0) {
+                return 'Low';
+            } else if ($this->priority == 1) {
+                return 'Normal';
+            } else if ($this->priority == 2) {
+                return 'High';
+            }
+        }
+        return null;
+    }
+
 }

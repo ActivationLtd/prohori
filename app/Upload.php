@@ -141,8 +141,8 @@ class Upload extends Basemodule
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
             // 'updated_by' => 'exists:users,id,is_active,1',
-            'latitude' => 'numeric|between:20.661913,26.635695',
-            'longitude' => 'numeric|between:88.002548,92.675171',
+            //'latitude' => 'numeric|between:20.661913,26.635695',
+            //'longitude' => 'numeric|between:88.002548,92.675171',
             'type' => 'in:' . implode(',', Upload::$types),
 
         ];
