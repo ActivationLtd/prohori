@@ -306,7 +306,7 @@ class UsersController extends ModulebaseController
             $assignee=User::find($id);
             $data=null;
             if(!is_null($assignee->operating_area_ids) && count($assignee->operating_area_ids)){
-                $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['id']);
+                $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
                 $clients=Client::whereIn('id',$clientlocations);
                 $data = $clients->remember(cacheTime('none'))->get();
             }

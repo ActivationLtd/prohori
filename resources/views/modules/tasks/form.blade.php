@@ -217,9 +217,6 @@
 
         $("select[name=clientlocation_id]").attr('disabled', true);
         $("select[name=client_id]").attr('disabled', true);
-        $("select[name=watchers]").change(function (){
-            console.log("hello");
-        });
         /**
          * dynamic selection of client location based on client selection
          */
