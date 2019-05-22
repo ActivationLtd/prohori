@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Clientlocation;
+use App\Client;
 use App\Upload;
 use App\User;
 use Hash;
 use Request;
 use Session;
 use Validator;
+use Response;
 
 class UsersController extends ModulebaseController
 {
@@ -297,11 +300,19 @@ class UsersController extends ModulebaseController
         # --------------------------------------------------------
         return $this->jsonOrRedirect($ret, $validator, $element);
     }
-    public function customWatcher(){
+    public function customClient(){
         if(Request::has('id')){
             $id=Request::get('id');
-            $user=User::find($id);
-            return $user;
+            $assignee=User::find($id);
+            $data=null;
+            if(!is_null($assignee->operating_area_ids) && count($assignee->operating_area_ids)){
+                $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['id']);
+                $clients=Client::whereIn('id',$clientlocations);
+                $data = $clients->remember(cacheTime('none'))->get();
+            }
+            $ret = ret('success', "", compact('data'));
+            return Response::json($ret);
+
         }
     }
 }

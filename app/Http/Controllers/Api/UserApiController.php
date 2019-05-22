@@ -7,6 +7,8 @@ use App\Http\Controllers\MessagesController;
 use Request;
 use App\Task;
 use App\User;
+use App\Client;
+use App\Clientlocation;
 use Response;
 use App\Http\Controllers\TasksController;
 use App\Http\Controllers\UsersController;
@@ -329,5 +331,21 @@ class UserApiController extends ApiController
     public function getMessages($id) {
         Request::merge(['element_id' => $id, 'module_id' => 29, 'sort_order' => 'desc']);
         return app(MessagesController::class)->list();
+    }
+
+    /**
+     * @param $id
+     */
+    public function getClientsBasedOnUser($id){
+        $assignee=User::find($id);
+        $data=null;
+        if(!is_null($assignee->operating_area_ids)){
+            $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['id']);
+            $clients=Client::whereIn('id',$clientlocations);
+            $data = $clients->remember(cacheTime('none'))->get();
+        }
+        $ret = ret('success', "User Client List", compact('data'));
+        return Response::json($ret);
+
     }
 }

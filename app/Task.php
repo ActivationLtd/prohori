@@ -260,11 +260,11 @@ class Task extends Basemodule
     public static function rules($element, $merge = []) {
         $rules = [
             'name' => 'required|between:1,255',
-            'assigned_to' => 'required',
-            'tasktype_id' => 'required',
+            'assigned_to' => 'required|gt:0',
             'priority' => 'required',
-            'client_id' => 'required',
-            'clientlocation_id' => 'required',
+            'client_id' => 'required|gt:0',
+            'clientlocation_id' => 'required|gt:0',
+            'tasktype_id' => 'required|gt:0',
             'due_date' => 'required',
             //'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
@@ -339,6 +339,11 @@ class Task extends Basemodule
             if(isset($element->parent_id)){
                 if($element->parenttask->parent_id != null){
                     $valid=setError("The selected parent task is already a sub task, so it can not be a parent task");
+                }
+                if(isset($element->id)){
+                    if($element->parent_id==$element->id){
+                        $valid=setError("The selected task can not be the parent task");
+                    }
                 }
             }
             //storing previous status
