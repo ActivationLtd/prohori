@@ -336,7 +336,7 @@ class Task extends Basemodule
                 }
             }
             //checking if parent task is a subtask
-            if(isset($element->parent_id)){
+            if(isset($element->parent_id) && ($element->parent_id!=0)){
                 if($element->parenttask->parent_id != null){
                     $valid=setError("The selected parent task is already a sub task, so it can not be a parent task");
                 }
