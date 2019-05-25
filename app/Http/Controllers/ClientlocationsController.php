@@ -125,7 +125,7 @@ class ClientlocationsController extends ModulebaseController
 
     // ****************** Grid functions end *********************************
     public function customClientLocation(){
-        $data=null;
+        $data=[];
         if(Request::has('id')){
             $id=Request::get('id');
             $clientlocation=Clientlocation::where('client_id',$id);

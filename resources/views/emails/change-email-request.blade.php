@@ -5,11 +5,11 @@ Email updated
 @endsection
 
 @section('email-content')
-<h2 style="font-family:Arial, Helvetica, sans-serif;  font-size:20px; color:#fff; line-height:30px; margin:0px 0 25px 0; padding:0px; font-weight:normal; ">
+<h2 style="font-family:Arial, Helvetica, sans-serif;  font-size:20px; color:#000; line-height:30px; margin:0px 0 25px 0; padding:0px; font-weight:normal; ">
     You updated your email to {{ isset($user->email) ? $user->email : "" }}.
     <br />
 	<br />
-	One more step... 
+	One more step...
 	<br />
 	<br />
 	Please verify your email address by <a href="{{$email_verification_url}}" target="_blank" style="color:#fff;">clicking the link</a>.
