@@ -338,7 +338,7 @@ class UserApiController extends ApiController
      */
     public function getClientsBasedOnUser($id){
         $assignee=User::find($id);
-        $data=null;
+        $data=[];
         if(!is_null($assignee->operating_area_ids)){
             $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
             $clients=Client::whereIn('id',$clientlocations);
