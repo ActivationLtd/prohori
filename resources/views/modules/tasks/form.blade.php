@@ -77,7 +77,7 @@
     {{--priority--}}
     @include('form.select-array',['var'=>['name'=>'priority','label'=>Lang::get('messages.Priority'), 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3']])
     {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
-    @include('form.input-text',['var'=>['name'=>'due_date','label'=>Lang::get('messages.Due-date'), 'container_class'=>'col-sm-2','params'=>['id'=>'datetimepicker']]])
+    @include('form.input-text',['var'=>['name'=>'due_date','label'=>Lang::get('messages.Due-date'), 'container_class'=>'col-sm-2','params'=>['id'=>'due_date']]])
     @if(isset($task))
         {{--days_open--}}
         @include('form.input-text',['var'=>['name'=>'days_open','label'=>'Days Open', 'container_class'=>'col-md-1','params'=>['readonly'=>true]]])
@@ -177,13 +177,6 @@
 @section('js')
     @parent
     <script type="text/javascript">
-        $(function () {
-            $('#datetimepicker').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm'
-            });
-        });
-    </script>
-    <script type="text/javascript">
         /*******************************************************************/
         // List of functions
         /*******************************************************************/
@@ -193,6 +186,85 @@
             $('input[name=due_date]').addClass('validate[required]');
 
         }
+
+        function addDateTimePicker() {
+            $('#due_date').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm'
+            });
+        }
+        /**
+         * function to check distance between two points
+         * */
+        function checkdistance(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+            var dLon = deg2rad(lon2 - lon1);
+            var a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+            ;
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var d = R * c *1000; // Distance in m
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180)
+        }
+        $("select[name=clientlocation_id]").attr('disabled',true);
+
+        /**
+         * dynamic selection of client location based on client selection
+         */
+        function dynamicClientLocation(){
+            $('select[name=client_id]').change(function(){ // change function of listbox
+                var id = $('select[name=client_id]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled',false);// Remove the existing options
+
+                console.log(id);
+                $.ajax({
+                    type: "get",
+                    datatype:'json',
+                    url: '{{route('custom.client-location')}}',
+                    data:{id:id} ,
+                    success:function(jsonArray) {
+                        console.log(jsonArray);
+                        var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
+                        $.each(jsonObject, function (i, obj) {
+                            $("select[name=clientlocation_id]").append("<option value=" + obj.id +">"+obj.name+"</option>");
+                        });
+                    },
+                });
+
+            });
+        }
+        //todo:Need to work on this in future
+        function dynamicWatcher(){
+            $('select[name=assigned_to]').change(function(){ // change function of listbox
+                var id = $('select[name=assigned_to]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                //$("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled',false);// Remove the existing options
+
+                console.log(id);
+                $.ajax({
+                    type: "get",
+                    datatype:'json',
+                    url: '{{route('custom.watcher-list')}}',
+                    data:{id:id} ,
+                    success:function(data) {
+                        console.log(data.watcher_objs);
+                        var jsonObject = data.watcher_objs; //Only if not already an object
+                        $.each(jsonObject, function (i, obj) {
+                            $("select[name=watchers]").append("<option value=" + obj.id +">"+obj.name+"</option>");
+                        });
+                    },
+                });
+
+            });
+        }
+
     </script>
     @if(!isset($$element))
         <script type="text/javascript">
@@ -224,6 +296,9 @@
             // your functions go here
             // function1();
             // function2();
+            navigator.geolocation.getCurrentPosition(function(location){
+                console.log(checkdistance(location.coords.latitude,location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}}));
+            });
         </script>
     @endif
     <script type="text/javascript">
@@ -245,5 +320,9 @@
         /*******************************************************************/
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
+        addDateTimePicker();//enabling date time picker
+        dynamicClientLocation();
+        //dynamicWatcher();
+
     </script>
 @endsection
