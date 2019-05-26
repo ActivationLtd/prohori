@@ -260,11 +260,11 @@ class Task extends Basemodule
     public static function rules($element, $merge = []) {
         $rules = [
             'name' => 'required|between:1,255',
-            'assigned_to' => 'required',
-            'tasktype_id' => 'required',
+            'assigned_to' => 'required|gt:0',
             'priority' => 'required',
-            'client_id' => 'required',
-            'clientlocation_id' => 'required',
+            'client_id' => 'required|gt:0',
+            'clientlocation_id' => 'required|gt:0',
+            'tasktype_id' => 'required|gt:0',
             'due_date' => 'required',
             //'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
@@ -336,9 +336,14 @@ class Task extends Basemodule
                 }
             }
             //checking if parent task is a subtask
-            if(isset($element->parent_id)){
+            if(isset($element->parent_id) && ($element->parent_id!=0)){
                 if($element->parenttask->parent_id != null){
                     $valid=setError("The selected parent task is already a sub task, so it can not be a parent task");
+                }
+                if(isset($element->id)){
+                    if($element->parent_id==$element->id){
+                        $valid=setError("The selected task can not be the parent task");
+                    }
                 }
             }
             //storing previous status
@@ -456,7 +461,15 @@ class Task extends Basemodule
         // the process of being deleted. This is good place to
         // put validations for eligibility of deletion.
         /************************************************************/
-        // static::deleting(function (Task $element) {});
+        static::deleting(function (Task $element) {
+            $valid=true;
+            if(!user()->isSuperUser()){
+                if($element->created_by!=user()->id){
+                    $valid=setError("Only superadmin and task creator can delete a task");
+                }
+            }
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - after an element is

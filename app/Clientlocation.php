@@ -115,7 +115,10 @@ class Clientlocation extends Basemodule
     public static function rules($element, $merge = []) {
         $rules = [
             'name' => 'required|between:1,255|unique:clientlocations,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
-            'is_active' => 'required|in:1,0',
+            'operatingarea_id'=>'required|gt:0',
+            'client_id' => 'required|gt:0',
+            'clientlocationtype_id' => 'required|gt:0',
+            //'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
             // 'updated_by' => 'exists:users,id,is_active,1',
@@ -191,7 +194,9 @@ class Clientlocation extends Basemodule
         // Following code block executes - after an element is created
         // for the first time.
         /************************************************************/
-        // static::created(function (Clientlocation $element) { });
+        static::created(function (Clientlocation $element) {
+            $element->is_active=1;
+        });
 
         /************************************************************/
         // Following code block executes - when an already existing

@@ -59,6 +59,7 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
                 Route::get('dashboardtasks', 'Api\UserApiController@dashboardTasks')->name('api.user.dashboardtasks');
                 Route::post('tasks/create', 'Api\UserApiController@tasksCreate')->name('api.user.tasks.create');
+                //Route::delete('tasks/{id}/delete', 'Api\UserApiController@tasksDelete')->name('api.user.tasks.delete');
                 Route::patch('tasks/{id}/update', 'Api\UserApiController@tasksUpdate')->name('api.user.tasks.update');
                 Route::post('tasks/{id}/upload', 'Api\UserApiController@tasksUpload')->name('api.user.tasks.upload');
                 //list of items for tasks
@@ -66,6 +67,7 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::get('tasks/{id}/subtasks', 'Api\UserApiController@getSubtasks')->name('api.user.tasks.subtasks');
                 Route::get('tasks/{id}/assignments', 'Api\UserApiController@getAssignments')->name('api.user.tasks.assignments');
                 Route::get('tasks/{id}/messages', 'Api\UserApiController@getMessages')->name('api.user.tasks.messages');
+                Route::get('tasks/{id}/clientlists', 'Api\UserApiController@getClientsBasedOnUser')->name('api.user.tasks.clientlist');
 
 
             });
