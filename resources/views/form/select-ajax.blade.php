@@ -1,6 +1,6 @@
 <?php
 /**
- * @var array $var                  A temporary variable, that is set only to render the view partial. Usually this view
+ * @var array $var A temporary variable, that is set only to render the view partial. Usually this view
  *                 file is included inside a form.
  * @var $errors                     \Illuminate\Support\MessageBag
  * @var $module_name                string 'aiddeclarations'
@@ -48,16 +48,19 @@ if ($var['value']) {
 }
 ?>
 
-
 <div id="{{$rand}}" class="form-group {{$errors->first($var['name'], ' has-error')}} {{$var['container_class']}}">
     @if(strlen(trim($var['label'])))
-        <label id="label_{{$var['name']}}" class="control-label {{$var['label_class']}}" for="{{$var['name']}}">
-            {{$var['label']}}
-        </label>
+        <label id="label_{{$var['name']}}" class="control-label {{$var['label_class']}}" for="{{$var['name']}}">{{$var['label']}}</label>
     @endif
+    <div class="clearfix"></div>
     @if($var['editable'])
         <input name="preload" type="hidden" value="{{$preload}}"/>
-        {{ Form::text($var['name'], $var['old_input'], $var['params']) }}
+        <div class="col-md-9" style="padding-left: 0px;">
+            {{ Form::text($var['name'], $var['old_input'], $var['params']) }}
+        </div>
+        <div class="col-md-3">
+            <button id="clear_{{$var['name']}}" name="clear_{{$var['name']}}" class="btn btn-default selectClearBtn" type="button">Clear</button>
+        </div>
     @else
         <span class="{{$var['params']['class']}} readonly">{{$$element->$var['name']}} &nbsp;</span>
     @endif
@@ -120,6 +123,12 @@ if ($var['value']) {
                 // callSomeFunction();
             });
         }
+
+        // clear button
+        $("#clear_{{$var['name']}}").click(function () {
+            $("input[name={{$var['name']}}]").select2("val", "");
+        });
+
 
     </script>
 @endsection

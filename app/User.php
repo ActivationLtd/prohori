@@ -330,7 +330,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $rules = [
             //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
-            //'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'watchers' => 'required',
+            'operating_area_ids' => 'required',
+            'group_ids' => 'required',
             'email' => 'required|email|unique:users,email,'.(isset($element->id) ? $element->id : 'null').',id,deleted_at,NULL',
             //'employee_id' =>'integer',
             // 'address1' => 'between:0,512',
