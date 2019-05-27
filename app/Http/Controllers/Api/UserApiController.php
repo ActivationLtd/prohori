@@ -133,10 +133,9 @@ class UserApiController extends ApiController
                         $tasks = $tasks->whereIn($name, explode(',', $val));
                     } else {
                         if (strlen($val)) {
-
                             if ($val == 'null') {
                                 $tasks = $tasks->whereNull($name); // Before select2
-                            } else if (is_int($val)) {
+                            } else if (ctype_digit($val)) {
                                 $tasks = $tasks->where($name, $val); // Before select2
                             } else {
                                 $tasks = $tasks->where($name, 'LIKE', "%$val%"); // Before select2
