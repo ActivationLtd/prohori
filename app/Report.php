@@ -112,8 +112,7 @@ class Report extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
             'title' => 'required|between:1,255|unique:reports,title,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
@@ -149,8 +148,7 @@ class Report extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Report::observe(ReportObserver::class);
 
@@ -183,15 +181,15 @@ class Report extends Basemodule
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-         static::saving(function (Report $element) {
+        static::saving(function (Report $element) {
             $valid = true;
-            $element->name=$element->title;
+            $element->name = $element->title;
             /************************************************************/
             //Your validation goes here
-             // if($valid) $valid = $element->isSomethingDoable(true)
+            // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
             return $valid;
-         });
+        });
 
         /************************************************************/
         // Execute codes after model is successfully saved
@@ -268,8 +266,7 @@ class Report extends Basemodule
      * @param $module_id
      * @return string
      */
-    public static function defaultForModule($module_id)
-    {
+    public static function defaultForModule($module_id) {
         /** @var \App\Report $default_report */
         $default_report = Report::where('module_id', $module_id)->where('is_module_default', 1)->remember(cacheTime('long'))->first();
         if ($default_report) {
@@ -284,6 +281,7 @@ class Report extends Basemodule
         }
         return $report_url;
     }
+
     /**
      * Generates report url from id
      *
@@ -308,7 +306,21 @@ class Report extends Basemodule
 
     }
 
+    public static function dailyStatusReport() {
+        $yesterday=strtotime("yesterday");
+        $from=date("Y-m-d 00:00:00", $yesterday);
+        $to = now();
+        $data = [];
+        $user_count =User::where('is_active',1)->whereNull('deleted_at')->count();
+        $client_count = Client::where('is_active',1)->whereNull('deleted_at')->count();
+        $clientlocation_count = Clientlocation::where('is_active',1)->whereNull('deleted_at')->count();
+        $tasks_count = Task::where('is_active',1)->whereNull('deleted_at')->count();
 
+        $user_count_today = User::where('is_active',1)->whereNull('deleted_at')->whereBetween('created_at',[$from,$to])->count();
+        $client_count_today = Client::where('is_active',1)->whereNull('deleted_at')->whereBetween('created_at',[$from,$to])->count();
+        $clientlocation_count_today = Clientlocation::where('is_active',1)->whereNull('deleted_at')->whereBetween('created_at',[$from,$to])->count();
+        $tasks_count_today = Task::where('is_active',1)->whereNull('deleted_at')->whereBetween('created_at',[$from,$to])->count();
+    }
 
     ############################################################################################
     # Permission functions
