@@ -361,6 +361,9 @@ class Task extends Basemodule
                     }
                 }
             }
+            if(!isset($element->parent_id)){
+                $element->parent_id=0;
+            }
             if(isset($element->watchers,$element->assignee->watchers)){
                 $element->watchers=array_merge($element->watchers,$element->assignee->watchers);
             }
