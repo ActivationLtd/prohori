@@ -70,17 +70,19 @@ class TasksController extends ModulebaseController
      */
     public function gridQuery() {
         $query = $this->sourceTables()->select($this->selectColumns());
+        $user=User();
 
         // Inject tenant context in grid query
         if ($tenant_id = inTenantContext($this->module_name)) {
             $query = injectTenantIdInModelQuery($this->module_name, $query);
         }
-        if ($this->user()->isManagerUser()) {
-            $query = $query->where(function ($q) {
-                $q->where('assigned_to', $this->user()->id)
-                    ->orWhere('created_by', $this->user()->id);
+        if ($user->isManagerUser()) {
+            $query = $query->where(function ($q) use($user) {
+                $q->where('assigned_to', $user->id)
+                    ->orWhere('tasks.created_by', $user->id);
             });
         }
+
         // Construct query based on filter param
         $query = self::filterQueryConstructor($query);
         // Exclude deleted rows
