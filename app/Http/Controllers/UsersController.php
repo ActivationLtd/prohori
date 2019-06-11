@@ -355,7 +355,8 @@ class UsersController extends ModulebaseController
         }
         // Limit override - Force all data with no limit.
         if (Request::get('force_all_data') === 'true') {
-            $limit = $q->remember(cacheTime('short'))->count();
+            // $limit = $q->remember(cacheTime('short'))->count();
+            $limit = $q->count();
         }
         $q = $q->take($limit);
 

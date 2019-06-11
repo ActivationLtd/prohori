@@ -401,14 +401,14 @@ class ModulebaseController extends Controller
         }
         // Limit override - Force all data with no limit.
         if (Request::get('force_all_data') === 'true') {
-            $limit = $q->remember(cacheTime('none'))->count();
+            $limit = $q->remember(cacheTime('short'))->count();
         }
         $q = $q->take($limit);
 
         /*********** Query construction ends ********************/
 
-        //$data = $q->remember(cacheTime('none'))->get();
-        $data = $q->get();
+        // $data = $q->remember(cacheTime('none'))->get();
+        $data = $q->remember(cacheTime('short'))->get();
         $ret  = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
         return Response::json(fillRet($ret));
     }
