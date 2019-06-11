@@ -1,8 +1,8 @@
 <?php
-$task_assigned=App\Task::where('assigned_to',user()->id)->whereIn('status',['To do','In Progress'])->count();
-$task_completed=App\Task::where('assigned_to',user()->id)->whereIn('status',['Done','Closed'])->count();
-$task_inprogress=App\Task::where('assigned_to',user()->id)->whereIn('status',['In Progress'])->count();
-$task_due=App\Task::where('assigned_to',user()->id)->whereNotIn('status',['Done','Closed'])->where('due_date','<',now())->count();
+$task_assigned=App\Task::remember(cacheTime('short'))->where('assigned_to',user()->id)->whereIn('status',['To do','In Progress'])->count();
+$task_completed=App\Task::remember(cacheTime('short'))->where('assigned_to',user()->id)->whereIn('status',['Done','Closed'])->count();
+$task_inprogress=App\Task::remember(cacheTime('short'))->where('assigned_to',user()->id)->whereIn('status',['In Progress'])->count();
+$task_due=App\Task::remember(cacheTime('short'))->where('assigned_to',user()->id)->whereNotIn('status',['Done','Closed'])->where('due_date','<',now())->count();
 ?>
 <div class="row">
     <div class="col-md-12"><b>{{Lang::get('messages.Task-summary')}}</b></div>
