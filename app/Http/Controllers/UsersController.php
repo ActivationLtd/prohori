@@ -1,16 +1,15 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace App\Http\Controllers;
 
-use App\Clientlocation;
-use App\Client;
-use App\Upload;
-use App\User;
+use DB;
 use Hash;
 use Request;
 use Session;
-use Validator;
 use Response;
+use App\User;
+use Validator;
+use App\Upload;
 
 class UsersController extends ModulebaseController
 {
@@ -22,7 +21,6 @@ class UsersController extends ModulebaseController
 
     /**
      * Define grid SELECT statement and HTML column name.
-     *
      * @return array
      */
     public function gridColumns()
@@ -41,7 +39,6 @@ class UsersController extends ModulebaseController
 
     /**
      * Construct SELECT statement based
-     *
      * @return array
      */
     // public function selectColumns()
@@ -55,7 +52,6 @@ class UsersController extends ModulebaseController
 
     /**
      * Define Query for generating results for grid
-     *
      * @return \Illuminate\Database\Query\Builder|static
      */
     // public function sourceTables()
@@ -66,7 +62,6 @@ class UsersController extends ModulebaseController
 
     /**
      * Define Query for generating results for grid
-     *
      * @return $this|mixed
      */
     // public function gridQuery()
@@ -86,9 +81,8 @@ class UsersController extends ModulebaseController
 
     /**
      * Modify datatable values
-     *
-     * @var $dt \Yajra\DataTables\DataTableAbstract
      * @return mixed
+     * @var $dt \Yajra\DataTables\DataTableAbstract
      */
     // public function datatableModify($dt)
     // {
@@ -106,9 +100,8 @@ class UsersController extends ModulebaseController
     /**
      * Returns datatable json for the module index page
      * A route is automatically created for all modules to access this controller function
-     *
-     * @var \Yajra\DataTables\DataTables $dt
      * @return \Illuminate\Http\JsonResponse
+     * @var \Yajra\DataTables\DataTables $dt
      */
     // public function grid()
     // {
@@ -124,9 +117,7 @@ class UsersController extends ModulebaseController
     /**
      * In Controller store(), update() before filling the model input values are
      * transformed. Usually it is a good approach for converting arrays to json.
-     *
-     *
-     * @param array $inputs
+     * @param  array  $inputs
      * @return array
      */
     public function transformInputs($inputs = [])
@@ -171,7 +162,7 @@ class UsersController extends ModulebaseController
         /** @var \App\Basemodule $element */
         // init local variables
         $module_name = $this->module_name;
-        $Model = model($this->module_name);
+        $Model       = model($this->module_name);
 
         //$element_name = str_singular($module_name);
         //$ret = ret();
@@ -179,8 +170,8 @@ class UsersController extends ModulebaseController
         # Process store while creation
         # --------------------------------------------------------
         $validator = null;
-        $inputs = $this->transformInputs(Request::all());
-        $element = new $Model($inputs);
+        $inputs    = $this->transformInputs(Request::all());
+        $element   = new $Model($inputs);
         if (hasModulePermission($this->module_name, 'create')) { // check module permission
             $validator = Validator::make(Request::all(), $Model::rules($element), $Model::$custom_validation_messages);
 
@@ -189,7 +180,8 @@ class UsersController extends ModulebaseController
             // $validator = $element->validateModel();
 
             if ($validator->fails()) {
-                $ret = ret('fail', "Validation error(s) on creating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
+                $ret = ret('fail', "Validation error(s) on creating {$this->module->title}.",
+                    ['validation_errors' => json_decode($validator->messages(), true)]);
             } else {
                 if ($element->isCreatable()) {
 
@@ -227,7 +219,6 @@ class UsersController extends ModulebaseController
 
     /**
      * Update handler for spyr element.
-     *
      * @param $id
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
@@ -238,7 +229,7 @@ class UsersController extends ModulebaseController
          * @var \App\User $element
          */
         $Model = model($this->module_name);
-        $ret = ret(); // load default return values
+        $ret   = ret(); // load default return values
         # --------------------------------------------------------
         # Process update
         # --------------------------------------------------------
@@ -254,12 +245,14 @@ class UsersController extends ModulebaseController
 
                 //dd(array_merge($element->getAttributes(), Request::all()));
 
-                $validator = Validator::make(array_merge($element->getAttributes(), Request::all()), $Model::rules($element), $Model::$custom_validation_messages);
+                $validator = Validator::make(array_merge($element->getAttributes(), Request::all()), $Model::rules($element),
+                    $Model::$custom_validation_messages);
                 //$validator = $element->validateModel();
                 /******************************************************************************************/
 
                 if ($validator->fails()) {
-                    $ret = ret('fail', "Validation error(s) on updating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
+                    $ret = ret('fail', "Validation error(s) on updating {$this->module->title}.",
+                        ['validation_errors' => json_decode($validator->messages(), true)]);
                 } else {
 
                     $element->fill($this->transformInputs(Request::all()));
@@ -300,19 +293,77 @@ class UsersController extends ModulebaseController
         # --------------------------------------------------------
         return $this->jsonOrRedirect($ret, $validator, $element);
     }
-    public function customClient(){
-        if(Request::has('id')){
-            $id=Request::get('id');
-            $assignee=User::find($id);
-            $data=null;
-            if(!is_null($assignee->operating_area_ids) && count($assignee->operating_area_ids)){
-                $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
-                $clients=Client::whereIn('id',$clientlocations);
-                $data = $clients->remember(cacheTime('none'))->get();
-            }
-            $ret = ret('success', "", compact('data'));
-            return Response::json($ret);
+
+    public function customWatcher()
+    {
+        if (Request::has('id')) {
+            $id   = Request::get('id');
+            $user = User::find($id);
+            return $user;
+        }
+    }
+
+    public function list()
+    {
+        /** @var \App\Basemodule $Model */
+        /** @var \Illuminate\Database\Eloquent\Builder $q */
+        $Model = model($this->module_name);
+
+        if (Request::has('columns')) {
+            $q = DB::table('users')->select(explode(',', Request::get('columns')));
+        } else {
+            $q = DB::table('users');
+        }
+
+        // Eager load
+        if (Request::has('with')) {
+            $with = Request::get('with');
+            $q    = $q->with(explode(',', $with));
+        }
+        // Force is_active = 1
+        $q->where('is_active', 1);
+
+        // Construct query based on filter param
+        $q = $this->filterQueryConstructor($q);
+
+        // Get total count with out offset and limit.
+        $total = $q->count();
+
+        // Sort
+        $sort_by = 'created_at';
+        if (Request::has('sort_by')) {
+            $sort_by = Request::get('sort_by');
 
         }
+        $sort_order = 'desc';
+        if (Request::has('sort_order')) {
+            $sort_order = Request::get('sort_order');
+        }
+        $q = $q->orderBy($sort_by, $sort_order);
+
+        // set offset
+        $offset = 0;
+        if (Request::has('offset')) {
+            $offset = Request::get('offset');
+            $q      = $q->skip($offset);
+        }
+
+        //set limit
+        $limit = $max_limit = 20;
+        if (Request::has('limit') && Request::get('limit') <= $max_limit) {
+            $limit = Request::get('limit');
+        }
+        // Limit override - Force all data with no limit.
+        if (Request::get('force_all_data') === 'true') {
+            $limit = $q->remember(cacheTime('short'))->count();
+        }
+        $q = $q->take($limit);
+
+        /*********** Query construction ends ********************/
+
+        // $data = $q->remember(cacheTime('none'))->get();
+        $data = $q->get();
+        $ret  = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
+        return Response::json(fillRet($ret));
     }
 }
