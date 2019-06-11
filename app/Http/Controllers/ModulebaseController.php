@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace App\Http\Controllers;
 
@@ -401,7 +401,7 @@ class ModulebaseController extends Controller
         }
         // Limit override - Force all data with no limit.
         if (Request::get('force_all_data') === 'true') {
-            $limit = $q->remember(cacheTime('none'))->count();
+            $limit = $q->remember(cacheTime('short'))->count();
         }
         $q = $q->take($limit);
 
