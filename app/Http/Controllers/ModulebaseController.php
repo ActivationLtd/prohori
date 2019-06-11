@@ -399,10 +399,12 @@ class ModulebaseController extends Controller
         if (Request::has('limit') && Request::get('limit') <= $max_limit) {
             $limit = Request::get('limit');
         }
+
         // Limit override - Force all data with no limit.
         if (Request::get('force_all_data') === 'true') {
             $limit = $q->remember(cacheTime('none'))->count();
         }
+
         $q = $q->take($limit);
 
         /*********** Query construction ends ********************/
