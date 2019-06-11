@@ -407,8 +407,8 @@ class ModulebaseController extends Controller
 
         /*********** Query construction ends ********************/
 
-        $data = $q->remember(cacheTime('short'))->get();
-        //$data = $q->get();
+        //$data = $q->remember(cacheTime('none'))->get();
+        $data = $q->get();
         $ret  = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
         return Response::json(fillRet($ret));
     }
