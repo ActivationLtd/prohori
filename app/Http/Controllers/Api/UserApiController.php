@@ -162,7 +162,7 @@ class UserApiController extends ApiController
         $max_limit = 20;
         $limit = (Request::has('limit') && Request::get('limit') <= $max_limit) ? Request::get('limit') : $max_limit;
         # Limit override
-        $limit = (Request::get('force_all_data') === 'true') ? $tasks->remember(cacheTime('none'))->count() : $limit;
+        $limit = (Request::get('force_all_data') === 'true') ? $tasks->remember(cacheTime('short'))->count() : $limit;
         $tasks = $tasks->take($limit);
 
         /*********** Query construction ends ********************/
@@ -245,7 +245,7 @@ class UserApiController extends ApiController
         $max_limit = 20;
         $limit = (Request::has('limit') && Request::get('limit') <= $max_limit) ? Request::get('limit') : $max_limit;
         # Limit override
-        $limit = (Request::get('force_all_data') === 'true') ? $tasks->remember(cacheTime('none'))->count() : $limit;
+        $limit = (Request::get('force_all_data') === 'true') ? $tasks->remember(cacheTime('short'))->count() : $limit;
         $tasks = $tasks->take($limit);
 
         /*********** Query construction ends ********************/
