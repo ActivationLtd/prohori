@@ -11,6 +11,7 @@ use App\User;
 use Validator;
 use App\Upload;
 use App\Clientlocation;
+use App\Client;
 
 class UsersController extends ModulebaseController
 {
