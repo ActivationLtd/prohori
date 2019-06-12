@@ -208,6 +208,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerificationCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmployeeId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereGroupIds($value)
+ * @property array|null $watchers
+ * @property array|null $operating_area_ids
+ * @property string|null $operating_area_names
+ * @property-read mixed $operating_area_ids_objects
+ * @property-read mixed $watcher_objs
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereOperatingAreaIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereOperatingAreaNames($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereWatchers($value)
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
