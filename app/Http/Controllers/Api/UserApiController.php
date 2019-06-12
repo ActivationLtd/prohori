@@ -71,10 +71,10 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function summary() {
-        $task_assigned = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
-        $task_completed = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
-        $task_inprogress = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
-        $task_due = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
+        $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
+        $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
+        $task_due = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
         $data = [
             'tasks' => [
                 'assigned' => $task_assigned,
@@ -92,7 +92,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function tasks() {
-        $tasks = Task::remember(cacheTime('very-short'))->with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
             ->where('is_active', 1);
 
         /**
@@ -167,7 +167,7 @@ class UserApiController extends ApiController
 
         /*********** Query construction ends ********************/
 
-        $data = $tasks->remember(cacheTime('very-short'))->get();
+        $data = $tasks->remember(cacheTime('short'))->get();
         $ret = ret('success', "User Task List", compact('data', 'total', 'offset', 'limit'));
         return Response::json($ret);
     }
@@ -177,7 +177,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function dashboardTasks() {
-        $tasks = Task::remember(cacheTime('very-short'))->with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
+        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
             ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
@@ -250,7 +250,7 @@ class UserApiController extends ApiController
 
         /*********** Query construction ends ********************/
 
-        $data = $tasks->remember(cacheTime('very-short'))->get();
+        $data = $tasks->remember(cacheTime('short'))->get();
         $ret = ret('success', "User Task List", compact('data', 'total', 'offset', 'limit'));
         return Response::json($ret);
     }
