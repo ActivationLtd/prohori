@@ -55,17 +55,15 @@
 
         mymap.on('click', onMapClick);
 
-        <?php $tasks = \App\Task::with('clientlocation')->whereIn('status', ['To do', 'In progress', 'Verify'])->get(); ?>
+        <?php $tasks = \App\Task::whereIn('status', ['To do', 'In progress', 'Verify'])->remember(cacheTime('short'))->get(); ?>
 
         @foreach($tasks as $task)
-        @if($task->clientlocation()->exists())
-        @if($task->clientlocation->latitude && $task->clientlocation->longitude)
+        @if(isset($task->clientlocation->id,$task->clientlocation->latitude,$task->clientlocation->longitude))
         L.marker([{{$task->clientlocation->latitude}}, {{$task->clientlocation->longitude}}])
             .addTo(mymap)
             .bindPopup("<a href='{{route('tasks.edit',$task->id)}}'><img style='width:50px' src='{{asset($task->assignee->profile_pic_url)}}'/><b>&nbsp{{$task->assignee->name}}&nbsp{{$task->tasktype->name}}&nbsp</b> <br>{{$task->clientlocation->name}}&nbsp<br>{{$task->status}}</a>")
             .openPopup();
 
-        @endif
         @endif
         @endforeach
 

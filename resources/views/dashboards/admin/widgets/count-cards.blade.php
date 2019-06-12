@@ -1,8 +1,9 @@
 <?php
-$task_assigned   = App\Task::remember(cacheTime('short'))->whereIn('status', ['To do', 'In Progress'])->count();
-$task_completed  = App\Task::remember(cacheTime('short'))->whereIn('status', ['Done', 'Closed'])->count();
-$task_inprogress = App\Task::remember(cacheTime('short'))->whereIn('status', ['In Progress'])->count();
-$task_due        = App\Task::remember(cacheTime('short'))->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+use App\Task;
+$task_assigned   = Task::remember(cacheTime('medium'))->whereIn('status', ['To do', 'In Progress'])->count();
+$task_completed  = Task::remember(cacheTime('medium'))->whereIn('status', ['Done', 'Closed'])->count();
+$task_inprogress = Task::remember(cacheTime('medium'))->whereIn('status', ['In Progress'])->count();
+$task_due        = Task::remember(cacheTime('medium'))->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
 ?>
 <div class="row">
 

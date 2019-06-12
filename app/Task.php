@@ -9,6 +9,7 @@ use DB;
 
 /**
  * Class Task
+ *
  * @package App
  * @property int $id
  * @property string|null $uuid
@@ -138,6 +139,13 @@ use DB;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifiedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifyNote($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereWatchers($value)
+ * @property-read \App\User|null $closer
+ * @property-read \App\User|null $flagger
+ * @property-read string $priorities_name
+ * @property-read mixed $watcher_objs
+ * @property-read \App\Task|null $parenttask
+ * @property-read \App\User|null $resolver
+ * @property-read \App\User|null $verifier
  */
 class Task extends Basemodule
 {

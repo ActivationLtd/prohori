@@ -65,6 +65,10 @@ use App\Traits\IsoModule;
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
  * @property-read \App\Upload $latestUpload
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Upload whereLatitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Upload whereLongitude($value)
  */
 class Upload extends Basemodule
 {

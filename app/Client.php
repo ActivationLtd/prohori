@@ -67,6 +67,8 @@ use App\Observers\ClientObserver;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereUpdatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereUuid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereZipCode($value)
+ * @property string|null $operating_area_ids
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Client whereOperatingAreaIds($value)
  */
 class Client extends Basemodule
 {
