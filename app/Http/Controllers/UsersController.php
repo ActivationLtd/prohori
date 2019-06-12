@@ -10,6 +10,7 @@ use Response;
 use App\User;
 use Validator;
 use App\Upload;
+use App\Clientlocation;
 
 class UsersController extends ModulebaseController
 {
@@ -317,7 +318,7 @@ class UsersController extends ModulebaseController
 
         }
     }
-    
+
     public function list()
     {
         /** @var \App\Basemodule $Model */
