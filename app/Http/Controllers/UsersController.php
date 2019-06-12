@@ -302,7 +302,22 @@ class UsersController extends ModulebaseController
             return $user;
         }
     }
+    public function customClient(){
+        if(Request::has('id')){
+            $id=Request::get('id');
+            $assignee=User::find($id);
+            $data=null;
+            if(!is_null($assignee->operating_area_ids) && count($assignee->operating_area_ids)){
+                $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
+                $clients=Client::whereIn('id',$clientlocations);
+                $data = $clients->remember(cacheTime('none'))->get();
+            }
+            $ret = ret('success', "", compact('data'));
+            return Response::json($ret);
 
+        }
+    }
+    
     public function list()
     {
         /** @var \App\Basemodule $Model */
