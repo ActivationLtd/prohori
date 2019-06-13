@@ -722,6 +722,12 @@ class Task extends Basemodule
     public function client() {
         return $this->belongsTo(\App\Client::class);
     }
+    public function taskfiles() {
+        $this->hasMany(Upload::class, 'element_id')->where('module_id', $this->module()->id)->where('type', 'Task file')->orderBy('created_at', 'DESC');
+    }
+    public function evidences() {
+        $this->hasMany(Upload::class, 'element_id')->where('module_id', $this->module()->id)->where('type', 'Evidence')->orderBy('created_at', 'DESC');
+    }
 
 
     // Write new relationships below this line
