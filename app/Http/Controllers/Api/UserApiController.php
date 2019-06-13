@@ -92,7 +92,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function tasks() {
-        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
+        $tasks = Task::with(['assignee'])
             ->where('is_active', 1);
 
         /**
@@ -177,7 +177,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function dashboardTasks() {
-        $tasks = Task::with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
+        $tasks = Task::with(['assignee'])
             ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
