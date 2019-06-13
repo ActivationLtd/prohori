@@ -111,6 +111,12 @@ class UserApiController extends ApiController
         if (Request::has('createdSince')) {
             $tasks = $tasks->where('created_at', '>=', Request::get('createdSince'));
         }
+        if (Request::has('dueNow')) {
+            if (Request::get('dueNow') == true) {
+                $tasks = $tasks->where('due_date', '<', now());
+            }
+
+        }
         if (Request::has('updatedAt')) {
             $tasks = $tasks->whereRaw("DATE(updated_at) = " . "'" . Request::get('updateddAt') . "'");
         }
@@ -191,6 +197,12 @@ class UserApiController extends ApiController
         }
         if (Request::has('createdSince')) {
             $tasks = $tasks->where('created_at', '>=', Request::get('createdSince'));
+        }
+        if (Request::has('dueNow')) {
+            if (Request::get('dueNow') == true) {
+                $tasks = $tasks->where('due_date', '<', now());
+            }
+
         }
         if (Request::has('updatedAt')) {
             $tasks = $tasks->whereRaw("DATE(updated_at) = " . "'" . Request::get('updateddAt') . "'");
@@ -331,12 +343,12 @@ class UserApiController extends ApiController
     /**
      * @param $id
      */
-    public function getClientsBasedOnUser($id){
-        $assignee=User::find($id);
-        $data=[];
-        if(!is_null($assignee->operating_area_ids)){
-            $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
-            $clients=Client::whereIn('id',$clientlocations);
+    public function getClientsBasedOnUser($id) {
+        $assignee = User::find($id);
+        $data = [];
+        if (!is_null($assignee->operating_area_ids)) {
+            $clientlocations = Clientlocation::whereIn('operatingarea_id', $assignee->operating_area_ids)->get(['client_id']);
+            $clients = Client::whereIn('id', $clientlocations);
             $data = $clients->remember(cacheTime('very-short'))->get();
         }
         $ret = ret('success', "User Client List", compact('data'));
