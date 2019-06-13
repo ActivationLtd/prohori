@@ -161,7 +161,7 @@ class Task extends Basemodule
         'name_ext',
         'parent_id',
         'priority',
-        'prioritiy_name',
+        'priority_name',
         'seq',
         'client_id',
         'client_name',
@@ -378,11 +378,11 @@ class Task extends Basemodule
             }
             if (isset($element->priority)) {
                 if ($element->priority == 0) {
-                    $element->prioritiy_name = 'Low';
+                    $element->priority_name = 'Low';
                 } else if ($element->priority == 1) {
-                    $element->prioritiy_name = 'Normal';
+                    $element->priority_name = 'Normal';
                 } else if ($element->priority == 2) {
-                    $element->prioritiy_name = 'High';
+                    $element->priority_name = 'High';
                 }
             }
             if (!isset($element->parent_id)) {
