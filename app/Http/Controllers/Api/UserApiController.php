@@ -15,6 +15,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UploadsController;
 use App\Http\Controllers\RecommendurlsController;
 use Illuminate\Support\Arr;
+use DB;
 
 class UserApiController extends ApiController
 {
@@ -92,7 +93,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function tasks() {
-        $tasks = Task::with(['assignee'])->where('is_active', 1)->whereNull('deleted_at');
+        $tasks = DB::table('tasks')->where('is_active', 1)->whereNull('deleted_at');
         /**
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
@@ -163,7 +164,7 @@ class UserApiController extends ApiController
 
         /*********** Query construction ends ********************/
 
-        $data = $tasks->remember(cacheTime('short'))->get();
+        $data = $tasks->get();
         $ret = ret('success', "User Task List", compact('data', 'total', 'offset', 'limit'));
         return Response::json($ret);
     }
@@ -173,8 +174,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function dashboardTasks() {
-        $tasks = Task::with(['assignee'])
-            ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify'])->whereNull('deleted_at');
+        $tasks = DB::table('tasks')->where('is_active', 1)->whereNull('deleted_at')->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
             $tasks = $tasks->where(function ($q) {
@@ -246,7 +246,7 @@ class UserApiController extends ApiController
 
         /*********** Query construction ends ********************/
 
-        $data = $tasks->remember(cacheTime('short'))->get();
+        $data = $tasks->get();
         $ret = ret('success', "User Task List", compact('data', 'total', 'offset', 'limit'));
         return Response::json($ret);
     }
