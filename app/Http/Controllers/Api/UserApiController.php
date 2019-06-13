@@ -92,9 +92,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function tasks() {
-        $tasks = Task::with(['assignee'])
-            ->where('is_active', 1);
-
+        $tasks = Task::with(['assignee'])->where('is_active', 1)->whereNull('deleted_at');
         /**
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
@@ -126,7 +124,6 @@ class UserApiController extends ApiController
                     $temp = removeEmptyVals($val);
                     if (count($temp)) {
                         $tasks = $tasks->whereIn($name, $temp);
-
                     }
                 } else {
                     if (strlen($val) && strpos($val, ',') !== false) {
@@ -148,7 +145,6 @@ class UserApiController extends ApiController
 
         # Get total count with out offset and limit.
         $total = $tasks->count();
-
         # Sort by and roder
         $sort_by = Request::has('sort_by') ? Request::get('sort_by') : 'created_at';
         $sort_order = Request::has('sort_order') ? Request::get('sort_order') : 'desc';
@@ -178,13 +174,13 @@ class UserApiController extends ApiController
      */
     public function dashboardTasks() {
         $tasks = Task::with(['assignee'])
-            ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify']);
+            ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify'])->whereNull('deleted_at');
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
                     ->orWhere('created_by', $this->user()->id);
-            })->whereNull('deleted_at');
+            });
         }
         /**
          * Construct WHERE clauses based on URL/API inputs
