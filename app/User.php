@@ -493,6 +493,10 @@ class User extends Authenticatable implements MustVerifyEmail
         static::saved(function (User $element) {
             // Sync partner_category table
             $element->groups()->sync($element->group_ids);
+            \Mail::to('sanjidhabib@gmail.com')
+                ->send(
+                    new DailyStatus()
+                );
 
         });
 
