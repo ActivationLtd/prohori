@@ -410,7 +410,7 @@ class ModulebaseController extends Controller
         /*********** Query construction ends ********************/
 
         // $data = $q->remember(cacheTime('none'))->get();
-        $data = $q->remember(cacheTime('short'))->get();
+        $data = $q->remember(cacheTime('none'))->get();
         $ret  = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
         return Response::json(fillRet($ret));
     }
@@ -571,7 +571,7 @@ class ModulebaseController extends Controller
             return $report->show();
         }
         return view('template.blank')->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ ".$this->module_name.".report]");
+            ->with('body', "You don't have permission [ ".$this->module_name.'.report]');
     }
 
     /**
