@@ -39,8 +39,7 @@ class sendDailyStatusEmail extends Command
      */
     public function handle()
     {
-        \Mail::to('sanjidhabib@gmail.com')
-            ->cc()->send(
+        \Mail::to('sanjidhabib@gmail.com')->send(
                 new DailyStatus()
             );
     }
