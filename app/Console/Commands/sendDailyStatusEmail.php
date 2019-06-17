@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\DailyStatus;
 use Illuminate\Console\Command;
-use App\Mail\TaskCreated;
+
 
 class sendDailyStatusEmail extends Command
 {
