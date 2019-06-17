@@ -10,7 +10,6 @@ use App\Traits\IsoUserPermission;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use App\Mail\DailyStatus;
 
 /**
  * App\User
@@ -494,10 +493,6 @@ class User extends Authenticatable implements MustVerifyEmail
         static::saved(function (User $element) {
             // Sync partner_category table
             $element->groups()->sync($element->group_ids);
-            \Mail::to('sanjidhabib@gmail.com')
-                ->send(
-                    new DailyStatus()
-                );
 
         });
 
