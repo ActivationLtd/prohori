@@ -10,6 +10,7 @@ use App\Traits\IsoUserPermission;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Mail\DailyStatus;
 
 /**
  * App\User
