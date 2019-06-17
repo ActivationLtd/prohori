@@ -10,9 +10,9 @@ return [
      |*/
     'forever' => -1,
     'none' => null,
-    'very-long' => 36000,
-    'long' => 14400,
-    'medium' => 3600,
+    'very-long' => 144000,
+    'long' => 7200,
+    'medium' => 1800,
     'short' => 300,
     'very-short' => 60,
 ];

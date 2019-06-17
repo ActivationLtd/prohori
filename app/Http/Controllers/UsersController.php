@@ -10,6 +10,8 @@ use Response;
 use App\User;
 use Validator;
 use App\Upload;
+use App\Clientlocation;
+use App\Client;
 
 class UsersController extends ModulebaseController
 {
@@ -300,6 +302,21 @@ class UsersController extends ModulebaseController
             $id   = Request::get('id');
             $user = User::find($id);
             return $user;
+        }
+    }
+    public function customClient(){
+        if(Request::has('id')){
+            $id=Request::get('id');
+            $assignee=User::find($id);
+            $data=null;
+            if(!is_null($assignee->operating_area_ids) && count($assignee->operating_area_ids)){
+                $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
+                $clients=Client::whereIn('id',$clientlocations);
+                $data = $clients->remember(cacheTime('none'))->get();
+            }
+            $ret = ret('success', "", compact('data'));
+            return Response::json($ret);
+
         }
     }
 

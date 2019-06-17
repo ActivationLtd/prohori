@@ -134,7 +134,6 @@
         @include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])
     </div>
 @endif
-
 <hr/>
 
 {{-- ******************* Form ends *********************** --}}
