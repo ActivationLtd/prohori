@@ -13,7 +13,7 @@ class DefaultModuleReport extends IsoReportBuilder
         /** @var array $escape_fields */
         $escape_fields = []; // Default filter logic will not apply on these
 
-        foreach ($this->request->all() as $name => $val) {
+        foreach ($this->request as $name => $val) {
             if (in_array($name, $escape_fields)) {
                 // Process custom filters test1,test2,test3
             } else {

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Reports\DefaultModuleReport;
 use DB;
-use Request;
-use App\Task;
-use Response;
 use Lang;
+use Request;
+use Redirect;
+use Response;
+use App\Task;
 
 class TasksController extends ModulebaseController
 {
@@ -18,10 +20,10 @@ class TasksController extends ModulebaseController
 
     /**
      * Define grid SELECT statement and HTML column name.
-     *
      * @return array
      */
-    public function gridColumns() {
+    public function gridColumns()
+    {
         return [
             //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
             ["{$this->module_name}.id", "id", Lang::get('messages.Id')],
@@ -41,69 +43,72 @@ class TasksController extends ModulebaseController
 
     /**
      * Construct SELECT statement based
-     *
      * @return array
      */
-    public function selectColumns() {
+    public function selectColumns()
+    {
         $select_cols = [];
-        foreach ($this->gridColumns() as $col)
-            $select_cols[] = $col[0] . ' as ' . $col[1];
+        foreach ($this->gridColumns() as $col) {
+            $select_cols[] = $col[0].' as '.$col[1];
+        }
 
         return $select_cols;
     }
 
     /**
      * Define Query for generating results for grid
-     *
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function sourceTables() {
+    public function sourceTables()
+    {
         return DB::table($this->module_name)
-            ->leftJoin('users as updater', $this->module_name . '.updated_by', 'updater.id')
-            ->leftJoin('users as assigned', $this->module_name . '.assigned_to', 'assigned.id');
+            ->leftJoin('users as updater', $this->module_name.'.updated_by', 'updater.id')
+            ->leftJoin('users as assigned', $this->module_name.'.assigned_to', 'assigned.id');
     }
 
     /**
      * Define Query for generating results for grid
-     *
      * @return $this|mixed
      */
-    public function gridQuery() {
+    public function gridQuery()
+    {
         $query = $this->sourceTables()->select($this->selectColumns());
-        $user=User();
+        $user  = User();
 
         // Inject tenant context in grid query
         if ($tenant_id = inTenantContext($this->module_name)) {
             $query = injectTenantIdInModelQuery($this->module_name, $query);
         }
         if ($user->isManagerUser()) {
-            $query = $query->where(function ($q) use($user) {
+            $query = $query->where(function ($q) use ($user) {
+                /** @var $q \Illuminate\Database\Query\Builder */
                 $q->where('assigned_to', $user->id)
                     ->orWhere('tasks.created_by', $user->id);
             });
         }
 
         // Construct query based on filter param
-        $query = self::filterQueryConstructor($query);
+        $query = $this->filterQueryConstructor($query);
         // Exclude deleted rows
-        $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
+        /** @var $query \Illuminate\Database\Query\Builder */
+        $query = $query->whereNull($this->module_name.'.deleted_at'); // Skip deleted rows
 
         return $query;
     }
 
     /**
      * Modify datatable values
-     *
-     * @var $dt \Yajra\DataTables\DataTableAbstract
      * @return mixed
+     * @var $dt \Yajra\DataTables\DataTableAbstract
      */
-    public function datatableModify($dt) {
+    public function datatableModify($dt)
+    {
         // First set columns for  HTML rendering
         $dt = $dt->rawColumns(['id', 'name', 'is_active']); // HTML can be printed for raw columns
 
         // Next modify each column content
-        $dt = $dt->editColumn('name', '<a href="{{ route(\'' . $this->module_name . '.edit\', $id) }}">{{$name}}</a>');
-        $dt = $dt->editColumn('id', '<a href="{{ route(\'' . $this->module_name . '.edit\', $id) }}">{{$id}}</a>');
+        $dt = $dt->editColumn('name', '<a href="{{ route(\''.$this->module_name.'.edit\', $id) }}">{{$name}}</a>');
+        $dt = $dt->editColumn('id', '<a href="{{ route(\''.$this->module_name.'.edit\', $id) }}">{{$id}}</a>');
         $dt = $dt->editColumn('is_active', '@if($is_active)  Yes @else <span class="text-red">No</span> @endif');
 
         return $dt;
@@ -112,9 +117,8 @@ class TasksController extends ModulebaseController
     /**
      * Returns datatable json for the module index page
      * A route is automatically created for all modules to access this controller function
-     *
-     * @var \Yajra\DataTables\DataTables $dt
      * @return \Illuminate\Http\JsonResponse
+     * @var \Yajra\DataTables\DataTables $dt
      */
     // public function grid()
     // {
@@ -129,8 +133,7 @@ class TasksController extends ModulebaseController
 
     /**
      * Transform form inputs
-     *
-     * @param array $inputs
+     * @param  array  $inputs
      * @return array
      */
     // public function transformInputs($inputs = [])
@@ -139,21 +142,16 @@ class TasksController extends ModulebaseController
     // }
     // ****************** transformInputs functions end ***********************
 
-    public function edit($id) {
-        return parent::edit($id); // TODO: Change the autogenerated stub
-    }
-
     /**
-     * save updated paragraph sequence
-     * @return \Illuminate\Http\RedirectResponse
+     * Save updated task sequence
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function postSaveSequence() {
+    public function postSaveSequence()
+    {
         if (Request::has('seq') && is_array(Request::get('seq')) && count(Request::get('seq'))) {
             $i = 1;
             foreach (Request::get('seq') as $task_id) {
-                $affectedRows = Task::where('id', $task_id)->update(
-                    ['seq' => $i++]
-                );
+                Task::where('id', $task_id)->update(['seq' => $i++]);
             }
         }
         if (Request::has('redirect_common')) {
@@ -167,5 +165,20 @@ class TasksController extends ModulebaseController
             return Redirect::to(Request::get('redirect_common'));
         }
         return Redirect::back();
+    }
+
+    /**
+     * Show and render report
+     */
+    public function report()
+    {
+        if (hasModulePermission($this->module_name, 'report')) {
+            $report              = new DefaultModuleReport();
+            $report->data_source = $this->reportDataSource();
+            $report->base_dir    = $this->reportViewBaseDir();
+            return $report->show();
+        }
+        return view('template.blank')->with('title', 'Permission denied!')
+            ->with('body', "You don't have permission [ ".$this->module_name.'.report]');
     }
 }
