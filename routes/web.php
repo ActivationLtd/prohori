@@ -69,6 +69,7 @@ Route::middleware(['auth'])->group(function () use ($modules, $modulegroups) {
 });
 
 Route::get('test', 'MiscController@test')->name('misc.test');
+Route::get('dailyStatusEmail', 'MiscController@dailyStatusEmail')->name('misc.dailyStatus');
 
 
 
