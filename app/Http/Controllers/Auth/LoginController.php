@@ -69,7 +69,6 @@ class LoginController extends Controller
 
         $this->validateLogin($request);
 
-
         if ($user = User::where($this->username(), $request->get($this->username()))->first()) {
             if (is_null($user->email_verified_at)) {
                 return $this->sendFailedLoginResponse($request, 'Email not verified');
@@ -112,8 +111,6 @@ class LoginController extends Controller
             $this->username() => 'required|string',
             'password' => 'required|string',
         ]);
-
-
 
     }
 
@@ -279,5 +276,25 @@ class LoginController extends Controller
         $request->merge(['redirect_success' => route('login')]);
         //\Request::merge(['redirect_fail' => \Redirect::route('login')]);
         return $this->jsonOrRedirect($ret, $validator);
+    }
+
+    /**
+     * Log the user out of the application.
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        // Todo [Sanjid. ACT-1568]
+
+        // Clear-out device token.
+
+        // if ret=json then return JSON response.
+
+        return $this->loggedOut($request) ?: redirect('/');
     }
 }

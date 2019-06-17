@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace App;
 
@@ -819,7 +819,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function groups() { return $this->belongsToMany(Group::class, 'user_group'); }
+    public function groups() { return $this->belongsToMany(Group::class, 'user_group')->remember(cacheTime('very-short')); }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
