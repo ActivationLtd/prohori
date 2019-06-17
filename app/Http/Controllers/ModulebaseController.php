@@ -571,7 +571,7 @@ class ModulebaseController extends Controller
             return $report->show();
         }
         return view('template.blank')->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ ".$this->module_name.".report]");
+            ->with('body', "You don't have permission [ ".$this->module_name.'.report]');
     }
 
     /**
