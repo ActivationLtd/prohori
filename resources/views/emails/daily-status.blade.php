@@ -6,11 +6,9 @@
 @endsection
 
 @section('email-content')
-<h3 style="font-family:Arial, Helvetica, sans-serif;  font-size:20px; color:#000; line-height:30px; margin:0px 0 25px 0; padding:0px; font-weight:normal; ">
     Dear All <br>
     Unresolved Tasks list for Prohori<br/>
-
-        <table class="table table-condensed">
+        <table class="table table-condensed border">
             <thead>
             <tr>
                 <th>Sequnce</th>
@@ -37,5 +35,4 @@
         </table>
     <br/><br/>
     Thanks
-    </h3>
 @endsection
