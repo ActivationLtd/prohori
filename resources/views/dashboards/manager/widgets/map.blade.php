@@ -52,10 +52,13 @@
         }
 
         mymap.on('click', onMapClick);
-        <?php $tasks = \App\Task::whereIn('status', ['To do', 'In progress', 'Verify'])->where(function ($q)  {
-            $q->where('assigned_to', user()->id)
-                ->orWhere('tasks.created_by', user()->id);
-        })->remember(cacheTime('short'))->get();
+        <?php
+        $tasks = \App\Task::with(['assignee', 'clientlocation', 'tasktype'])
+            ->whereIn('status', ['To do', 'In progress', 'Verify'])
+            ->where(function ($q) {
+                $q->where('assigned_to', user()->id)
+                    ->orWhere('tasks.created_by', user()->id);
+            })->remember(cacheTime('short'))->get();
         ?>
         @foreach($tasks as $task)
         @if(isset($task->clientlocation->id,$task->clientlocation->latitude,$task->clientlocation->longitude))

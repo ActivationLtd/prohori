@@ -3,7 +3,7 @@
 $subtasks = $task->subtasks()->orderBy('seq', 'ASC')->get();
 
 ?>
-
+<h4>Sub-tasks</h4>
 <div class="clearfix"></div>
 <span class="btn btn-success btn-xs" id="paragraphSeqUpdateMsg" style="display: none"></span>
 @if(count($subtasks))

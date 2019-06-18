@@ -5,36 +5,26 @@
  */
 
 ?>
-
 <div class="row">
     <div class="col-md-12">
         <h4>See task in map</h4>
         <div id="mapid" style="width: 100%; height: 400px;"></div>
     </div>
 </div>
-
-
 @section('css')
     @parent
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
           integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
           crossorigin=""/>
-
 @endsection
-
-
 @section('js')
     @parent
-
     <!-- Make sure you put this AFTER Leaflet's CSS -->
     <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
             integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
             crossorigin=""></script>
-
-
     <script>
-        var mymap = L.map('mapid').setView([23.483401, 90.186768], 13);
-
+        var mymap = L.map('mapid').setView([23.7807777,90.3492858], 9);
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 18,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -42,8 +32,6 @@
             'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             id: 'mapbox.streets'
         }).addTo(mymap);
-
-
         var popup = L.popup();
 
         function onMapClick(e) {
@@ -54,8 +42,11 @@
         }
 
         mymap.on('click', onMapClick);
-
-        <?php $tasks = \App\Task::whereIn('status', ['To do', 'In progress', 'Verify'])->remember(cacheTime('short'))->get(); ?>
+        <?php
+        $tasks = \App\Task::with(['assignee', 'clientlocation', 'tasktype'])
+            ->whereIn('status', ['To do', 'In progress', 'Verify'])
+            ->remember(cacheTime('short'))->get();
+        ?>
 
         @foreach($tasks as $task)
         @if(isset($task->clientlocation->id,$task->clientlocation->latitude,$task->clientlocation->longitude))
