@@ -56,7 +56,7 @@
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
     {{--status--}}
-    @include('form.select-array',['var'=>['name'=>'status','label'=>Lang::get('messages.Status'), 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-4']])
+    @include('form.select-array',['var'=>['name'=>'status','label'=>Lang::get('messages.Status'), 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-6']])
 </div>
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding-l">
@@ -115,23 +115,23 @@
     </div>
     <div class="clearfix"></div>
     {{--<div class="col-md-6 no-padding ">--}}
-        {{--is_verified--}}
-        {{--@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
-        {{--verified_by--}}
-        {{--@include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
-        {{--<div class="clearfix"></div>--}}
-        {{--verify_note--}}
-        {{--@include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])--}}
+    {{--is_verified--}}
+    {{--@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
+    {{--verified_by--}}
+    {{--@include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
+    {{--<div class="clearfix"></div>--}}
+    {{--verify_note--}}
+    {{--@include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])--}}
     {{--</div>--}}
 
     {{--<div class="col-md-6 no-padding ">--}}
-        {{--is_closed--}}
-        {{--@include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
-        {{--closed_by--}}
-        {{--@include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
-        {{--closing_note--}}
-        {{--<div class="clearfix"></div>--}}
-        {{--@include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])--}}
+    {{--is_closed--}}
+    {{--@include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
+    {{--closed_by--}}
+    {{--@include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
+    {{--closing_note--}}
+    {{--<div class="clearfix"></div>--}}
+    {{--@include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])--}}
     {{--</div>--}}
 @endif
 <hr/>
@@ -141,23 +141,21 @@
 @section('content-bottom')
     @parent
     <div class="col-md-6 no-padding-l">
+        <h4>Uploads</h4>
         <b>{{Lang::get('messages.Task-files')}}</b>
         <small>Share task related files with assignee.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Task file','limit'=>10]])
-
         <b>{{Lang::get('messages.Evidences')}}</b>
         <small>For assignee to upload image as proof of the task completion.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
 
-        @if(isset($task))
-            <b>Sub-tasks</b>
+        @if(isset($task) && count($task->subtasks))
             @include('modules.tasks.subtasks')
         @endif
         <div class="clearfix"></div>
         @if(isset($task) && count($task->assignments))
-            <b>Task Related Assignments</b>
             @include('modules.tasks.taskassignments')
         @endif
     </div>
@@ -216,6 +214,7 @@
 
         $("select[name=clientlocation_id]").attr('disabled', true);
         $("select[name=client_id]").attr('disabled', true);
+
         /**
          * dynamic selection of client location based on client selection
          */
@@ -258,7 +257,7 @@
                     data: {id: id},
                     success: function (response) {
                         console.log(response.data);
-                        if((response.data)){
+                        if ((response.data)) {
                             //var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
                             //
                             $.each(response.data, function (i, obj) {
