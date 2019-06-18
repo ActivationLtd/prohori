@@ -305,41 +305,10 @@ class Task extends Basemodule
         /************************************************************/
         static::saving(function (Task $element) {
             $valid = true;
-
             /************************************************************/
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
-            if ($valid) {
-                if ($element->client()->exists()) {
-                    $element->client_name = $element->client->name;
-                    $element->client_obj = $element->client->toJson();
-                }
-            }
-            if ($element->clientlocation()->exists()) {
-                $element->clientlocation_obj = $element->clientlocation->toJson();
-                $element->clientlocation_name = $element->clientlocation->name;
-
-                $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
-                $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
-
-                $element->clientlocation_obj = $element->clientlocation->toJson();
-
-                $element->division_id = $element->clientlocation->division_id;
-                $element->division_name = $element->clientlocation->division_name;
-
-                $element->district_id = $element->clientlocation->district_id;
-                $element->district_name = $element->clientlocation->district_name;
-
-                $element->upazila_id = $element->clientlocation->upazila_id;
-                $element->upazila_name = $element->clientlocation->upazila_name;
-
-                $element->longitude = $element->clientlocation->longitude;
-                $element->latitude = $element->clientlocation->latitude;
-            }
-            if ($element->tasktype()->exists()) {
-                $element->tasktype_name = $element->tasktype->name;
-            }
             //checking assignee operating area and client location operating area
             if (isset($element->assignee->operating_area_ids, $element->clientlocation->operatingarea_id)) {
                 if (!in_array($element->clientlocation->operatingarea_id, $element->assignee->operating_area_ids)) {
@@ -361,35 +330,86 @@ class Task extends Basemodule
             if ($element->getOriginal('status') != $element->status) {
                 $element->previous_status = $element->getOriginal('status');
             }
-            //update assignment and closed by
-            if ($element->status == 'Closed') {
-                $element->is_closed = 1;
-                $element->closed_by = $element->assigned_to;
-                if (count($element->assignments) > 0) {
-                    foreach ($element->assignments as $assignment) {
-                        $assignment->is_closed = 1;
-                        $assignment->save();
+
+            //data filling
+            if ($valid) {
+                //filling client info
+                if ($element->client()->exists()) {
+                    $element->client_name = $element->client->name;
+                    $element->client_obj = $element->client->toJson();
+                }
+                //filling client location
+                if ($element->clientlocation()->exists()) {
+                    $element->clientlocation_obj = $element->clientlocation->toJson();
+                    $element->clientlocation_name = $element->clientlocation->name;
+
+                    $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
+                    $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
+
+                    $element->clientlocation_obj = $element->clientlocation->toJson();
+
+                    $element->division_id = $element->clientlocation->division_id;
+                    $element->division_name = $element->clientlocation->division_name;
+
+                    $element->district_id = $element->clientlocation->district_id;
+                    $element->district_name = $element->clientlocation->district_name;
+
+                    $element->upazila_id = $element->clientlocation->upazila_id;
+                    $element->upazila_name = $element->clientlocation->upazila_name;
+
+                    $element->longitude = $element->clientlocation->longitude;
+                    $element->latitude = $element->clientlocation->latitude;
+                }
+                //filling tasktype information
+                if ($element->tasktype()->exists()) {
+                    $element->tasktype_name = $element->tasktype->name;
+                }
+                //filling assignee information
+                if (isset($element->assigned_to)) {
+                    $element->assignee_name = $element->assignee->name;
+                    $element->assignee_profile_pic_url = $element->assignee->profile_pic_url;
+                }
+                //filling priority
+                if (isset($element->priority)) {
+                    if ($element->priority == 0) {
+                        $element->priority_name = 'Low';
+                    } else if ($element->priority == 1) {
+                        $element->priority_name = 'Normal';
+                    } else if ($element->priority == 2) {
+                        $element->priority_name = 'High';
                     }
                 }
-            }
-            if (isset($element->assigned_to)) {
-                $element->assignee_name = $element->assignee->name;
-                $element->assignee_profile_pic_url = $element->assignee->profile_pic_url;
-            }
-            if (isset($element->priority)) {
-                if ($element->priority == 0) {
-                    $element->priority_name = 'Low';
-                } else if ($element->priority == 1) {
-                    $element->priority_name = 'Normal';
-                } else if ($element->priority == 2) {
-                    $element->priority_name = 'High';
+                //making parent id null
+                if (!isset($element->parent_id)) {
+                    $element->parent_id = 0;
                 }
-            }
-            if (!isset($element->parent_id)) {
-                $element->parent_id = 0;
-            }
-            if (isset($element->watchers, $element->assignee->watchers)) {
-                $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
+                //adding watchers
+                if (isset($element->watchers, $element->assignee->watchers)) {
+                    $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
+                }
+
+                //update assignment and closed by
+                if ($element->status === 'Closed') {
+                    $element->is_closed = 1;
+                    $element->closed_by = $element->assigned_to;
+                    if (count($element->assignments) > 0) {
+                        foreach ($element->assignments as $assignment) {
+                            $assignment->is_closed = 1;
+                            $assignment->save();
+                        }
+                    }
+                }
+                //update assignment and verified by
+                if ($element->status === 'Done') {
+                    $element->is_verified = 1;
+                    $element->verified_by = $element->assigned_to;
+                    if (count($element->assignments) > 0) {
+                        foreach ($element->assignments as $assignment) {
+                            $assignment->is_verified = 1;
+                            $assignment->save();
+                        }
+                    }
+                }
             }
             $element->is_active = 1;
 
