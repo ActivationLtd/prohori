@@ -384,7 +384,7 @@ class Task extends Basemodule
                     $element->parent_id = 0;
                 }
                 //adding watchers
-                if (isset($element->watchers, $element->assignee->watchers)) {
+                if (isset($element->assignee->watchers)) {
                     $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
                 }
 
