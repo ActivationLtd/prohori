@@ -114,25 +114,25 @@
         @include('form.textarea',['var'=>['name'=>'resolve_note','label'=>'Resolve Notes','container_class'=>'col-md-8']])
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6 no-padding ">
+    {{--<div class="col-md-6 no-padding ">--}}
         {{--is_verified--}}
-        @include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+        {{--@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
         {{--verified_by--}}
-        @include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
-        <div class="clearfix"></div>
+        {{--@include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
+        {{--<div class="clearfix"></div>--}}
         {{--verify_note--}}
-        @include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])
-    </div>
+        {{--@include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])--}}
+    {{--</div>--}}
 
-    <div class="col-md-6 no-padding ">
+    {{--<div class="col-md-6 no-padding ">--}}
         {{--is_closed--}}
-        @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
+        {{--@include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
         {{--closed_by--}}
-        @include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
+        {{--@include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
         {{--closing_note--}}
-        <div class="clearfix"></div>
-        @include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])
-    </div>
+        {{--<div class="clearfix"></div>--}}
+        {{--@include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])--}}
+    {{--</div>--}}
 @endif
 <hr/>
 
