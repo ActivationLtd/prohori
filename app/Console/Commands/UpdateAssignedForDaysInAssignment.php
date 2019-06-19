@@ -13,7 +13,7 @@ class updateAssignedForDaysInAssignment extends Command
      *
      * @var string
      */
-    protected $signature = 'command:updateAssignedForDaysInAssignment';
+    protected $signature = 'command:update-assigned-for-days-in-assignment';
 
     /**
      * The console command description.

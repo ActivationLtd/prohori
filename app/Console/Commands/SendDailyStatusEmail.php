@@ -13,7 +13,7 @@ class sendDailyStatusEmail extends Command
      *
      * @var string
      */
-    protected $signature = 'command:sendDailyStatusEmail';
+    protected $signature = 'command:send-daily-status-email';
 
     /**
      * The console command description.

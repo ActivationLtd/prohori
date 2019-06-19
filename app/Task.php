@@ -383,8 +383,8 @@ class Task extends Basemodule
                 if (!isset($element->parent_id)) {
                     $element->parent_id = 0;
                 }
-                if(!isset($element->watchers)){
-                    $element->watchers=[];
+                if (!isset($element->watchers)) {
+                    $element->watchers = [];
                 }
                 //adding watchers
                 if (isset($element->assignee->watchers)) {
@@ -425,13 +425,6 @@ class Task extends Basemodule
         // completed yet.
         /************************************************************/
         static::creating(function (Task $element) {
-
-            $emails = [];
-            if (isset($element->watchers)) {
-                foreach ($element->watchers as $user_id) {
-                    $emails[] = User::find($user_id)->email;
-                }
-            }
             $element->days_open = 0;
             $element->is_closed = 0;
             $element->is_resolved = 0;
@@ -449,7 +442,7 @@ class Task extends Basemodule
                 $emails = [];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
-                        $emails[] = User::find($user_id)->email;
+                        $emails[] = User::find($user_id)->remember(cacheTime('long'))->email;
                     }
                 }
                 //send mail to the assignee when task is created
@@ -457,9 +450,7 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
-
             }
-
         });
 
         /************************************************************/
