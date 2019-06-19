@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Mail\AssignmentCreated;
 use App\Observers\AssignmentObserver;
 use App\Traits\IsoModule;
 
@@ -188,7 +189,21 @@ class Assignment extends Basemodule
         // Following code block executes - after an element is created
         // for the first time.
         /************************************************************/
-        // static::created(function (Assignment $element) { });
+        static::created(function (Assignment $element) {
+            if ($element->assignee()->exists()) {
+                $emails = [];
+                if (isset($element->task->watchers)) {
+                    foreach ($element->task->watchers as $user_id) {
+                        $emails[] = User::find($user_id)->email;
+                    }
+                }
+                //send mail to the assignee when task is created
+                \Mail::to($element->assignee->email)
+                    ->cc($emails)->send(
+                        new AssignmentCreated($element)
+                    );
+            }
+        });
 
         /************************************************************/
         // Following code block executes - when an already existing

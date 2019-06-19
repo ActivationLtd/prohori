@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use View;
 use App\Mail\DailyStatus;
+use App\Task;
 
 
 class MiscController extends Controller
@@ -35,6 +36,8 @@ class MiscController extends Controller
         \Mail::to('sanjidhabib@gmail.com')->send(
             new DailyStatus()
         );
+        // $tasks=Task::where('is_active',1)->get();
+        // return View::make('emails.daily-status')->with('tasks',$tasks);
     }
 }
 
