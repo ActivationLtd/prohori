@@ -383,12 +383,17 @@ class Task extends Basemodule
                 if (!isset($element->parent_id)) {
                     $element->parent_id = 0;
                 }
+
                 if (!isset($element->watchers)) {
                     $element->watchers = [];
                 }
+
                 //adding watchers
                 if (isset($element->assignee->watchers)) {
-                    $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
+                    if(is_array($element->watchers)){
+                        $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
+                    }
+
                 }
 
                 //update assignment and closed by
@@ -442,7 +447,8 @@ class Task extends Basemodule
                 $emails = [];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
-                        $emails[] = User::find($user_id)->remember(cacheTime('long'))->email;
+                        /** @noinspection PhpUndefinedMethodInspection */
+                        $emails[] = User::remember(cacheTime('long'))->find($user_id)->email;
                     }
                 }
                 //send mail to the assignee when task is created
