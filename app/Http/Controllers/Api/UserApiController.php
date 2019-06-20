@@ -15,6 +15,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\UploadsController;
 use App\Http\Controllers\RecommendurlsController;
 use Illuminate\Support\Arr;
+use DB;
 
 class UserApiController extends ApiController
 {
@@ -71,10 +72,10 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function summary() {
-        $task_assigned = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
-        $task_completed = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
-        $task_inprogress = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
-        $task_due = Task::remember(cacheTime('very-short'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
+        $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
+        $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
+        $task_due = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
         $data = [
             'tasks' => [
                 'assigned' => $task_assigned,
@@ -92,9 +93,7 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function tasks() {
-        $tasks = Task::remember(cacheTime('very-short'))->with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
-            ->where('is_active', 1);
-
+        $tasks = DB::table('tasks')->where('is_active', 1)->whereNull('deleted_at');
         /**
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
@@ -112,6 +111,12 @@ class UserApiController extends ApiController
         if (Request::has('createdSince')) {
             $tasks = $tasks->where('created_at', '>=', Request::get('createdSince'));
         }
+        if (Request::has('dueNow')) {
+            if (Request::get('dueNow') == true) {
+                $tasks = $tasks->where('due_date', '<', now());
+            }
+
+        }
         if (Request::has('updatedAt')) {
             $tasks = $tasks->whereRaw("DATE(updated_at) = " . "'" . Request::get('updateddAt') . "'");
         }
@@ -126,7 +131,6 @@ class UserApiController extends ApiController
                     $temp = removeEmptyVals($val);
                     if (count($temp)) {
                         $tasks = $tasks->whereIn($name, $temp);
-
                     }
                 } else {
                     if (strlen($val) && strpos($val, ',') !== false) {
@@ -148,7 +152,6 @@ class UserApiController extends ApiController
 
         # Get total count with out offset and limit.
         $total = $tasks->count();
-
         # Sort by and roder
         $sort_by = Request::has('sort_by') ? Request::get('sort_by') : 'created_at';
         $sort_order = Request::has('sort_order') ? Request::get('sort_order') : 'desc';
@@ -167,7 +170,7 @@ class UserApiController extends ApiController
 
         /*********** Query construction ends ********************/
 
-        $data = $tasks->remember(cacheTime('very-short'))->get();
+        $data = $tasks->get();
         $ret = ret('success', "User Task List", compact('data', 'total', 'offset', 'limit'));
         return Response::json($ret);
     }
@@ -177,14 +180,13 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function dashboardTasks() {
-        $tasks = Task::remember(cacheTime('very-short'))->with(['subtasks', 'uploads', 'assignments', 'assignee', 'flagger', 'verifier', 'resolver', 'closer', 'parenttask'])
-            ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify']);
+        $tasks = DB::table('tasks')->where('is_active', 1)->whereNull('deleted_at')->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
                     ->orWhere('created_by', $this->user()->id);
-            })->whereNull('deleted_at');
+            });
         }
         /**
          * Construct WHERE clauses based on URL/API inputs
@@ -195,6 +197,12 @@ class UserApiController extends ApiController
         }
         if (Request::has('createdSince')) {
             $tasks = $tasks->where('created_at', '>=', Request::get('createdSince'));
+        }
+        if (Request::has('dueNow')) {
+            if (Request::get('dueNow') == true) {
+                $tasks = $tasks->where('due_date', '<', now());
+            }
+
         }
         if (Request::has('updatedAt')) {
             $tasks = $tasks->whereRaw("DATE(updated_at) = " . "'" . Request::get('updateddAt') . "'");
@@ -250,7 +258,7 @@ class UserApiController extends ApiController
 
         /*********** Query construction ends ********************/
 
-        $data = $tasks->remember(cacheTime('very-short'))->get();
+        $data = $tasks->get();
         $ret = ret('success', "User Task List", compact('data', 'total', 'offset', 'limit'));
         return Response::json($ret);
     }
@@ -335,12 +343,12 @@ class UserApiController extends ApiController
     /**
      * @param $id
      */
-    public function getClientsBasedOnUser($id){
-        $assignee=User::find($id);
-        $data=[];
-        if(!is_null($assignee->operating_area_ids)){
-            $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
-            $clients=Client::whereIn('id',$clientlocations);
+    public function getClientsBasedOnUser($id) {
+        $assignee = User::find($id);
+        $data = [];
+        if (!is_null($assignee->operating_area_ids)) {
+            $clientlocations = Clientlocation::whereIn('operatingarea_id', $assignee->operating_area_ids)->get(['client_id']);
+            $clients = Client::whereIn('id', $clientlocations);
             $data = $clients->remember(cacheTime('very-short'))->get();
         }
         $ret = ret('success', "User Client List", compact('data'));

@@ -1,5 +1,10 @@
 <?php
-$tasks = \App\Task::remember(cacheTime('short'))->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify'])->where('assigned_to', user()->id)->orWhere('created_by', user()->id)->orderBy('created_at', 'asc')->get();
+$tasks = \App\Task::with(['assignee', 'clientlocation', 'tasktype'])
+    ->where('is_active', 1)->whereIn('status', ['To do', 'In progress', 'Verify'])
+    ->where(function ($q) {
+        $q->where('assigned_to', user()->id)
+            ->orWhere('tasks.created_by', user()->id);
+    })->remember(cacheTime('short'))->get();
 $status_map = [
     'To do' => 'todo',
     'In progress' => 'inprogress',

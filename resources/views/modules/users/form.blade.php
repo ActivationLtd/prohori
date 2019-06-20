@@ -171,7 +171,7 @@ $var = [
                     </div>
                     @include('form.input-text',['var'=>['name'=>'auth_token','label'=>'Auth token', 'container_class'=>'col-sm-6']])
                     {{--device_name--}}
-                    @include('form.input-text',['var'=>['name'=>'device_name','label'=>'Device name', 'container_class'=>'col-sm-3']])
+                    @include('form.input-text',['var'=>['name'=>'device_token','label'=>'Device Token', 'container_class'=>'col-sm-3']])
                 </div>
                 <div class="clearfix"></div>
             </div>

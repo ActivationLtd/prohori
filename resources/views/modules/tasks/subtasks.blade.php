@@ -3,7 +3,7 @@
 $subtasks = $task->subtasks()->orderBy('seq', 'ASC')->get();
 
 ?>
-
+<h4>Sub-tasks</h4>
 <div class="clearfix"></div>
 <span class="btn btn-success btn-xs" id="paragraphSeqUpdateMsg" style="display: none"></span>
 @if(count($subtasks))
@@ -65,13 +65,6 @@ $subtasks = $task->subtasks()->orderBy('seq', 'ASC')->get();
                 }
             });
         }
-
-<<<<<<< HEAD
-@if(!in_array($task->status,['Closed','Done']))
-    <a class="btn pull-left  btn-default" href="{{route('tasks.create')}}?parent_id={{$task->id}}&redirect_success={{URL::full()}}">Create</a>
-@endif
-=======
-        //$("#sortable").sortable();
     </script>
 @stop
->>>>>>> master
+

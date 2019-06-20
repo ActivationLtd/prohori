@@ -1,4 +1,9 @@
-<?php /** @noinspection PhpUndefinedMethodInspection */
+<?php /** @noinspection PhpUndefinedClassInspection */
+/** @noinspection NotOptimalIfConditionsInspection */
+/** @noinspection PhpParamsInspection */
+/** @noinspection PhpUnusedLocalVariableInspection */
+
+/** @noinspection PhpUndefinedMethodInspection */
 
 namespace App\Http\Controllers;
 
@@ -7,10 +12,12 @@ use View;
 use Request;
 use Redirect;
 use Response;
+use Exception;
 use Validator;
 use App\Module;
 use App\Upload;
 use App\Traits\IsoOutput;
+use Illuminate\Support\Str;
 use App\Traits\IsoGridDatatable;
 use App\Classes\Reports\DefaultModuleReport;
 
@@ -22,11 +29,11 @@ class ModulebaseController extends Controller
     use IsoOutput;
     use IsoGridDatatable;
 
-    protected $module_name;         // Stores module name with lowercase and plural i.e. 'superheros'.
+    protected $module_name;    // Stores module name with lowercase and plural i.e. 'superheros'.
     protected $module;         // Stores module name with lowercase and plural i.e. 'superheros'.
     protected $query;          // Stores default DB query to create the grid. Used in grid() function.
-    protected $grid_columns;        // Columns to show, this array is set form modules individual controller.
-    protected $report_data_source = null;  // loads the model name
+    protected $grid_columns;   // Columns to show, this array is set form modules individual controller.
+    protected $report_data_source;  // loads the model name
 
     /**
      * Constructor for this class is very important as it boots up necessary features of
@@ -42,12 +49,10 @@ class ModulebaseController extends Controller
         $this->module_name = controllerModule(get_class($this));
         $this->module      = Module::where('name', $this->module_name)->remember(cacheTime('long'))->first();
 
-        # Add tenant context Inject tenant context in grid query
         if ($tenant_id = inTenantContext($this->module_name)) {
-            Request::merge([tenantIdField() => $tenant_id]); // Set tenant_id in request header
+            Request::merge([tenantIdField() => $tenant_id]);
         }
 
-        // Share the variables across all views accessed by this controller
         View::share([
             'module_name' => $this->module_name,
             'mod' => $this->module
@@ -64,7 +69,7 @@ class ModulebaseController extends Controller
     {
         if (hasModulePermission($this->module_name, 'view-list')) {
             if (Request::get('ret') === 'json') {
-                return self::list();
+                return $this->list();
             }
             $view = 'modules.base.grid';
             if (View::exists('modules.'.$this->module_name.'.grid')) {
@@ -75,64 +80,68 @@ class ModulebaseController extends Controller
 
         return View::make('template.blank')
             ->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ ".$this->module_name.".view-list]");
+            ->with('body', "You don't have permission [ ".$this->module_name.'.view-list]');
     }
 
     /**
      * Shows an element create form.
      * @return \Illuminate\Contracts\View\View|\View
+     * @throws \Exception
      */
     public function create()
     {
-        if (hasModulePermission($this->module_name, 'create')) { // check for create permission
-            $uuid = (Request::old('uuid')) ? Request::old('uuid') : uuid(); // Set uuid for the new element to be created
+
+        if (hasModulePermission($this->module_name, 'create')) {
+            $uuid = Request::old('uuid') ?: uuid();
             return View::make('modules.base.form')->with('uuid', $uuid)->with('element_editable', true);
         }
 
         return View::make('template.blank')
             ->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ ".$this->module_name.".create]");
+            ->with('body', "You don't have permission [ ".$this->module_name.'.create]');
     }
 
     /**
      * Store an spyr element. Returns json response if ret=json is sent as url parameter. Otherwise redirects
      * based on the url set in redirect_success|redirect_fail
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @var \App\Basemodule $element
+     * @var \App\Superhero $Model
      */
     public function store()
     {
-        /** @var \App\Basemodule $Model */
-        /** @var \App\Basemodule $element */
-        // init local variables
+
         $module_name = $this->module_name;
         $Model       = model($this->module_name);
+        $validator   = null;
+        $element     = new $Model($this->transformInputs(Request::all()));
 
-        //$element_name = str_singular($module_name);
-        //$ret = ret();
-        # --------------------------------------------------------
-        # Process store while creation
-        # --------------------------------------------------------
-        $validator = null;
-        $inputs    = $this->transformInputs(Request::all());
-        $element   = new $Model($inputs);
-        if (hasModulePermission($this->module_name, 'create')) { // check module permission
-            $validator = Validator::make(Request::all(), $Model::rules($element), $Model::$custom_validation_messages);
+        if (hasModulePermission($this->module_name, 'create')) {
 
-            // $element = new $Model;
-            // $element->fill(Request::all());
-            // $validator = $element->validateModel();
+            $validator = Validator::make(
+                Request::all(),
+                $Model::rules($element),
+                $Model::$custom_validation_messages
+            );
 
             if ($validator->fails()) {
-                $ret = ret('fail', "Validation error(s) on creating {$this->module->title}.",
-                    ['validation_errors' => json_decode($validator->messages(), true)]);
+
+                $ret = ret('fail',
+                    "Validation error(s) on creating {$this->module->title}.",
+                    ['validation_errors' => json_decode($validator->messages(), true)]
+                );
+
             } else {
                 if ($element->isCreatable()) {
-                    if ($element->save()) {
-                        //$ret = ret('success', "$Model " . $element->id . " has been created", ['data' => $Model::find($element->id)]);
-                        $ret = ret('success', "{$this->module->title} has been added", ['data' => $Model::find($element->id)]);
-                        Upload::linkTemporaryUploads($element->id, $element->uuid);
-                    } else {
-                        $ret = ret('fail', "{$this->module->title} create failed.");
+                    try {
+                        if ($element->save()) {
+                            $ret = ret('success', "{$this->module->title} has been added", ['data' => $Model::find($element->id)]);
+                            Upload::linkTemporaryUploads($element->id, $element->uuid);
+                        } else {
+                            $ret = ret('fail', "{$this->module->title} create failed.");
+                        }
+                    } catch (Exception $e) {
+                        $ret = ret('fail', $e->getMessage());
                     }
                 } else {
                     $ret = ret('fail', "{$this->module->title} could not be saved. (error: isCreatable())");
@@ -167,7 +176,7 @@ class ModulebaseController extends Controller
         if ($element = $Model::find($id)) { // Check if the element exists
             if ($element->isViewable()) { // Check if the element is viewable
                 //$ret = ret('success', "$Model " . $element->id . " found", ['data' => $element]);
-                $ret = ret('success', "", ['data' => $element]);
+                $ret = ret('success', '', ['data' => $element]);
             } else { // not viewable
                 $ret = ret('fail', "{$this->module->title} is not viewable.");
             }
@@ -201,7 +210,7 @@ class ModulebaseController extends Controller
         // init local variables
         $module_name  = $this->module_name;
         $Model        = model($this->module_name);
-        $element_name = str_singular($module_name);
+        $element_name = Str::singular($module_name);
         # --------------------------------------------------------
         # Process return/redirect
         # --------------------------------------------------------
@@ -217,14 +226,14 @@ class ModulebaseController extends Controller
             //return showPermissionErrorPage("The element is not view-able by current user.");
             return View::make('template.blank')
                 ->with('title', 'Permission denied!')
-                ->with('body', "The element is not view-able by current user. [ Error :: isViewable()]");
+                ->with('body', 'The element is not view-able by current user. [ Error :: isViewable()]');
         }
 
         // The element does not exist. Set error and return values
         //return showGenericErrorPage("The item that you are trying to access does not exist or has been deleted");
         return View::make('template.blank')
             ->with('title', 'Not found!')
-            ->with('body', "The item that you are trying to access does not exist or has been deleted");
+            ->with('body', 'The item that you are trying to access does not exist or has been deleted');
     }
 
     /**
@@ -253,21 +262,33 @@ class ModulebaseController extends Controller
                 $validator = $element->validateModel();
 
                 if ($validator->fails()) {
-                    $ret = ret('fail', "Validation error(s) on updating {$this->module->title}.",
-                        ['validation_errors' => json_decode($validator->messages(), true)]);
+                    $ret = ret('fail',
+                        "Validation error(s) on updating {$this->module->title}.",
+                        ['validation_errors' => json_decode($validator->messages(), true)]
+                    );
+
                 } else {
-                    if ($element->save()) { // Attempt to update/save.
+                    if ($element->save()) {
+
                         $ret = ret('success', "{$this->module->title} has been updated", ['data' => $element]);
-                    } else { // attempt to update/save failed. Set error message and return values.
+
+                    } else {
+
                         $ret = ret('fail', "{$this->module->title} update failed.");
+
                     }
                 }
 
-            } else { // Element is not editable. Set message and return values.
+            } else {
+
                 $ret = ret('fail', "{$this->module->title} is not editable by user.");
+
             }
-        } else { // element does not exist(or possibly deleted). Set error message and return values
+
+        } else {
+
             $ret = ret('fail', "{$this->module->title} could not be found. The element is either unavailable or deleted.");
+
         }
         # --------------------------------------------------------
         # Process return/redirect
@@ -279,6 +300,7 @@ class ModulebaseController extends Controller
      * Delete spyr element.
      * @param $id
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
     public function destroy($id)
     {
@@ -313,18 +335,14 @@ class ModulebaseController extends Controller
         }
 
         if ($ret['status'] === 'fail') { // Delete failed. Redirect to fail path(url)
-            // Obtain redirection path based on url param redirect_fail
-            // Or, default redirect to back if no param is set.
             $redirect = Request::has('redirect_fail') ? Redirect::to(Request::get('redirect_fail')) : Redirect::back();
-        } else { // Delete successful. Redirect to success path(url)
-            // Obtain redirection path based on url param redirect_fail
-            // Or, default redirect to back if no param is set.
+        } else {
             if (Request::has('redirect_success')) {
                 $redirect = Redirect::to(Request::get('redirect_success'));
             } else {
                 return View::make('template.blank')
                     ->with('title', 'Delete success!')
-                    ->with('body', "The item that you are trying to access does not exist or has been deleted");
+                    ->with('body', 'The item that you are trying to access does not exist or has been deleted');
             }
         }
         return $redirect;
@@ -340,7 +358,7 @@ class ModulebaseController extends Controller
         //return showGenericErrorPage("[$id] can not be restored. Restore feature is disabled");
         return View::make('template.blank')
             ->with('title', 'Restore not allowed')
-            ->with('body', 'The item can not be restored');
+            ->with('body', 'The item '.$id.' can not be restored');
     }
 
     /**
@@ -350,6 +368,16 @@ class ModulebaseController extends Controller
      * @var \App\Basemodule $Model
      */
     public function list()
+    {
+        $ret = ret('success', "{$this->module_name} list", $this->listData());
+        return Response::json(fillRet($ret));
+    }
+
+    /**
+     * Obtain data
+     * @return array
+     */
+    public function listData()
     {
         /** @var \App\Basemodule $Model */
         /** @var \Illuminate\Database\Eloquent\Builder $q */
@@ -399,20 +427,18 @@ class ModulebaseController extends Controller
         if (Request::has('limit') && Request::get('limit') <= $max_limit) {
             $limit = Request::get('limit');
         }
-
         // Limit override - Force all data with no limit.
         if (Request::get('force_all_data') === 'true') {
-            $limit = $q->remember(cacheTime('short'))->count();
+            $limit = $q->remember(cacheTime('none'))->count();
         }
-
         $q = $q->take($limit);
 
         /*********** Query construction ends ********************/
 
         // $data = $q->remember(cacheTime('none'))->get();
-        $data = $q->remember(cacheTime('short'))->get();
-        $ret  = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
-        return Response::json(fillRet($ret));
+        $data = $q->get();
+
+        return compact('data', 'total', 'offset', 'limit');
     }
 
     /**
@@ -442,10 +468,10 @@ class ModulebaseController extends Controller
             $q = $q->where('created_at', '>=', Request::get('createdSince'));
         }
         if (Request::has('updatedAt')) {
-            $q = $q->whereRaw("DATE(updated_at) = "."'".Request::get('updateddAt')."'");
+            $q = $q->whereRaw('DATE(updated_at) = '."'".Request::get('updatedAt')."'");
         }
         if (Request::has('createdAt')) {
-            $q = $q->whereRaw("DATE(created_at) = "."'".Request::get('createdAt')."'");
+            $q = $q->whereRaw('DATE(created_at) = '."'".Request::get('createdAt')."'");
         }
 
         if (Request::has('fieldName') && Request::has('fieldValue')) {
@@ -508,13 +534,13 @@ class ModulebaseController extends Controller
         if ($element = $Model::find($id)) { // Check if the element you are trying to edit exists
             if ($element->isViewable()) { // Check if the element is viewable
                 $changes = $element->changes;
-                $ret     = ret('success', "", ['data' => $changes]);
+                $ret     = ret('success', '', ['data' => $changes]);
             } else { // Not viewable by the user. Set error message and return value.
-                $ret = ret('fail', "The element is not view-able by current user.");
+                $ret = ret('fail', 'The element is not view-able by current user.');
                 //return showPermissionErrorPage("The element is not view-able by current user.");
             }
         } else { // The element does not exist. Set error and return values
-            $ret = ret('fail', "The item that you are trying to access does not exist or has been deleted");
+            $ret = ret('fail', 'The item that you are trying to access does not exist or has been deleted');
             //return showGenericErrorPage("The item that you are trying to access does not exist or has been deleted");
         }
         # --------------------------------------------------------
@@ -571,7 +597,7 @@ class ModulebaseController extends Controller
             return $report->show();
         }
         return view('template.blank')->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ ".$this->module_name.".report]");
+            ->with('body', "You don't have permission [ ".$this->module_name.'.report]');
     }
 
     /**

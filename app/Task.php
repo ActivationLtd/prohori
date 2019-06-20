@@ -9,6 +9,7 @@ use DB;
 
 /**
  * Class Task
+ *
  * @package App
  * @property int $id
  * @property string|null $uuid
@@ -138,6 +139,13 @@ use DB;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifiedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereVerifyNote($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Task whereWatchers($value)
+ * @property-read \App\User|null $closer
+ * @property-read \App\User|null $flagger
+ * @property-read string $priorities_name
+ * @property-read mixed $watcher_objs
+ * @property-read \App\Task|null $parenttask
+ * @property-read \App\User|null $resolver
+ * @property-read \App\User|null $verifier
  */
 class Task extends Basemodule
 {
@@ -153,6 +161,7 @@ class Task extends Basemodule
         'name_ext',
         'parent_id',
         'priority',
+        'priority_name',
         'seq',
         'client_id',
         'client_name',
@@ -173,6 +182,8 @@ class Task extends Basemodule
         'tasktype_name',
         'assignment_id',
         'assigned_to',
+        'assignee_name',
+        'assignee_profile_pic_url',
         'watchers',
         'status',
         'previous_status',
@@ -294,55 +305,24 @@ class Task extends Basemodule
         /************************************************************/
         static::saving(function (Task $element) {
             $valid = true;
-
             /************************************************************/
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
-            if ($valid) {
-                if ($element->client()->exists()) {
-                    $element->client_name = $element->client->name;
-                    $element->client_obj = $element->client->toJson();
-                }
-            }
-            if ($element->clientlocation()->exists()) {
-                $element->clientlocation_obj = $element->clientlocation->toJson();
-                $element->clientlocation_name = $element->clientlocation->name;
-
-                $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
-                $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
-
-                $element->clientlocation_obj = $element->clientlocation->toJson();
-
-                $element->division_id = $element->clientlocation->division_id;
-                $element->division_name = $element->clientlocation->division_name;
-
-                $element->district_id = $element->clientlocation->district_id;
-                $element->district_name = $element->clientlocation->district_name;
-
-                $element->upazila_id = $element->clientlocation->upazila_id;
-                $element->upazila_name = $element->clientlocation->upazila_name;
-
-                $element->longitude = $element->clientlocation->longitude;
-                $element->latitude = $element->clientlocation->latitude;
-            }
-            if ($element->tasktype()->exists()) {
-                $element->tasktype_name = $element->tasktype->name;
-            }
             //checking assignee operating area and client location operating area
             if (isset($element->assignee->operating_area_ids, $element->clientlocation->operatingarea_id)) {
-                if (!in_array($element->clientlocation->operatingarea_id,$element->assignee->operating_area_ids)) {
+                if (!in_array($element->clientlocation->operatingarea_id, $element->assignee->operating_area_ids)) {
                     $valid = setError("Assignee and Client Operating Area does not match");
                 }
             }
             //checking if parent task is a subtask
-            if(isset($element->parent_id) && ($element->parent_id!=0)){
-                if($element->parenttask->parent_id != null){
-                    $valid=setError("The selected parent task is already a sub task, so it can not be a parent task");
+            if (isset($element->parent_id) && ($element->parent_id != 0)) {
+                if ($element->parenttask->parent_id != null) {
+                    $valid = setError("The selected parent task is already a sub task, so it can not be a parent task");
                 }
-                if(isset($element->id)){
-                    if($element->parent_id==$element->id){
-                        $valid=setError("The selected task can not be the parent task");
+                if (isset($element->id)) {
+                    if ($element->parent_id == $element->id) {
+                        $valid = setError("The selected task can not be the parent task");
                     }
                 }
             }
@@ -350,22 +330,94 @@ class Task extends Basemodule
             if ($element->getOriginal('status') != $element->status) {
                 $element->previous_status = $element->getOriginal('status');
             }
-            //update assignment and closed by
-            if ($element->status == 'Closed') {
-                $element->is_closed = 1;
-                $element->closed_by = $element->assigned_to;
-                if (count($element->assignments) > 0) {
-                    foreach ($element->assignments as $assignment) {
-                        $assignment->is_closed = 1;
-                        $assignment->save();
+
+            //data filling
+            if ($valid) {
+                //filling client info
+                if ($element->client()->exists()) {
+                    $element->client_name = $element->client->name;
+                    $element->client_obj = $element->client->toJson();
+                }
+                //filling client location
+                if ($element->clientlocation()->exists()) {
+                    $element->clientlocation_obj = $element->clientlocation->toJson();
+                    $element->clientlocation_name = $element->clientlocation->name;
+
+                    $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
+                    $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
+
+                    $element->clientlocation_obj = $element->clientlocation->toJson();
+
+                    $element->division_id = $element->clientlocation->division_id;
+                    $element->division_name = $element->clientlocation->division_name;
+
+                    $element->district_id = $element->clientlocation->district_id;
+                    $element->district_name = $element->clientlocation->district_name;
+
+                    $element->upazila_id = $element->clientlocation->upazila_id;
+                    $element->upazila_name = $element->clientlocation->upazila_name;
+
+                    $element->longitude = $element->clientlocation->longitude;
+                    $element->latitude = $element->clientlocation->latitude;
+                }
+                //filling tasktype information
+                if ($element->tasktype()->exists()) {
+                    $element->tasktype_name = $element->tasktype->name;
+                }
+                //filling assignee information
+                if (isset($element->assigned_to)) {
+                    $element->assignee_name = $element->assignee->name;
+                    $element->assignee_profile_pic_url = $element->assignee->profile_pic_url;
+                }
+                //filling priority
+                if (isset($element->priority)) {
+                    if ($element->priority == 0) {
+                        $element->priority_name = 'Low';
+                    } else if ($element->priority == 1) {
+                        $element->priority_name = 'Normal';
+                    } else if ($element->priority == 2) {
+                        $element->priority_name = 'High';
                     }
                 }
-            }
-            if(!isset($element->parent_id)){
-                $element->parent_id=0;
-            }
-            if(isset($element->watchers,$element->assignee->watchers)){
-                $element->watchers=array_merge($element->watchers,$element->assignee->watchers);
+                //making parent id null
+                if (!isset($element->parent_id)) {
+                    $element->parent_id = 0;
+                }
+
+                if (!isset($element->watchers)) {
+                    $element->watchers = [];
+                }
+
+                //adding watchers
+                if (isset($element->assignee->watchers)) {
+                    if(is_array($element->watchers)){
+                        $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
+                    }
+
+                }
+
+                //update assignment and closed by
+                if ($element->status === 'Closed') {
+                    $element->is_closed = 1;
+                    $element->closed_by = $element->assigned_to;
+                    if (count($element->assignments) > 0) {
+                        foreach ($element->assignments as $assignment) {
+                            $assignment->is_closed = 1;
+                            $assignment->save();
+                        }
+                    }
+                }
+                //update assignment and verified by
+                if ($element->status === 'Done') {
+                    $element->is_verified = 1;
+                    $element->verified_by = $element->assigned_to;
+                    if (count($element->assignments) > 0) {
+                        foreach ($element->assignments as $assignment) {
+                            $assignment->is_verified = 1;
+                            $assignment->save();
+                        }
+                    }
+                }
             }
             $element->is_active = 1;
 
@@ -377,21 +429,14 @@ class Task extends Basemodule
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-         static::creating(function (Task $element) {
-
-             $emails = [];
-             if (isset($element->watchers)) {
-                 foreach ($element->watchers as $user_id) {
-                     $emails[] = User::find($user_id)->email;
-                 }
-             }
-             $element->days_open = 0;
-             $element->is_closed = 0;
-             $element->is_resolved = 0;
-             $element->is_verified = 0;
-             $element->is_flagged = 0;
-             $element->status = 'To do'; // Set initial status to draft.
-         });
+        static::creating(function (Task $element) {
+            $element->days_open = 0;
+            $element->is_closed = 0;
+            $element->is_resolved = 0;
+            $element->is_verified = 0;
+            $element->is_flagged = 0;
+            $element->status = 'To do'; // Set initial status to draft.
+        });
 
         /************************************************************/
         // Following code block executes - after an element is created
@@ -402,7 +447,8 @@ class Task extends Basemodule
                 $emails = [];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
-                        $emails[] = User::find($user_id)->email;
+                        /** @noinspection PhpUndefinedMethodInspection */
+                        $emails[] = User::remember(cacheTime('long'))->find($user_id)->email;
                     }
                 }
                 //send mail to the assignee when task is created
@@ -410,12 +456,7 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
-
             }
-
-
-
-
         });
 
         /************************************************************/
@@ -465,10 +506,10 @@ class Task extends Basemodule
         // put validations for eligibility of deletion.
         /************************************************************/
         static::deleting(function (Task $element) {
-            $valid=true;
-            if(!user()->isSuperUser()){
-                if($element->created_by!=user()->id){
-                    $valid=setError("Only superadmin and task creator can delete a task");
+            $valid = true;
+            if (!user()->isSuperUser()) {
+                if ($element->created_by != user()->id) {
+                    $valid = setError("Only superadmin and task creator can delete a task");
                 }
             }
             return $valid;

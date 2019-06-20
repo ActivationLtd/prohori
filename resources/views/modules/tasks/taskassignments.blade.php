@@ -1,5 +1,6 @@
+<h4>Assignments</h4>
 <div class="clearfix"></div>
-<table class="table">
+<table class="table table-condensed">
     <thead>
     <tr>
         <th>Assigned To</th>
