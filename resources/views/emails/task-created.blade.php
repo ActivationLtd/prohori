@@ -13,7 +13,7 @@
         <br>
     </p>
     <br>
-    <table border="1" cellspacing="0" cellpadding="2" style="text-align:center;">
+    <table border="1" cellspacing="0" cellpadding="2" style="text-align:left;">
         <tr>
             <td width="150px" >Task Name</td>
             <td width="150px">Client Name</td>

@@ -7,7 +7,7 @@
 @section('email-content')
     Dear All <br>
     Unresolved Tasks list for Prohori<br/>
-    <table border="1" cellspacing="0" cellpadding="2">
+    <table border="1" cellspacing="0" cellpadding="2" style="text-align:left;">
         <thead>
         <tr>
             <th>Sequnce</th>
@@ -21,11 +21,11 @@
         <?php $row = 1; ?>
         @foreach($tasks as $task)
             <tr>
-                <td style="text-align:center;">{{$row++}}</td>
-                <td width="300px" style="text-align:center;">{{$task->name}}</td>
-                <td style="text-align:center;">{{$task->assignee->email}}</td>
-                <td width="100px" style="text-align:center;">{{$task->due_date}}</td>
-                <td width="60px" style="text-align:center;"><a
+                <td>{{$row++}}</td>
+                <td width="300px">{{$task->name}}</td>
+                <td>{{$task->assignee->email}}</td>
+                <td width="100px">{{$task->due_date}}</td>
+                <td width="60px"><a
                             href="{{route('tasks.edit',$task->id)}}">{{$task->status}}</a></td>
             </tr>
         @endforeach
