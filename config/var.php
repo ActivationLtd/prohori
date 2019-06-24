@@ -43,4 +43,7 @@ return [
     // Defines what is user for login/
     'login-attribute' => 'email',
 
+    'admin-emails' => ['emon@evbs.com.bd '],
+    'admin-cc-emails' =>['ceo@euro-vigil.com.bd '.'sanjidhabib@gmail.com','rifatshara@gmail.com','raihan.act@gmail.com']
+
 ];
