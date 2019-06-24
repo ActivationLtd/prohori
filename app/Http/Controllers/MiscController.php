@@ -30,11 +30,11 @@ class MiscController extends Controller
 
     public function dailyStatusEmail() {
         //dd(config('var.admin-cc-emails'));
-        // \Mail::to(config('var.admin-emails'))->cc(config('var.admin-cc-emails'))->send(
-        //     new DailyStatus()
-        // );
-         $tasks=Task::where('is_active',1)->get();
-         return View::make('emails.daily-status')->with('tasks',$tasks);
+        \Mail::to(config('var.admin-emails'))->cc(config('var.admin-cc-emails'))->send(
+            new DailyStatus()
+        );
+        // $tasks=Task::where('is_active',1)->whereIn('status',['To do','In progress'])->get();
+        // return View::make('emails.daily-status')->with('tasks',$tasks);
     }
 }
 
