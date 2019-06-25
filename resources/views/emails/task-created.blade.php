@@ -13,7 +13,7 @@
         <br>
     </p>
     <br>
-    <table border="1" cellspacing="0" cellpadding="2" style="text-align:center;">
+    <table border="1" cellspacing="0" cellpadding="2" style="text-align:left;">
         <tr>
             <td width="150px" >Task Name</td>
             <td width="150px">Client Name</td>
@@ -24,7 +24,7 @@
             <td width="100px">Assigned to</td>
         </tr>
         <tr>
-            <td width="150px" style="text-align:center;"><a href="{{route('tasks.edit',$task->id)}}">{{$task->name}}</a>
+            <td width="150px"><a href="{{route('tasks.edit',$task->id)}}">{{$task->name}}</a>
             </td>
             <td width="150px" >{{$task->client_name}}</td>
             <td width="100px">{{$task->clientlocation_name}}</td>
