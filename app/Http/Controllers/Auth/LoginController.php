@@ -15,7 +15,6 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 /** @noinspection PhpInconsistentReturnPointsInspection */
-
 class LoginController extends Controller
 {
     /*
@@ -41,8 +40,7 @@ class LoginController extends Controller
     /**
      * Create a new controller instance.
      */
-    public function __construct()
-    {
+    public function __construct() {
         //$this->middleware('guest')->except('logout');
     }
 
@@ -50,8 +48,7 @@ class LoginController extends Controller
      * Show the application's login form.
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
-    {
+    public function showLoginForm() {
         if (Auth::check()) {
             return redirect(route('home'));
         }
@@ -60,12 +57,11 @@ class LoginController extends Controller
 
     /**
      * Handle a login request to the application.
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response|void
      */
 
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
 
         $this->validateLogin($request);
 
@@ -100,11 +96,10 @@ class LoginController extends Controller
 
     /**
      * Validate the user login request.
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return void
      */
-    protected function validateLogin(Request $request)
-    {
+    protected function validateLogin(Request $request) {
 
         /** @var $request \Illuminate\Support\Facades\Request */
         $request->validate([
@@ -116,16 +111,15 @@ class LoginController extends Controller
 
     /**
      * Get the failed login response instance.
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string  $msg
+     * @param  \Illuminate\Http\Request $request
+     * @param  string $msg
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    protected function sendFailedLoginResponse(Request $request, $msg = '')
-    {
+    protected function sendFailedLoginResponse(Request $request, $msg = '') {
         // Handle api login through ret.json Middleware
         if ($request->get('ret') === 'json') {
             setError(trans('auth.failed'));
-            $ret = ret('fail', "Login failed. ".$msg);
+            $ret = ret('fail', "Login failed. " . $msg);
             return Response::json(fillRet($ret));
         }
 
@@ -136,11 +130,10 @@ class LoginController extends Controller
 
     /**
      * Redirect the user after determining they are locked out.
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function sendLockoutResponse(Request $request)
-    {
+    protected function sendLockoutResponse(Request $request) {
         $seconds = $this->limiter()->availableIn(
             $this->throttleKey($request)
         );
@@ -159,12 +152,11 @@ class LoginController extends Controller
 
     /**
      * The user has been authenticated.
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\User $user
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function authenticated(Request $request, $user)
-    {
+    protected function authenticated(Request $request, $user) {
         // Generate auth_token for this login
         if (!strlen($user->auth_token)) {
             $user->auth_token = $user->generateAuthToken();
@@ -191,11 +183,10 @@ class LoginController extends Controller
 
     /**
      * Social login
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function socialLogin(Request $request)
-    {
+    public function socialLogin(Request $request) {
         // First validated
 
         $validator = Validator::make($request->all(), [
@@ -212,7 +203,7 @@ class LoginController extends Controller
         else {
             // First check if a user with same email already exists.
             $email = trim(strtolower($request->get('email')));
-            $user  = User::where('email', $email)->first();
+            $user = User::where('email', $email)->first();
 
             // If user with same email already exists than only update the fields.
             if ($user) {
@@ -236,10 +227,10 @@ class LoginController extends Controller
                 $user->full_name = $user->name;
             } else { // If users do not exist then create the user
 
-                $user           = new User($request->all());
+                $user = new User($request->all());
                 $user->password = Hash::make(randomString());
 
-                $user->first_login_at  = now();
+                $user->first_login_at = now();
                 $user->email_confirmed = 1;
                 // Breakdown name to first and last name
                 $name_parts = explode(' ', $request->get('name'));
@@ -268,7 +259,7 @@ class LoginController extends Controller
             // dd($user);
             if ($user->save()) {
                 $user = User::find($user->id);
-                $ret  = ret('success', "Login success", ['data' => $user]);
+                $ret = ret('success', "Login success", ['data' => $user]);
             } else {
                 $ret = ret('fail', "Login not successful");
             }
@@ -280,21 +271,25 @@ class LoginController extends Controller
 
     /**
      * Log the user out of the application.
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function logout(Request $request)
-    {
+    public function logout(Request $request) {
+        // Clear-out device token.
+        // Todo [Sanjid. ACT-1568]
+        $user = Auth::user();
+        $user->device_token = null;
+        $user->save();
+
         $this->guard()->logout();
 
         $request->session()->invalidate();
 
-        // Todo [Sanjid. ACT-1568]
-
-        // Clear-out device token.
-
         // if ret=json then return JSON response.
-
+        if ($request->input('ret') && $request->ret == "json") {
+            $ret = ret('Success', "Log out success.");
+            return Response::json(fillRet($ret));
+        }
         return $this->loggedOut($request) ?: redirect('/');
     }
 }
