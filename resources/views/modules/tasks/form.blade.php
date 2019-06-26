@@ -262,13 +262,12 @@
                             //
                             $.each(response.data, function (i, obj) {
                                 console.log(obj);
-                                $("select[name=client_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                                $("select[name=client_id]").append("<option value=>Select</option>").append("<option value=" + obj.id + ">" + obj.name + "</option>");
                             });
                         }
 
                     },
                 });
-
             });
         }
 
