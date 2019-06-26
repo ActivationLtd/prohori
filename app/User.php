@@ -700,12 +700,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isViewable($user_id = null, $set_msg = false) {
         /** @var \App\User $user */
         $user = user($user_id);
+
         if (!spyrElementViewable($this, $user_id, $set_msg)) {
             return false;
         }
         // Allow super user
         if ($user->isSuperUser()) {
+
             return true;
+        }
+        if ($user->isManagerUser()) {
+
+            if ($this->id == $user->id) {
+                return true;
+            }else{
+                return false;
+            }
         }
         return false;
     }
