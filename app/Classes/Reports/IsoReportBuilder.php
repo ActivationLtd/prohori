@@ -495,7 +495,12 @@ class IsoReportBuilder
                             if ($this->columnIsFullText($name)) { // Substring search. Good for name, email etc.
                                 $query = $query->where($name, 'LIKE', '%'.trim($val).'%');
                             } else { // Exact string match
-                                $query = $query->where($name, trim($val));
+                                //added this for select fields, where we are sending Select=>Select
+                                if($val!="Select"){
+                                    $query = $query->where($name, trim($val));
+                                }
+
+
                             }
                         }
 

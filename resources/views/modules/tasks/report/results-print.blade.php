@@ -19,57 +19,47 @@
  * @var $result_blade                        string
  */
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-US">
 <head>
-    @include('modules.base.report-old.init-functions')
-    <link rel="stylesheet" href="{{ asset('assets/css/printreport.css') }}" type="text/css"/>
+    @include($base_dir.'.init-functions')
+    <link rel="stylesheet" href="{{ asset('prohori/css/printreport.css') }}" type="text/css"/>
     <meta charset="UTF-8"/>
 </head>
 <body lang=EN-US>
-<div style="width: 150px;float: right;">
-    <input id="printpagebutton" type="button" value="Print this page" onclick="printpage()"/>
+<div style="width: 100%">
+    <div style="float: left">
+        <input id="printpagebutton" type="button" value="Print this page" onclick="printpage()" style=""/>
+    </div>
+    <div style="margin: 0 auto; width: 33%; text-align: center">
+        <img src="{{ asset('prohori/images/logo-ev.png') }}"/>
+        <div style="font-size:  12px;">
+            Prohori‎<br/>
+            Euro Vigil‎<br/>
+        </div>
+    </div>
 </div>
 @if(Request::get('submit')==='Run' && count($results))
     <table class="table table-bordered table-mailbox table-condensed table-hover" id="report-table">
         <thead>
         <tr>
-            @foreach ($column_aliases as $column_alias)
-                <th>{{$column_alias}}</th>
+            @foreach ($alias_columns as $col)
+                <th>{{$col}}</th>
             @endforeach
-
-            @if (strlen($group_by))
-                <th>Total</th>
-            @endif
         </tr>
         </thead>
         <tbody>
-        <?php $i = 1; ?>
         @foreach ($results as $result)
             <tr>
-                @foreach ($columns_to_show as $column)
+                @foreach ($show_columns as $col)
                     <td>
-                        @if(isset($result->$column))
-                            <?php echo transformRow($column, $result, $result->$column, $data_source)?>
+                        @if(isset($result->$col))
+                            <?php echo transformRow($col, $result, $result->$col, $data_source)?>
                         @endif
                     </td>
                 @endforeach
-                {{-- if SQL 'GROUP' is set then post stats (male, female, filled etc) are shown --}}
-                @if (strlen($group_by))
-                    <td>{{number_format($result->total)}}</td>
-                @endif
-                {{-- end stat ounts --}}
             </tr>
         @endforeach
-        <tr>
-            @if (strlen($group_by))
-                @foreach ($columns_to_show as $column)
-                    <td></td>
-                @endforeach
-                <td></td>
-                <td>Total : <b>{{number_format($total)}}</b></td>
-            @endif
-        </tr>
         </tbody>
     </table>
 @endif
