@@ -36,6 +36,9 @@ class MiscController extends Controller
         // $tasks=Task::where('is_active',1)->whereIn('status',['To do','In progress'])->get();
         // return View::make('emails.daily-status')->with('tasks',$tasks);
     }
+    public function privacypolicy() {
+        return View::make('modules.base.privacy');
+    }
 }
 
 
