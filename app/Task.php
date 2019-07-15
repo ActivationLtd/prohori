@@ -343,25 +343,28 @@ class Task extends Basemodule
                 }
                 //filling client location
                 if ($element->clientlocation()->exists()) {
-                    $element->clientlocation_obj = $element->clientlocation->toJson();
-                    $element->clientlocation_name = $element->clientlocation->name;
 
-                    $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
-                    $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
+                    $clientlocation =$element->clientlocation;
 
-                    $element->clientlocation_obj = $element->clientlocation->toJson();
+                    $element->clientlocation_obj = $clientlocation->toJson();
+                    $element->clientlocation_name = $clientlocation->name;
 
-                    $element->division_id = $element->clientlocation->division_id;
-                    $element->division_name = $element->clientlocation->division_name;
+                    $element->clientlocationtype_id = $clientlocation->clientlocationtype_id;
+                    $element->clientlocationtype_name = $clientlocation->clientlocationtype_name;
 
-                    $element->district_id = $element->clientlocation->district_id;
-                    $element->district_name = $element->clientlocation->district_name;
+                    $element->clientlocation_obj = $clientlocation->toJson();
 
-                    $element->upazila_id = $element->clientlocation->upazila_id;
-                    $element->upazila_name = $element->clientlocation->upazila_name;
+                    $element->division_id = $clientlocation->division_id;
+                    $element->division_name = $clientlocation->division_name;
 
-                    $element->longitude = $element->clientlocation->longitude;
-                    $element->latitude = $element->clientlocation->latitude;
+                    $element->district_id = $clientlocation->district_id;
+                    $element->district_name = $clientlocation->district_name;
+
+                    $element->upazila_id = $clientlocation->upazila_id;
+                    $element->upazila_name = $clientlocation->upazila_name;
+
+                    $element->longitude = $clientlocation->longitude;
+                    $element->latitude = $clientlocation->latitude;
                 }
                 //filling tasktype information
                 if ($element->tasktype()->exists()) {
@@ -369,8 +372,9 @@ class Task extends Basemodule
                 }
                 //filling assignee information
                 if (isset($element->assigned_to)) {
-                    $element->assignee_name = $element->assignee->name;
-                    $element->assignee_profile_pic_url = $element->assignee->profile_pic_url;
+                    $assignee=$element->assignee;
+                    $element->assignee_name = $assignee->name;
+                    $element->assignee_profile_pic_url = $assignee->profile_pic_url;
                 }
                 //filling priority
                 if (isset($element->priority)) {
