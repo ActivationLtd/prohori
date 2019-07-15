@@ -260,9 +260,10 @@
                         if ((response.data)) {
                             //var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
                             //
+                            client_id=$("select[name=client_id]").append("<option value=>Select</option>");
                             $.each(response.data, function (i, obj) {
                                 console.log(obj);
-                                $("select[name=client_id]").append("<option value=>Select</option>").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                                client_id.append("<option value=" + obj.id + ">" + obj.name + "</option>");
                             });
                         }
 
