@@ -24,7 +24,11 @@ class MiscController extends Controller
     public function test() {
         $end_date = today()->toDateString();
         $date = Carbon::createFromFormat('Y-m-d', $end_date)->addDays(1)->toDateString();
-
+        $tasks=Task::all();
+        foreach($tasks as $task)
+        {
+            $task->save();
+        }
         dd($date);
     }
 

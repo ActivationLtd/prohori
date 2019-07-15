@@ -6,6 +6,7 @@ use App\Mail\TaskCreated;
 use App\Traits\Assignable;
 use App\Observers\TaskObserver;
 use DB;
+use Benwilkins\FCM\FcmMessage;
 
 /**
  * Class Task
@@ -151,6 +152,7 @@ class Task extends Basemodule
 {
     //use IsoModule;
     use Assignable;
+
     /**
      * Mass assignment fields (White-listed fields)
      * @var array
@@ -185,6 +187,7 @@ class Task extends Basemodule
         'assignee_name',
         'assignee_profile_pic_url',
         'watchers',
+        'watchers_emails',
         'status',
         'previous_status',
         'due_date',
@@ -383,7 +386,7 @@ class Task extends Basemodule
                 if (!isset($element->parent_id)) {
                     $element->parent_id = 0;
                 }
-
+                //filling it as a blank array
                 if (!isset($element->watchers)) {
                     $element->watchers = [];
                 }
@@ -391,9 +394,12 @@ class Task extends Basemodule
                 //adding watchers
                 if (isset($element->assignee->watchers)) {
                     if(is_array($element->watchers)){
-                        $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
+                        $element->watchers = array_unique(array_merge($element->watchers, $element->assignee->watchers));
                     }
-
+                    if(count($element->watchers)){
+                        $emails=User::whereIn('id',$element->watchers)->pluck('email')->toArray();
+                        $element->watchers_emails=implode(",",$emails);
+                    }
                 }
 
                 //update assignment and closed by
@@ -494,9 +500,15 @@ class Task extends Basemodule
                     $valid = setMessage("Assignment created");
                 }
             }
+
+
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
+            $element->toFcm();
+
+
+
             return $valid;
         });
 
@@ -570,6 +582,21 @@ class Task extends Basemodule
      * @param $id
      */
     // public static function someOtherAction($id) { }
+    public function toFcm()
+    {
+        $message = new FcmMessage();
+        $message->to('ftPIfefZYxU:APA91bFGFoISY_Ulbn1lm8XwXQwYA28dmkAxl963')->content([
+            'title'        => 'Test',
+            'body'         => 'Hello Testing sanjid',
+            'sound'        => '', // Optional
+            'icon'         => '', // Optional
+            'click_action' => '' // Optional
+        ])->data([
+            'param1' => 'baz' // Optional
+        ])->priority(FcmMessage::PRIORITY_HIGH); // Optional - Default is 'normal'.
+
+        return $message;
+    }
 
     ############################################################################################
     # Permission functions

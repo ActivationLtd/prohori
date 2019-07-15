@@ -72,10 +72,18 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function summary() {
-        $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
-        $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
-        $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
-        $task_due = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        if($this->user()->isManagerUser()){
+            $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
+            $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
+            $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
+            $task_due = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        }else{
+            $task_assigned = Task::remember(cacheTime('medium'))->whereIn('status', ['To do', 'In Progress'])->count();
+            $task_completed = Task::remember(cacheTime('medium'))->whereIn('status', ['Done', 'Closed'])->count();
+            $task_inprogress = Task::remember(cacheTime('medium'))->whereIn('status', ['In Progress'])->count();
+            $task_due = Task::remember(cacheTime('medium'))->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        }
+
         $data = [
             'tasks' => [
                 'assigned' => $task_assigned,

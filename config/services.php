@@ -34,5 +34,11 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
+    /*
+     * Add the Firebase API key
+     */
+    'fcm' => [
+        'key' => 'AIzaSyBh54nPzrZoR47gnSRkAFEO6yJtKoqNAf8'
+    ]
 
 ];

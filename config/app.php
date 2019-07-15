@@ -168,6 +168,8 @@ return [
         //Barryvdh\Debugbar\ServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         'Collective\Html\HtmlServiceProvider',
+        //Laravel FCM (Firebase Cloud Messaging) Notification Channel
+        Benwilkins\FCM\FcmNotificationServiceProvider::class,
 
     ],
 

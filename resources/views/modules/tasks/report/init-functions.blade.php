@@ -25,33 +25,7 @@ function transformRow($column, $row, $value, $module_name = '') {
             $data = json_decode($value);
             $new_value = $data->name;
         }
-    } else if (in_array($column, ['watchers'])) {
-        $emails = null;
-        //todo have to find a better solution
-        // the value comes as an string "["2","4","5"]"
-        if (isset($row->id)) {
-            if ($value) {
-                $users = arrayFromCsv($value);
-                foreach ($users as $user) {
-                    //removing [ from array
-                    if (strpos($user, '[') !== false) {
-                        $user_id = trim($user, '[');
-                    } //removing ] from array
-                    else if (strpos($user, ']') !== false) {
-                        $user_id = trim($user, ']');
-                    }
-                    //removing ' " ' from array
-                    $user_id=trim($user_id,'"');
-                    //finding user
-                    $user=App\User::find($user_id);
-                    if(isset($user))
-                    $emails = $emails . $user->email.',';
-                }
-            }
-        }
-        $new_value = $emails;
     }
-
     return $new_value;
 }
 
