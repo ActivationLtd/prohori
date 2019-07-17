@@ -20,7 +20,7 @@ use App\Traits\IsoOutput;
 use Illuminate\Support\Str;
 use App\Traits\IsoGridDatatable;
 use App\Classes\Reports\DefaultModuleReport;
-use \App\Tenant;
+use App\Tenant;
 
 /**
  * Class ModulebaseController

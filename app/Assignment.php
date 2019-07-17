@@ -204,7 +204,7 @@ class Assignment extends Basemodule
                         new AssignmentCreated($element)
                     );
                 $contents=[
-                    'title'=>'Assignment Created',
+                    'title'=>'New Assignment Created',
                     'body'=>'A new Task has been assigned to you',
                 ];
                 pushNotification($element->assignee,$contents);

@@ -10,7 +10,6 @@ use DB;
 use Notification;
 use Benwilkins\FCM\FcmMessage;
 
-
 /**
  * Class Task
  *
@@ -347,7 +346,7 @@ class Task extends Basemodule
                 //filling client location
                 if ($element->clientlocation()->exists()) {
 
-                    $clientlocation =$element->clientlocation;
+                    $clientlocation = $element->clientlocation;
 
                     $element->clientlocation_obj = $clientlocation->toJson();
                     $element->clientlocation_name = $clientlocation->name;
@@ -375,7 +374,7 @@ class Task extends Basemodule
                 }
                 //filling assignee information
                 if (isset($element->assigned_to)) {
-                    $assignee=$element->assignee;
+                    $assignee = $element->assignee;
                     $element->assignee_name = $assignee->name;
                     $element->assignee_profile_pic_url = $assignee->profile_pic_url;
                 }
@@ -400,12 +399,12 @@ class Task extends Basemodule
 
                 //adding watchers
                 if (isset($element->assignee->watchers)) {
-                    if(is_array($element->watchers)){
+                    if (is_array($element->watchers)) {
                         $element->watchers = array_unique(array_merge($element->watchers, $element->assignee->watchers));
                     }
-                    if(count($element->watchers)){
-                        $emails=User::whereIn('id',$element->watchers)->pluck('email')->toArray();
-                        $element->watchers_emails=implode(",",$emails);
+                    if (count($element->watchers)) {
+                        $emails = User::whereIn('id', $element->watchers)->pluck('email')->toArray();
+                        $element->watchers_emails = implode(",", $emails);
                     }
                 }
 
@@ -470,14 +469,14 @@ class Task extends Basemodule
                         new TaskCreated($element)
                     );
                 //notification for task created
-                $contents=[
-                    'title'=>'Task Created',
-                    'body'=>'A new Task has been created',
+                $contents = [
+                    'title' => 'A new Task has been created',
+                    'body' => $element->tasktype_name . ' for ' . $element->client_name . ' has been created, task id ' . $element->id . ' and assigned to ' . $element->assignee->name,
                 ];
-                foreach($element->watcher_objs as $watchers){
-                    pushNotification($watchers,$contents);
+                foreach ($element->watcher_objs as $watchers) {
+                    pushNotification($watchers, $contents);
                 }
-                pushNotification($element->assignee,$contents);
+                pushNotification($element->assignee, $contents);
             }
         });
 
@@ -500,22 +499,24 @@ class Task extends Basemodule
         static::saved(function (Task $element) {
             $valid = true;
 
-
-
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
             //contents for notification
-            $contents=[
-                'title'=>'Task Updated',
-                'body'=>'Task has been updated',
+            $contents = [
+                'title' => 'Task updated',
+                'body' => 'Task id '.$element->id.' has been updated',
             ];
-            foreach($element->watcher_objs as $watchers){
-                pushNotification($watchers,$contents);
+            pushNotification($element->assignee, $contents);
+            if($element->getOriginal('status') != $element->status){
+                $contents = [
+                    'title' => 'Task status has changed',
+                    'body' => 'Task id '.$element->id.' '.$element->tasktype_name.' for '.$element->client_name. ' status has been changed to '.$element->status,
+                ];
+                foreach ($element->watcher_objs as $watchers) {
+                    pushNotification($watchers, $contents);
+                }
             }
-
-            pushNotification($element->assignee,$contents);
-
             //creating assignement based on changing of assingee
             if (isset($element->assigned_to)) {
                 if ($element->getOriginal('assigned_to') != $element->assigned_to) {
@@ -529,7 +530,7 @@ class Task extends Basemodule
                         'assigned_to' => $element->assigned_to,
                     ]);
                     //filling the assignment id in task table
-
+                    DB::table('tasks')->where('id',$element->id)->update(['assignment_id',$assignment->id]);
                     $valid = setMessage("Assignment created");
                 }
             }
@@ -603,7 +604,6 @@ class Task extends Basemodule
 
     /**
      * Static functions needs to be called using Model::function($id) public function toFcm()
-
      * Inside static function you may need to query and get the element
      * @param $id
      */
@@ -775,7 +775,7 @@ class Task extends Basemodule
     }
 
     public function tasktype() {
-        return $this->belongsTo(\App\Tasktype::class,'tasktype_id');
+        return $this->belongsTo(\App\Tasktype::class, 'tasktype_id');
     }
 
     public function subtasks() {
