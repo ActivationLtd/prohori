@@ -486,6 +486,12 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
+                //notification for task created
+                $contents=[
+                    'title'=>'Task Created',
+                    'body'=>'A new Task has been created',
+                ];
+                pushNotification($element->assignee,$contents);
             }
         });
 
@@ -513,7 +519,13 @@ class Task extends Basemodule
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
-            $element->sendNotification();
+            //contents for notification
+            $contents=[
+                'title'=>'Task Updated',
+                'body'=>'Task has been updated',
+            ];
+            pushNotification($element->creator,$contents);
+            pushNotification($element->assignee,$contents);
 
 
 
@@ -591,19 +603,7 @@ class Task extends Basemodule
      * @param $id
      */
     // public static function someOtherAction($id) { }
-    public function sendNotification()
-    {
-        $user = User::first();
 
-        $details = [
-            'title' => 'Hi Artisan',
-            'body' => 'This is my first notification from ItSolutionStuff.com',
-        ];
-
-        Notification::send($user, new SomeNotification($details));
-
-        //dd('done');
-    }
     ############################################################################################
     # Permission functions
     # ---------------------------------------------------------------------------------------- #

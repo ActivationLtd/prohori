@@ -202,6 +202,11 @@ class Assignment extends Basemodule
                     ->cc($emails)->send(
                         new AssignmentCreated($element)
                     );
+                $contents=[
+                    'title'=>'Assignment Created',
+                    'body'=>'A new Task has been assigned to you',
+                ];
+                pushNotification($element->assignee,$contents);
             }
         });
 
