@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Mail\TaskCreated;
+use App\Notifications\SomeNotification;
 use App\Traits\Assignable;
 use App\Observers\TaskObserver;
 use DB;
@@ -428,6 +429,23 @@ class Task extends Basemodule
                         }
                     }
                 }
+                //creating assignement based on changing of assingee
+                if (isset($element->assigned_to)) {
+                    if ($element->getOriginal('assigned_to') != $element->assigned_to) {
+                        //if assignment does not exists
+                        $assignment = Assignment::create([
+                            'name' => $element->name,
+                            'type' => $element->tasktype_id,
+                            'module_id' => '29',
+                            'element_id' => $element->id,
+                            'assigned_by' => user()->id,
+                            'assigned_to' => $element->assigned_to,
+                        ]);
+                        //filling the assignment id in task table
+                        $element->assignment_id = $assignment->id;
+                        $valid = setMessage("Assignment created");
+                    }
+                }
             }
             $element->is_active = 1;
 
@@ -487,29 +505,13 @@ class Task extends Basemodule
         /************************************************************/
         static::saved(function (Task $element) {
             $valid = true;
-            //creating assignement based on changing of assingee
-            if (isset($element->assigned_to)) {
-                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
-                    //if assignment does not exists
-                    $assignment = Assignment::create([
-                        'name' => $element->name,
-                        'type' => $element->tasktype_id,
-                        'module_id' => '29',
-                        'element_id' => $element->id,
-                        'assigned_by' => user()->id,
-                        'assigned_to' => $element->assigned_to,
-                    ]);
-                    //filling the assignment id in task table
-                    $element->assignment_id = $assignment->id;
-                    $valid = setMessage("Assignment created");
-                }
-            }
+
 
 
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
-            $element->toFcm();
+
 
 
 
@@ -581,27 +583,25 @@ class Task extends Basemodule
     // public function someAction() { }
 
     /**
-     * Static functions needs to be called using Model::function($id)
+     * Static functions needs to be called using Model::function($id) public function toFcm()
+
      * Inside static function you may need to query and get the element
      * @param $id
      */
     // public static function someOtherAction($id) { }
-    public function toFcm()
+    public function sendNotification()
     {
-        $message = new FcmMessage();
-        $message->to('ftPIfefZYxU:APA91bFGFoISY_Ulbn1lm8XwXQwYA28dmkAxl963')->content([
-            'title'        => 'Test',
-            'body'         => 'Hello Testing sanjid',
-            'sound'        => '', // Optional
-            'icon'         => '', // Optional
-            'click_action' => '' // Optional
-        ])->data([
-            'param1' => 'baz' // Optional
-        ])->priority(FcmMessage::PRIORITY_HIGH); // Optional - Default is 'normal'.
+        $user = User::first();
 
-        return $message;
+        $details = [
+            'title' => 'Hi Artisan',
+            'body' => 'This is my first notification from ItSolutionStuff.com',
+        ];
+
+        Notification::send($user, new SomeNotification($details));
+
+        //dd('done');
     }
-
     ############################################################################################
     # Permission functions
     # ---------------------------------------------------------------------------------------- #
