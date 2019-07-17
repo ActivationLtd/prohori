@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use View;
 use App\Mail\DailyStatus;
 use App\Task;
+use Edujugon\PushNotification\PushNotification;
 
 class MiscController extends Controller
 {
@@ -42,6 +43,24 @@ class MiscController extends Controller
     }
     public function privacypolicy() {
         return View::make('modules.base.privacy');
+    }
+    public function notifyFcm() {
+        $push = new PushNotification('fcm');
+        $push->setMessage([
+            'notification' => [
+                'title'=>'This is the title',
+                'body'=>'This is the message',
+                'sound' => 'default'
+            ],
+            'data' => [
+                'extraPayLoad1' => 'value1',
+                'extraPayLoad2' => 'value2'
+            ]
+        ])
+            ->setApiKey('AIzaSyCaARnsVRiPSHTYAxaznNgrHlRjI7aTUC0')
+            ->setDevicesToken('ftPIfefZYxU:APA91bFGFoISY_Ulbn1lm8XwXQwYA28dmkAxl9631VnIJjoX-l--DYxrWhxwIpkFIqwcZh7zaL3xAMkdFxPeR6Nad0bc3ajc02vLAIjbmFRt11qewVXhw7J7IJMvoG9I3JGVVe-wuqAD')
+            ->send()->getFeedback();
+
     }
 }
 

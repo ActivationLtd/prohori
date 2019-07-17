@@ -38,7 +38,7 @@ return [
      * Add the Firebase API key
      */
     'fcm' => [
-        'key' => 'AIzaSyBh54nPzrZoR47gnSRkAFEO6yJtKoqNAf8'
+        'key' => 'AIzaSyCaARnsVRiPSHTYAxaznNgrHlRjI7aTUC0'
     ]
 
 ];
