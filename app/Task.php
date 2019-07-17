@@ -431,23 +431,6 @@ class Task extends Basemodule
                         }
                     }
                 }
-                //creating assignement based on changing of assingee
-                if (isset($element->assigned_to)) {
-                    if ($element->getOriginal('assigned_to') != $element->assigned_to) {
-                        //if assignment does not exists
-                        $assignment = Assignment::create([
-                            'name' => $element->name,
-                            'type' => $element->tasktype_id,
-                            'module_id' => '29',
-                            'element_id' => $element->id,
-                            'assigned_by' => user()->id,
-                            'assigned_to' => $element->assigned_to,
-                        ]);
-                        //filling the assignment id in task table
-                        $element->assignment_id = $assignment->id;
-                        $valid = setMessage("Assignment created");
-                    }
-                }
             }
             $element->is_active = 1;
 
@@ -491,6 +474,9 @@ class Task extends Basemodule
                     'title'=>'Task Created',
                     'body'=>'A new Task has been created',
                 ];
+                foreach($element->watcher_objs as $watchers){
+                    pushNotification($watchers,$contents);
+                }
                 pushNotification($element->assignee,$contents);
             }
         });
@@ -524,10 +510,29 @@ class Task extends Basemodule
                 'title'=>'Task Updated',
                 'body'=>'Task has been updated',
             ];
-            pushNotification($element->creator,$contents);
+            foreach($element->watcher_objs as $watchers){
+                pushNotification($watchers,$contents);
+            }
+
             pushNotification($element->assignee,$contents);
 
+            //creating assignement based on changing of assingee
+            if (isset($element->assigned_to)) {
+                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
+                    //if assignment does not exists
+                    $assignment = Assignment::create([
+                        'name' => $element->name,
+                        'type' => $element->tasktype_id,
+                        'module_id' => '29',
+                        'element_id' => $element->id,
+                        'assigned_by' => user()->id,
+                        'assigned_to' => $element->assigned_to,
+                    ]);
+                    //filling the assignment id in task table
 
+                    $valid = setMessage("Assignment created");
+                }
+            }
 
             return $valid;
         });
@@ -770,7 +775,7 @@ class Task extends Basemodule
     }
 
     public function tasktype() {
-        return $this->belongsTo(\App\Tasktype::class);
+        return $this->belongsTo(\App\Tasktype::class,'tasktype_id');
     }
 
     public function subtasks() {
