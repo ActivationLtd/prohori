@@ -18,8 +18,9 @@ class SomeNotification extends Notification
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct($contents) {
         //
+        $this->contents = $contents;
     }
 
     /**

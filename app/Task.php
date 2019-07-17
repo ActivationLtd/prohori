@@ -7,7 +7,9 @@ use App\Notifications\SomeNotification;
 use App\Traits\Assignable;
 use App\Observers\TaskObserver;
 use DB;
+use Notification;
 use Benwilkins\FCM\FcmMessage;
+
 
 /**
  * Class Task
@@ -511,7 +513,7 @@ class Task extends Basemodule
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
-
+            $element->sendNotification();
 
 
 
