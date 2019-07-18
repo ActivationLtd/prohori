@@ -505,7 +505,7 @@ class Task extends Basemodule
             //contents for notification
             $contents = [
                 'title' => 'Task updated',
-                'body' => 'Task id '.$element->id.' has been updated',
+                'body' => "Task id ".$element->id." has been updated",
             ];
             pushNotification($element->assignee, $contents);
             if($element->getOriginal('status') != $element->status){
@@ -530,7 +530,7 @@ class Task extends Basemodule
                         'assigned_to' => $element->assigned_to,
                     ]);
                     //filling the assignment id in task table
-                    DB::table('tasks')->where('id',$element->id)->update(['assignment_id',$assignment->id]);
+                    DB::table('tasks')->where('id',$element->id)->update(['assignment_id'=>$assignment->id]);
                     $valid = setMessage("Assignment created");
                 }
             }
