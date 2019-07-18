@@ -87,8 +87,8 @@ class UserApiController extends ApiController
         $data = [
             'tasks' => [
                 'assigned' => $task_assigned,
-                'in_progress' => $task_completed,
-                'complete' => $task_inprogress,
+                'in_progress' => $task_inprogress,
+                'complete' => $task_completed,
                 'due' => $task_due,
             ]
         ];
