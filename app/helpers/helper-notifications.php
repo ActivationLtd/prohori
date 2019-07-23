@@ -201,7 +201,8 @@ function pushNotification($user,$content){
             'notification' => [
                 'title'=>$content['title'],
                 'body'=>$content['body'],
-                'sound' => 'default'
+                'sound' => 'default',
+                'click_action' => 'OPEN_APP'
             ],
             'data' => [
                 'extraPayLoad1' => 'value1',
