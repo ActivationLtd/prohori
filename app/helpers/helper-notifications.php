@@ -196,22 +196,25 @@ function emailVerificationNotification($user)
     });
 }
 function pushNotification($user,$content){
-        $push = new PushNotification('fcm');
-        $push->setMessage([
-            'notification' => [
-                'title'=>$content['title'],
-                'body'=>$content['body'],
-                'sound' => 'default',
-                'click_action' => 'OPEN_APP'
-            ],
-            'data' => [
-                'extraPayLoad1' => 'value1',
-                'extraPayLoad2' => 'value2'
-            ]
-        ])
-            ->setApiKey('AIzaSyCaARnsVRiPSHTYAxaznNgrHlRjI7aTUC0')
-            ->setDevicesToken($user->device_token)
-            ->send()->getFeedback();
+        if(isset($user->device_token)){
+            $push = new PushNotification('fcm');
+            $push->setMessage([
+                'notification' => [
+                    'title'=>$content['title'],
+                    'body'=>$content['body'],
+                    'sound' => 'default',
+                    'click_action' => 'OPEN_APP'
+                ],
+                'data' => [
+                    'extraPayLoad1' => 'value1',
+                    'extraPayLoad2' => 'value2'
+                ]
+            ])
+                ->setApiKey('AIzaSyCaARnsVRiPSHTYAxaznNgrHlRjI7aTUC0')
+                ->setDevicesToken($user->device_token)
+                ->send()->getFeedback();
+        }
+
 
 }
 
