@@ -455,12 +455,19 @@ class Task extends Basemodule
         // for the first time.
         /************************************************************/
         static::created(function (Task $element) {
+            //notification for task created
+            $contents = [
+                'title' => 'A new Task has been created',
+                'body' => $element->tasktype_name . ' for ' . $element->client_name . ' has been created, task id ' . $element->id . ' and assigned to ' . $element->assignee->name,
+            ];
             if ($element->assignee()->exists()) {
                 $emails = [];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
                         /** @noinspection PhpUndefinedMethodInspection */
                         $emails[] = User::remember(cacheTime('long'))->find($user_id)->email;
+                        //push notification for watchers
+                        pushNotification($user_id, $contents);
                     }
                 }
                 //send mail to the assignee when task is created
@@ -468,14 +475,7 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
-                //notification for task created
-                $contents = [
-                    'title' => 'A new Task has been created',
-                    'body' => $element->tasktype_name . ' for ' . $element->client_name . ' has been created, task id ' . $element->id . ' and assigned to ' . $element->assignee->name,
-                ];
-                foreach ($element->watcher_objs as $watchers) {
-                    pushNotification($watchers, $contents);
-                }
+                //push notification to assignee
                 pushNotification($element->assignee, $contents);
             }
         });
@@ -502,75 +502,78 @@ class Task extends Basemodule
             Statusupdate::log($element, [
                 'status' => $element->status,
             ]);
-            //contents for notification
+            //element updated notification to assignee
             $contents = [
                 'title' => 'Task updated',
-                'body' => "Task id ".$element->id." has been updated",
+                'body' => "Task id " . $element->id . " has been updated",
             ];
             pushNotification($element->assignee, $contents);
-            if($element->getOriginal('status') != $element->status){
+            //status change notification to watchers
+            if ($element->getOriginal('status') != $element->status) {
                 $contents = [
                     'title' => 'Task status has changed',
-                    'body' => 'Task id '.$element->id.' '.$element->tasktype_name.' for '.$element->client_name. ' status has been changed to '.$element->status,
+                    'body' => 'Task id ' . $element->id . ' ' . $element->tasktype_name . ' for ' . $element->client_name . ' status has been changed to ' . $element->status,
                 ];
-                foreach ($element->watcher_objs as $watchers) {
-                    pushNotification($watchers, $contents);
+                if (isset($element->watchers)) {
+                    foreach ($element->watchers as $user_id) {
+                        pushNotification($user_id, $contents);
+                    }
                 }
             }
-            //creating assignement based on changing of assingee
-            if (isset($element->assigned_to)) {
-                if ($element->getOriginal('assigned_to') != $element->assigned_to) {
-                    //if assignment does not exists
-                    $assignment = Assignment::create([
-                        'name' => $element->name,
-                        'type' => $element->tasktype_id,
-                        'module_id' => '29',
-                        'element_id' => $element->id,
-                        'assigned_by' => user()->id,
-                        'assigned_to' => $element->assigned_to,
-                    ]);
-                    //filling the assignment id in task table
-                    DB::table('tasks')->where('id',$element->id)->update(['assignment_id'=>$assignment->id]);
-                    $valid = setMessage("Assignment created");
+                //creating assignement based on changing of assingee
+                if (isset($element->assigned_to)) {
+                    if ($element->getOriginal('assigned_to') != $element->assigned_to) {
+                        //if assignment does not exists
+                        $assignment = Assignment::create([
+                            'name' => $element->name,
+                            'type' => $element->tasktype_id,
+                            'module_id' => '29',
+                            'element_id' => $element->id,
+                            'assigned_by' => user()->id,
+                            'assigned_to' => $element->assigned_to,
+                        ]);
+                        //filling the assignment id in task table
+                        DB::table('tasks')->where('id', $element->id)->update(['assignment_id' => $assignment->id]);
+                        $valid = setMessage("Assignment created");
+                    }
                 }
-            }
 
-            return $valid;
-        });
+                return $valid;
+            });
 
-        /************************************************************/
-        // Following code block executes - when some element is in
-        // the process of being deleted. This is good place to
-        // put validations for eligibility of deletion.
-        /************************************************************/
-        static::deleting(function (Task $element) {
-            $valid = true;
-            if (!user()->isSuperUser()) {
-                if ($element->created_by != user()->id) {
-                    $valid = setError("Only superadmin and task creator can delete a task");
+            /************************************************************/
+            // Following code block executes - when some element is in
+            // the process of being deleted. This is good place to
+            // put validations for eligibility of deletion.
+            /************************************************************/
+            static::deleting(function (Task $element) {
+                $valid = true;
+                if (!user()->isSuperUser()) {
+                    if ($element->created_by != user()->id) {
+                        $valid = setError("Only superadmin and task creator can delete a task");
+                    }
                 }
-            }
-            return $valid;
-        });
+                return $valid;
+            });
 
-        /************************************************************/
-        // Following code block executes - after an element is
-        // successfully deleted.
-        /************************************************************/
-        // static::deleted(function (Task $element) {});
+            /************************************************************/
+            // Following code block executes - after an element is
+            // successfully deleted.
+            /************************************************************/
+            // static::deleted(function (Task $element) {});
 
-        /************************************************************/
-        // Following code block executes - when an already deleted element
-        // is in the process of being restored.
-        /************************************************************/
-        // static::restoring(function (Task $element) {});
+            /************************************************************/
+            // Following code block executes - when an already deleted element
+            // is in the process of being restored.
+            /************************************************************/
+            // static::restoring(function (Task $element) {});
 
-        /************************************************************/
-        // Following code block executes - after an element is
-        // successfully restored.
-        /************************************************************/
-        //static::restored(function (Task $element) {});
-    }
+            /************************************************************/
+            // Following code block executes - after an element is
+            // successfully restored.
+            /************************************************************/
+            //static::restored(function (Task $element) {});
+        }
 
     ############################################################################################
     # Validator functions
@@ -630,24 +633,24 @@ class Task extends Basemodule
      */
     public function isViewable($user_id = null, $set_msg = false) {
 
-        $valid = false;
-        if ($valid = spyrElementViewable($this, $user_id)) {
             $valid = false;
-            if ($this->created_by == User()->id) {
-                $valid = true;
-            } else {
-                if ($this->assigned_to == User()->id) {
+            if ($valid = spyrElementViewable($this, $user_id)) {
+                $valid = false;
+                if ($this->created_by == User()->id) {
                     $valid = true;
                 } else {
-                    if (User()->isSuperUser()) {
+                    if ($this->assigned_to == User()->id) {
                         $valid = true;
+                    } else {
+                        if (User()->isSuperUser()) {
+                            $valid = true;
+                        }
                     }
                 }
+                //if ($valid && somethingElse()) $valid = false;
             }
-            //if ($valid && somethingElse()) $valid = false;
+            return $valid;
         }
-        return $valid;
-    }
 
     /**
      * Checks if the $module is editable by current or any user passed as parameter.
@@ -751,48 +754,48 @@ class Task extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function assignee() {
-        return $this->belongsTo(\App\User::class, 'assigned_to');
-    }
+            return $this->belongsTo(\App\User::class, 'assigned_to');
+        }
 
     public function flagger() {
-        return $this->belongsTo(\App\User::class, 'flagged_by');
-    }
+            return $this->belongsTo(\App\User::class, 'flagged_by');
+        }
 
     public function verifier() {
-        return $this->belongsTo(\App\User::class, 'verified_by');
-    }
+            return $this->belongsTo(\App\User::class, 'verified_by');
+        }
 
     public function resolver() {
-        return $this->belongsTo(\App\User::class, 'resolved_by');
-    }
+            return $this->belongsTo(\App\User::class, 'resolved_by');
+        }
 
     public function closer() {
-        return $this->belongsTo(\App\User::class, 'closed_by');
-    }
+            return $this->belongsTo(\App\User::class, 'closed_by');
+        }
 
     public function clientlocation() {
-        return $this->belongsTo(\App\Clientlocation::class);
-    }
+            return $this->belongsTo(\App\Clientlocation::class);
+        }
 
     public function tasktype() {
-        return $this->belongsTo(\App\Tasktype::class, 'tasktype_id');
-    }
+            return $this->belongsTo(\App\Tasktype::class, 'tasktype_id');
+        }
 
     public function subtasks() {
-        return $this->hasMany(\App\Task::class, 'parent_id');
-    }
+            return $this->hasMany(\App\Task::class, 'parent_id');
+        }
 
     public function parenttask() {
-        return $this->belongsTo(\App\Task::class, 'parent_id');
-    }
+            return $this->belongsTo(\App\Task::class, 'parent_id');
+        }
 
     public function assignments() {
-        return $this->hasMany(\App\Assignment::class, 'element_id');
-    }
+            return $this->hasMany(\App\Assignment::class, 'element_id');
+        }
 
     public function client() {
-        return $this->belongsTo(\App\Client::class);
-    }
+            return $this->belongsTo(\App\Client::class);
+        }
 
 
     // Write new relationships below this line
@@ -817,43 +820,43 @@ class Task extends Basemodule
      * @return void
      */
     public function setWatchersAttribute($value) {
-        // Original default value
-        $this->attributes['watchers'] = $value;
+            // Original default value
+            $this->attributes['watchers'] = $value;
 
-        // 1. If the value is originally array converts array to json
-        if (is_array($value)) {
-            $this->attributes['watchers'] = json_encode(cleanArray($value));
+            // 1. If the value is originally array converts array to json
+            if (is_array($value)) {
+                $this->attributes['watchers'] = json_encode(cleanArray($value));
+            }
+            //2 .If the original value is CSV converts array to json
+            // if (isCsv($value)) {
+            //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+            // }
+
         }
-        //2 .If the original value is CSV converts array to json
-        // if (isCsv($value)) {
-        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
-        // }
-
-    }
 
     /**
      * @return mixed
      */
     public function getWatcherObjsAttribute() {
-        if (isset($this->watchers))
-            return User::whereIn('id', $this->watchers)->remember(cacheTime('long'))->get();
-        return null;
-    }
+            if (isset($this->watchers))
+                return User::whereIn('id', $this->watchers)->remember(cacheTime('long'))->get();
+            return null;
+        }
 
     /**
      * @return string
      */
     public function getPrioritiesNameAttribute() {
-        if (isset($this->priority)) {
-            if ($this->priority == 0) {
-                return 'Low';
-            } else if ($this->priority == 1) {
-                return 'Normal';
-            } else if ($this->priority == 2) {
-                return 'High';
+            if (isset($this->priority)) {
+                if ($this->priority == 0) {
+                    return 'Low';
+                } else if ($this->priority == 1) {
+                    return 'Normal';
+                } else if ($this->priority == 2) {
+                    return 'High';
+                }
             }
+            return null;
         }
-        return null;
-    }
 
 }
