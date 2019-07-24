@@ -206,8 +206,10 @@ function pushNotification($user,$content){
                     'click_action' => 'OPEN_APP'
                 ],
                 'data' => [
-                    'extraPayLoad1' => 'value1',
-                    'extraPayLoad2' => 'value2'
+                    'title'=>$content['title'],
+                    'body'=>$content['body'],
+                    'sound' => 'default',
+                    'click_action' => 'OPEN_APP'
                 ]
             ])
                 ->setApiKey('AIzaSyCaARnsVRiPSHTYAxaznNgrHlRjI7aTUC0')
