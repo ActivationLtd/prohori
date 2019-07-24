@@ -464,10 +464,11 @@ class Task extends Basemodule
                 $emails = [];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
+                        $user=User::remember(cacheTime('long'))->find($user_id);
                         /** @noinspection PhpUndefinedMethodInspection */
-                        $emails[] = User::remember(cacheTime('long'))->find($user_id)->email;
+                        $emails[] = $user->email;
                         //push notification for watchers
-                        pushNotification($user_id, $contents);
+                        pushNotification($user, $contents);
                     }
                 }
                 //send mail to the assignee when task is created
@@ -516,7 +517,8 @@ class Task extends Basemodule
                 ];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
-                        pushNotification($user_id, $contents);
+                        $user=User::remember(cacheTime('long'))->find($user_id);
+                        pushNotification($user, $contents);
                     }
                 }
             }
