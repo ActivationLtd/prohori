@@ -83,7 +83,8 @@ class TasksController extends ModulebaseController
             $query = $query->where(function ($q) use ($user) {
                 /** @var $q \Illuminate\Database\Query\Builder */
                 $q->where('assigned_to', $user->id)
-                    ->orWhere('tasks.created_by', $user->id);
+                    ->orWhere('tasks.created_by', $user->id)
+                    ->orWhere('tasks.watchers_emails','LIKE', '%'.$user->email.'%');
             });
         }
 
