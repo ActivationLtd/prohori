@@ -203,7 +203,8 @@ function pushNotification($user,$content){
                     'title'=>$content['title'],
                     'body'=>$content['body'],
                     'sound' => 'default',
-                    'click_action' => 'OPEN_APP'
+                    'click_action' => 'OPEN_APP',
+                    'batch' => 1
                 ],
                 'data' => [
                     'title'=>$content['title'],

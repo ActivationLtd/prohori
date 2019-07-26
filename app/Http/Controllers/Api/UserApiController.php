@@ -110,7 +110,7 @@ class UserApiController extends ApiController
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
                     ->orWhere('created_by', $this->user()->id)
-                    ->orWhere('tasks.watchers_emails','LIKE', '%'.$user->email.'%');
+                    ->orWhere('tasks.watchers','LIKE', '%'.$user->id.'%');
             });
         }
         # Generic API return
