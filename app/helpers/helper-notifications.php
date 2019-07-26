@@ -204,15 +204,13 @@ function pushNotification($user,$content){
                     'body'=>$content['body'],
                     'sound' => 'default',
                     'click_action' => 'OPEN_APP',
-                    'batch' => '1'
-
+                    'badge' => 1
                 ],
                 'data' => [
                     'title'=>$content['title'],
                     'body'=>$content['body'],
                     'sound' => 'default',
-                    'click_action' => 'OPEN_APP',
-                    'batch' => '1'
+                    'click_action' => 'OPEN_APP'
                 ]
             ])
                 ->setApiKey('AIzaSyCaARnsVRiPSHTYAxaznNgrHlRjI7aTUC0')
