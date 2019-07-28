@@ -92,6 +92,9 @@ class Upload extends Basemodule
         'element_id',
         'latitude',
         'longitude',
+        'distance',
+        'distance_flag_id',
+        'distacne_flag_name',
         'element_uuid',
         'is_active',
         'created_by',
@@ -115,6 +118,12 @@ class Upload extends Basemodule
      * @var array
      */
     public static $types = ['Profile photo', 'Logo', 'Task file','Evidence'];
+
+    public static $upload_flags = [
+        '0'=>'Green',
+        '1'=>'Yellow',
+        '2'=>'Red'
+    ];
     /**
      * Disallow from mass assignment. (Black-listed fields)
      *
@@ -216,6 +225,19 @@ class Upload extends Basemodule
             if ($valid) {
                 $element->is_active = 1; // Always set as 'Yes'
                 $element->ext = extFrmPath($element->path); // Store file extension separately
+            }
+            if($valid){
+                if($element->distance>0 && $element->distance<200)
+                {
+                    $element->distance_flag_id = 0;
+                    $element->distance_flag_name = 'Green';
+                }elseif($element->distance>200 && $element->distance<400){
+                    $element->distance_flag_id = 1;
+                    $element->distance_flag_name = 'Yellow';
+                }else{
+                    $element->distance_flag_id = 2;
+                    $element->distance_flag_name = 'Red';
+                }
             }
             return $valid;
         });

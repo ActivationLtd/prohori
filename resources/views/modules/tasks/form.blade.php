@@ -304,7 +304,14 @@
             // function1();
             // function2();
             navigator.geolocation.getCurrentPosition(function (location) {
-                console.log(checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}}));
+                @if(isset($task->clientlocation->latitude,$task->clientlocation->longitude))
+                distance=checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}});
+                console.log(distance);
+                if(distance>0){
+                    $('input[name=distance]').val(distance);
+                }
+                @endif
+
             });
         </script>
     @endif
