@@ -48,7 +48,6 @@ if ((isset($element) && isset($$element))) {
                 <input type="hidden" name="element_uuid" value="{{$var['element_uuid']}}"/>
                 <input type="hidden" name="latitude"/>
                 <input type="hidden" name="longitude"/>
-                <input type="hidden" name="distance"/>
                 @if($var['type'])
                     <input type="hidden" name="type" value="{{$var['type']}}"/>
                 @endif

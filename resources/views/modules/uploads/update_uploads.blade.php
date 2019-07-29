@@ -17,6 +17,7 @@ $var['upload_container_id'] = "img_container_" . $rand;
         {{-- initUploader gets these values and post to uplaod route  --}}
         <div id="{{$var['upload_container_id']}}" class="uploads_container">
             <form>
+                {{csrf_field()}}
                 <input type="hidden" name="ret" value="json"/>
                 <input type="hidden" name="id" value="{{$var['id']}}"/>
             </form>

@@ -303,16 +303,16 @@
             // your functions go here
             // function1();
             // function2();
-            navigator.geolocation.getCurrentPosition(function (location) {
-                @if(isset($task->clientlocation->latitude,$task->clientlocation->longitude))
-                distance=checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}});
-                console.log(distance);
-                if(distance>0){
-                    $('input[name=distance]').val(distance);
-                }
-                @endif
+            //navigator.geolocation.getCurrentPosition(function (location) {
+            {{--//    @if(isset($task->clientlocation->latitude,$task->clientlocation->longitude))--}}
+            {{--//    distance=checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}});--}}
+            //    console.log(distance);
+            //   if(distance>0){
+            //       $('input[name=distance]').val(distance);
+            //   }
+            {{--//   @endif--}}
 
-            });
+            //  });
         </script>
     @endif
     <script type="text/javascript">
