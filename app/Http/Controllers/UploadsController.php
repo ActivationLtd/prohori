@@ -7,6 +7,7 @@ use Redirect;
 use Request;
 use Response;
 use Storage;
+use ImageOptimizer;
 
 class UploadsController extends ModulebaseController
 {
@@ -195,6 +196,7 @@ class UploadsController extends ModulebaseController
                         $element->path = $path . $unique_name; //save the full path including file to easy retrieve
                         // todo: Sanjid: https://activationltd.atlassian.net/browse/ACT-1597
                         // Optimization happens here
+                        ImageOptimizer::optimize(public_path($element->path));
                     }
 
                     if ($upload_success) {
@@ -267,7 +269,89 @@ class UploadsController extends ModulebaseController
             return $response;
         }
     }
+    /**
+     * Update existing upload.
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    public function updateExistingUpload() {
+        // init
+        /** @var \App\Basemodule $Model */
+        /** @var \App\Basemodule $element */
+        // init local variables
+        $module_name = $this->module_name;
+        $Model = model($this->module_name);
+        $ret = ret();
+        # --------------------------------------------------------
+        # Process store while creation
+        # --------------------------------------------------------
+        if (hasModulePermission($this->module_name, 'create')) {
+            $id = Request::get('id');
+            $uploadedentry = Upload::find($id);
+            $element = new $Model(Request::all());
+            // validate
+            $validator = \Validator::make(Request::all(), $Model::rules($element), $Model::$custom_validation_messages);
 
+            if ($validator->fails()) {
+                $ret = ret('fail', "Validation error(s) on creating {$this->module->title}.", ['validation_errors' => json_decode($validator->messages(), true)]);
+            } else { // Validation success
+                if (Request::hasFile('file')) {
+                    $file = Request::file('file');
+                        $uuid = uuid();
+                        // $unique_name = $uuid . "." . $file->getClientOriginalExtension();
+                        $name = 'test_' . randomString() . "_" . $file->getClientOriginalName();
+                        $path = conf('var.file-upload-root');
+                        $upload_success = $file->move(public_path() . $path, $name);
+                        //ImageOptimizer::optimize(public_path($path.$name));
+                        if ($upload_success) {
+                            $uploadedentry->name = $name;
+                            $uploadedentry->path = $path . $name;
+
+                            if ($uploadedentry->save()) { // data saved in database
+                                $ret = ret('success', '', ['data' => $uploadedentry->toArray()]);
+                                $ret['message'] = [
+                                    'id' => $uploadedentry->id,
+                                    'name' => $uploadedentry->name,
+                                    'absolute_path' => asset($uploadedentry->path),
+                                    'relative_path' => $uploadedentry->path,
+                                ];
+                            } else {
+                                //setError("$Model could not be created ");
+                                $ret = ret('fail', "$Model could not be created ");
+                            }
+                        } else {
+                            $ret = ret('fail', "Failed to move file from tmp to destination directory");
+                        }
+
+                } else {
+                    $ret = ret('fail', "No file selected");
+                }
+            }
+        }
+        # --------------------------------------------------------
+        # Process return/redirect
+        # --------------------------------------------------------
+        if (Request::get('ret') == 'json') {
+            $ret = fillRet($ret); // fill with session values(messages, errors, success etc) and redirect
+            if ($ret['status'] == 'success' && (isset($ret['redirect']) && $ret['redirect'] == '#new')) {
+                $ret['redirect'] = route("$module_name.edit", $$element->id);
+            }
+            return Response::json($ret);
+        } else {
+            if ($ret['status'] == 'fail') {
+                $redirect = Redirect::to(Request::get('redirect_fail'))->withInput();
+                if (isset($validator)) {
+                    $redirect = $redirect->withErrors($validator);
+                }
+            } else {
+                if (Request::get('redirect_success') == '#new') {
+                    $redirect = Redirect::route("$module_name.edit", $$element->id);
+                } else {
+                    $redirect = Redirect::to(Request::get('redirect_success'));
+                }
+            }
+            return $redirect;
+        }
+    }
     // public function destroy($id){
     //     $module_name = $this->module_name;
     //     $Model = model($this->module_name);

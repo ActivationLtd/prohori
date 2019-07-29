@@ -23,6 +23,7 @@
     "phpoffice/phpspreadsheet": "^1.5",
     "pusher/pusher-push-notifications": "^1.0",
     "ramsey/uuid": "^3.8",
+    "spatie/laravel-image-optimizer": "^1.4",
     "watson/rememberable": "^2.0",
     "webpatser/laravel-uuid": "^3.0",
     "yajra/laravel-datatables-oracle": "~9.0"
