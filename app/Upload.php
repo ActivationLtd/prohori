@@ -245,7 +245,7 @@ class Upload extends Basemodule
                     $element->distance_flag_name = 'Red';
                 }
             }
-            ImageOptimizer::optimize(public_path($element->path),'test.png');
+            //ImageOptimizer::optimize(public_path($element->path));
             return $valid;
         });
 
