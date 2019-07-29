@@ -17,6 +17,7 @@ class DefaultModuleReport extends IsoReportBuilder
             if (in_array($name, $escape_fields)) {
                 // Process custom filters test1,test2,test3
             } else {
+
                 $query = $this->defaultFilter($query, $name, $val);
             }
         }

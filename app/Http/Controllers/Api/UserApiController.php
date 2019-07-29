@@ -72,15 +72,23 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function summary() {
-        $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
-        $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
-        $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
-        $task_due = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        if($this->user()->isManagerUser()){
+            $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
+            $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
+            $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
+            $task_due = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        }else{
+            $task_assigned = Task::remember(cacheTime('medium'))->whereIn('status', ['To do', 'In Progress'])->count();
+            $task_completed = Task::remember(cacheTime('medium'))->whereIn('status', ['Done', 'Closed'])->count();
+            $task_inprogress = Task::remember(cacheTime('medium'))->whereIn('status', ['In Progress'])->count();
+            $task_due = Task::remember(cacheTime('medium'))->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
+        }
+
         $data = [
             'tasks' => [
                 'assigned' => $task_assigned,
-                'in_progress' => $task_completed,
-                'complete' => $task_inprogress,
+                'in_progress' => $task_inprogress,
+                'complete' => $task_completed,
                 'due' => $task_due,
             ]
         ];
@@ -101,7 +109,8 @@ class UserApiController extends ApiController
         if ($this->user()->isManagerUser()) {
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
-                    ->orWhere('created_by', $this->user()->id);
+                    ->orWhere('created_by', $this->user()->id)
+                    ->orWhere('tasks.watchers','LIKE', '%'.$this->user()->id.'%');
             });
         }
         # Generic API return

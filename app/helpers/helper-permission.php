@@ -238,9 +238,9 @@ function spyrElementViewable($element, $user_id = null, $set_msg = false)
     }
 
     // Check for valid tenant context
-    if ($valid && (inTenantContext($module_name) && !elementBelongsToSameTenant($element))) {
-        $valid = setError("User[" . $user->name . "] does not have view permission on module: $module_name [" . $element->id . "] because the element does not belong to same user", $set_msg);
-    }
+    // if ($valid && (inTenantContext($module_name) && !elementBelongsToSameTenant($element))) {
+    //     $valid = setError("User[" . $user->name . "] does not have view permission on module: $module_name [" . $element->id . "] because the element does not belong to same user", $set_msg);
+    // }
 
     return $valid;
 }

@@ -13,7 +13,7 @@
         @if(Request::has('submit') && hasPermission('reports.create'))
             <?php
             $report_save_url = route('reports.create');
-            $report_save_url .= '?title=' . Request::get('report_name');
+            $report_save_url .= '?title=' . Request::get('title');
             $report_save_url .= '&module_id=' . $mod->id;
             $report_save_url .= '&parameters=' . urlencode(str_replace(route('home'), '', URL::full()));
             ?>

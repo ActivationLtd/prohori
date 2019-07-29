@@ -73,7 +73,7 @@
     @include('form.select-ajax',['var'=>['label' => Lang::get('messages.Parent-task'), 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-6',]])
     <div class="clearfix"></div>
     {{--tasktype_id--}}
-    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>Lang::get('messages.Task-type'),'query'=> new \App\Tasktype(),'container_class'=>'col-md-3']])
+    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>Lang::get('messages.Task-type'),'query'=> new \App\Tasktype,'container_class'=>'col-md-3']])
     {{--priority--}}
     @include('form.select-array',['var'=>['name'=>'priority','label'=>Lang::get('messages.Priority'), 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3']])
     {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
@@ -260,15 +260,15 @@
                         if ((response.data)) {
                             //var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
                             //
+                            client_id=$("select[name=client_id]").append("<option value=>Select</option>");
                             $.each(response.data, function (i, obj) {
                                 console.log(obj);
-                                $("select[name=client_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                                client_id.append("<option value=" + obj.id + ">" + obj.name + "</option>");
                             });
                         }
 
                     },
                 });
-
             });
         }
 
@@ -304,7 +304,14 @@
             // function1();
             // function2();
             navigator.geolocation.getCurrentPosition(function (location) {
-                console.log(checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}}));
+                @if(isset($task->clientlocation->latitude,$task->clientlocation->longitude))
+                distance=checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}});
+                console.log(distance);
+                if(distance>0){
+                    $('input[name=distance]').val(distance);
+                }
+                @endif
+
             });
         </script>
     @endif

@@ -18,9 +18,15 @@ function transformRow($column, $row, $value, $module_name = '') {
     $new_value = $value;
     if (in_array($column, ['id', 'name'])) {
         if (isset($row->id)) {
-            $new_value = "<a href='".route($module_name.'.edit',$row->id)."'>".$value."</a>";
+            $new_value = "<a href='" . route($module_name . '.edit', $row->id) . "'>" . $value . "</a>";
+        }
+    } else if (in_array($column, ['client_obj', 'clientlocation_obj'])) {
+        if (isset($row->id)) {
+            $data = json_decode($value);
+            $new_value = $data->name;
         }
     }
     return $new_value;
 }
+
 ?>

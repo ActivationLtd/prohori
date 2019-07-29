@@ -451,6 +451,11 @@ class User extends Authenticatable implements MustVerifyEmail
                 $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
                 $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
+            if(isset($element->watchers)){
+                if(in_array($element->id,$element->watchers)){
+                    $valid=setError("Watcher can not be the same user");
+                }
+            }
 
             // fill common fields, null-fill, trim blanks from Request
             if ($valid) {
@@ -700,12 +705,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isViewable($user_id = null, $set_msg = false) {
         /** @var \App\User $user */
         $user = user($user_id);
+
         if (!spyrElementViewable($this, $user_id, $set_msg)) {
             return false;
         }
         // Allow super user
         if ($user->isSuperUser()) {
+
             return true;
+        }
+        if ($user->isManagerUser()) {
+
+            if ($this->id == $user->id) {
+                return true;
+            }else{
+                return false;
+            }
         }
         return false;
     }

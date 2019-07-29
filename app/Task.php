@@ -3,9 +3,12 @@
 namespace App;
 
 use App\Mail\TaskCreated;
+use App\Notifications\SomeNotification;
 use App\Traits\Assignable;
 use App\Observers\TaskObserver;
 use DB;
+use Notification;
+use Benwilkins\FCM\FcmMessage;
 
 /**
  * Class Task
@@ -151,6 +154,7 @@ class Task extends Basemodule
 {
     //use IsoModule;
     use Assignable;
+
     /**
      * Mass assignment fields (White-listed fields)
      * @var array
@@ -185,6 +189,7 @@ class Task extends Basemodule
         'assignee_name',
         'assignee_profile_pic_url',
         'watchers',
+        'watchers_emails',
         'status',
         'previous_status',
         'due_date',
@@ -340,25 +345,28 @@ class Task extends Basemodule
                 }
                 //filling client location
                 if ($element->clientlocation()->exists()) {
-                    $element->clientlocation_obj = $element->clientlocation->toJson();
-                    $element->clientlocation_name = $element->clientlocation->name;
 
-                    $element->clientlocationtype_id = $element->clientlocation->clientlocationtype_id;
-                    $element->clientlocationtype_name = $element->clientlocation->clientlocationtype_name;
+                    $clientlocation = $element->clientlocation;
 
-                    $element->clientlocation_obj = $element->clientlocation->toJson();
+                    $element->clientlocation_obj = $clientlocation->toJson();
+                    $element->clientlocation_name = $clientlocation->name;
 
-                    $element->division_id = $element->clientlocation->division_id;
-                    $element->division_name = $element->clientlocation->division_name;
+                    $element->clientlocationtype_id = $clientlocation->clientlocationtype_id;
+                    $element->clientlocationtype_name = $clientlocation->clientlocationtype_name;
 
-                    $element->district_id = $element->clientlocation->district_id;
-                    $element->district_name = $element->clientlocation->district_name;
+                    $element->clientlocation_obj = $clientlocation->toJson();
 
-                    $element->upazila_id = $element->clientlocation->upazila_id;
-                    $element->upazila_name = $element->clientlocation->upazila_name;
+                    $element->division_id = $clientlocation->division_id;
+                    $element->division_name = $clientlocation->division_name;
 
-                    $element->longitude = $element->clientlocation->longitude;
-                    $element->latitude = $element->clientlocation->latitude;
+                    $element->district_id = $clientlocation->district_id;
+                    $element->district_name = $clientlocation->district_name;
+
+                    $element->upazila_id = $clientlocation->upazila_id;
+                    $element->upazila_name = $clientlocation->upazila_name;
+
+                    $element->longitude = $clientlocation->longitude;
+                    $element->latitude = $clientlocation->latitude;
                 }
                 //filling tasktype information
                 if ($element->tasktype()->exists()) {
@@ -366,8 +374,9 @@ class Task extends Basemodule
                 }
                 //filling assignee information
                 if (isset($element->assigned_to)) {
-                    $element->assignee_name = $element->assignee->name;
-                    $element->assignee_profile_pic_url = $element->assignee->profile_pic_url;
+                    $assignee = $element->assignee;
+                    $element->assignee_name = $assignee->name;
+                    $element->assignee_profile_pic_url = $assignee->profile_pic_url;
                 }
                 //filling priority
                 if (isset($element->priority)) {
@@ -383,17 +392,20 @@ class Task extends Basemodule
                 if (!isset($element->parent_id)) {
                     $element->parent_id = 0;
                 }
-
+                //filling it as a blank array
                 if (!isset($element->watchers)) {
                     $element->watchers = [];
                 }
 
                 //adding watchers
                 if (isset($element->assignee->watchers)) {
-                    if(is_array($element->watchers)){
-                        $element->watchers = array_merge($element->watchers, $element->assignee->watchers);
+                    if (is_array($element->watchers)) {
+                        $element->watchers = array_unique(array_merge($element->watchers, $element->assignee->watchers));
                     }
-
+                    if (count($element->watchers)) {
+                        $emails = User::whereIn('id', $element->watchers)->pluck('email')->toArray();
+                        $element->watchers_emails = implode(",", $emails);
+                    }
                 }
 
                 //update assignment and closed by
@@ -443,12 +455,20 @@ class Task extends Basemodule
         // for the first time.
         /************************************************************/
         static::created(function (Task $element) {
+            //notification for task created
+            $contents = [
+                'title' => 'A new Task has been created',
+                'body' => $element->tasktype_name . ' for ' . $element->client_name . ' has been created, task id ' . $element->id . ' and assigned to ' . $element->assignee->name,
+            ];
             if ($element->assignee()->exists()) {
                 $emails = [];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
+                        $user = User::remember(cacheTime('long'))->find($user_id);
                         /** @noinspection PhpUndefinedMethodInspection */
-                        $emails[] = User::remember(cacheTime('long'))->find($user_id)->email;
+                        $emails[] = $user->email;
+                        //push notification for watchers
+                        pushNotification($user, $contents);
                     }
                 }
                 //send mail to the assignee when task is created
@@ -456,6 +476,8 @@ class Task extends Basemodule
                     ->cc($emails)->send(
                         new TaskCreated($element)
                     );
+                //push notification to assignee
+                pushNotification($element->assignee, $contents);
             }
         });
 
@@ -477,6 +499,29 @@ class Task extends Basemodule
         /************************************************************/
         static::saved(function (Task $element) {
             $valid = true;
+
+            Statusupdate::log($element, [
+                'status' => $element->status,
+            ]);
+            //element updated notification to assignee
+            $contents = [
+                'title' => 'Task updated',
+                'body' => "Task id " . $element->id . " has been updated",
+            ];
+            pushNotification($element->assignee, $contents);
+            //status change notification to watchers
+            if ($element->getOriginal('status') != $element->status) {
+                $contents = [
+                    'title' => 'Task status has changed',
+                    'body' => 'Task id ' . $element->id . ' ' . $element->tasktype_name . ' for ' . $element->client_name . ' status has been changed to ' . $element->status,
+                ];
+                if (isset($element->watchers)) {
+                    foreach ($element->watchers as $user_id) {
+                        $user = User::remember(cacheTime('long'))->find($user_id);
+                        pushNotification($user, $contents);
+                    }
+                }
+            }
             //creating assignement based on changing of assingee
             if (isset($element->assigned_to)) {
                 if ($element->getOriginal('assigned_to') != $element->assigned_to) {
@@ -490,13 +535,11 @@ class Task extends Basemodule
                         'assigned_to' => $element->assigned_to,
                     ]);
                     //filling the assignment id in task table
-                    $element->assignment_id = $assignment->id;
+                    DB::table('tasks')->where('id', $element->id)->update(['assignment_id' => $assignment->id]);
                     $valid = setMessage("Assignment created");
                 }
             }
-            Statusupdate::log($element, [
-                'status' => $element->status,
-            ]);
+
             return $valid;
         });
 
@@ -565,7 +608,7 @@ class Task extends Basemodule
     // public function someAction() { }
 
     /**
-     * Static functions needs to be called using Model::function($id)
+     * Static functions needs to be called using Model::function($id) public function toFcm()
      * Inside static function you may need to query and get the element
      * @param $id
      */
@@ -593,19 +636,20 @@ class Task extends Basemodule
     public function isViewable($user_id = null, $set_msg = false) {
 
         $valid = false;
+        $user = User();
         if ($valid = spyrElementViewable($this, $user_id)) {
             $valid = false;
-            if ($this->created_by == User()->id) {
+            if ($this->created_by == $user->id) {
                 $valid = true;
-            } else {
-                if ($this->assigned_to == User()->id) {
-                    $valid = true;
-                } else {
-                    if (User()->isSuperUser()) {
-                        $valid = true;
-                    }
-                }
+            } else if ($this->assigned_to == $user->id) {
+                $valid = true;
+            } else if ($user->isSuperUser()) {
+                $valid = true;
+            } else if (in_array($user->id, $this->watchers)) {
+                $valid = true;
+
             }
+
             //if ($valid && somethingElse()) $valid = false;
         }
         return $valid;
@@ -737,7 +781,7 @@ class Task extends Basemodule
     }
 
     public function tasktype() {
-        return $this->belongsTo(\App\Tasktype::class);
+        return $this->belongsTo(\App\Tasktype::class, 'tasktype_id');
     }
 
     public function subtasks() {

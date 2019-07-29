@@ -167,14 +167,15 @@ class Assignment extends Basemodule
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-        // static::saving(function (Assignment $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
+        static::saving(function (Assignment $element) {
+            $valid = true;
+            /************************************************************/
+            // Your validation goes here
+            // if($valid) $valid = $element->isSomethingDoable(true)
+            /************************************************************/
+            $element->task->assignment_id = $element->id;
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - when an element is in process
@@ -202,6 +203,11 @@ class Assignment extends Basemodule
                     ->cc($emails)->send(
                         new AssignmentCreated($element)
                     );
+                $contents=[
+                    'title'=>'New Assignment Created',
+                    'body'=>'A new Task has been assigned to you',
+                ];
+                pushNotification($element->assignee,$contents);
             }
         });
 

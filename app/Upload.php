@@ -4,7 +4,6 @@ namespace App;
 
 use App\Observers\UploadObserver;
 use App\Traits\IsoModule;
-use ImageOptimizer;
 
 /**
  * Class Upload
@@ -239,7 +238,6 @@ class Upload extends Basemodule
                     $element->distance_flag_id = 2;
                     $element->distance_flag_name = 'Red';
                 }
-
             }
             return $valid;
         });
@@ -256,7 +254,6 @@ class Upload extends Basemodule
             if($element->type == 'Profile photo' && $element->module_id == 4){
                 User::where('id',$element->element_id)->update(['profile_pic_url'=>$element->path]);
             }
-
         });
 
         /************************************************************/
