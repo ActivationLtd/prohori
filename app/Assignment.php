@@ -173,7 +173,10 @@ class Assignment extends Basemodule
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
-            $element->task->assignment_id = $element->id;
+            if(isset($element->task->id)){
+                $element->task->assignment_id = $element->id;
+            }
+
             return $valid;
         });
 

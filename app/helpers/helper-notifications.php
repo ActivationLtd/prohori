@@ -204,6 +204,7 @@ function pushNotification($user,$content){
                     'body'=>$content['body'],
                     'sound' => 'default',
                     'click_action' => 'OPEN_APP',
+                    'badge' => 1
 
                 ],
                 'data' => [

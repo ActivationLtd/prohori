@@ -14,7 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
-        'App\Console\Commands\updateAssignedForDaysInAssignment',
+        'App\Console\Commands\UpdateAssignedForDaysInAssignment',
     ];
 
     /**
@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('command:updateAssignedForDaysInAssignment')
+        $schedule->command('command:UpdateAssignedForDaysInAssignment')
             ->daily();
     }
 

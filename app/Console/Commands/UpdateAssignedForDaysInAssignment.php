@@ -6,7 +6,7 @@ use App\Assignment;
 use App\Task;
 use Illuminate\Console\Command;
 
-class updateAssignedForDaysInAssignment extends Command
+class UpdateAssignedForDaysInAssignment extends Command
 {
     /**
      * The name and signature of the console command.
