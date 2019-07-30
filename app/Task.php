@@ -457,8 +457,8 @@ class Task extends Basemodule
         static::created(function (Task $element) {
             //notification for task created
             $contents = [
-                'title' => 'A new Task has been created',
-                'body' => $element->tasktype_name . ' for ' . $element->client_name . ' has been created, task id ' . $element->id . ' and assigned to ' . $element->assignee->name,
+                'title' => 'New task created',
+                'body' => 'New Task has been assigned to Mr. ' . $element->assignee->name,
             ];
             if ($element->assignee()->exists()) {
                 $emails = [];
@@ -477,6 +477,10 @@ class Task extends Basemodule
                         new TaskCreated($element)
                     );
                 //push notification to assignee
+                $contents = [
+                    'title' => 'New task created',
+                    'body' => 'New Task has been assigned to you. (' . $element->assignee->name.')',
+                ];
                 pushNotification($element->assignee, $contents);
             }
         });
@@ -513,7 +517,7 @@ class Task extends Basemodule
             if ($element->getOriginal('status') != $element->status) {
                 $contents = [
                     'title' => 'Task status has changed',
-                    'body' => 'Task id ' . $element->id . ' ' . $element->tasktype_name . ' for ' . $element->client_name . ' status has been changed to ' . $element->status,
+                    'body' => 'Task id no' . $element->id .' status changed successfully to' . $element->status .' by assigned person Mr.' .$element->assignee->name,
                 ];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
@@ -537,6 +541,16 @@ class Task extends Basemodule
                     //filling the assignment id in task table
                     DB::table('tasks')->where('id', $element->id)->update(['assignment_id' => $assignment->id]);
                     $valid = setMessage("Assignment created");
+                    $contents = [
+                        'title' => 'Task asignee changed',
+                        'body' => 'Task id no' . $element->id .' has been updated and assigned to person Mr.' .$element->assignee->name,
+                    ];
+                    if (isset($element->watchers)) {
+                        foreach ($element->watchers as $user_id) {
+                            $user = User::remember(cacheTime('long'))->find($user_id);
+                            pushNotification($user, $contents);
+                        }
+                    }
                 }
             }
 

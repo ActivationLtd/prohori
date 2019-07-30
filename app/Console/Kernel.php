@@ -15,20 +15,33 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         //
         'App\Console\Commands\UpdateAssignedForDaysInAssignment',
+        'App\Console\Commands\SendOverDueTaskNotificationToAssigneeAndWatcher',
+        'App\Console\Commands\SendDailyStatusEmail',
     ];
 
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  \Illuminate\Console\Scheduling\Schedule $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule)
-    {
+    protected function schedule(Schedule $schedule) {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('command:UpdateAssignedForDaysInAssignment')
-            ->daily();
+        //updating assigned for days
+        $schedule->command('command:update-assigned-for-days-in-assignment')
+            ->daily()
+            ->appendOutputTo(public_path('files\schedular_log.txt'));
+
+        //sending daily status email
+        $schedule->command('command:send-daily-status-email')
+            ->daily()
+            ->appendOutputTo(public_path('files\schedular_log.txt'));
+
+        //sending notification for tasks
+        $schedule->command('command:over-due-notification-for-tasks')
+            ->daily()
+            ->appendOutputTo(public_path('files\schedular_log.txt'));
     }
 
     /**
@@ -36,9 +49,8 @@ class Kernel extends ConsoleKernel
      *
      * @return void
      */
-    protected function commands()
-    {
-        $this->load(__DIR__.'/Commands');
+    protected function commands() {
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

@@ -72,6 +72,7 @@ Route::get('test', 'MiscController@test')->name('misc.test');
 Route::get('privacy-policy', 'MiscController@privacypolicy')->name('misc.privacypolicy');
 Route::get('dailyStatusEmail', 'MiscController@dailyStatusEmail')->name('misc.dailyStatus');
 Route::get('notifiy-fcm', 'MiscController@notifyFcm')->name('misc.notifyfcm');
+Route::get('notify-due-time', 'TasksController@sendNotificationsForTasksNotCompleted')->name('task.notifyduetime');
 
 
 
