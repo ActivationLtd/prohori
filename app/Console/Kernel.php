@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
 
         //sending notification for tasks
         $schedule->command('command:over-due-notification-for-tasks')
-            ->daily()
+            ->hourly()
             ->appendOutputTo(public_path('files\schedular_log.txt'))
             ->emailOutputOnFailure('sanjidhabib@gmail.com');
     }
