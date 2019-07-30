@@ -31,17 +31,20 @@ class Kernel extends ConsoleKernel
         //updating assigned for days
         $schedule->command('command:update-assigned-for-days-in-assignment')
             ->daily()
-            ->appendOutputTo(public_path('files\schedular_log.txt'));
+            ->appendOutputTo(public_path('files\schedular_log.txt'))
+            ->emailOutputOnFailure('sanjidhabib@gmail.com');
 
         //sending daily status email
         $schedule->command('command:send-daily-status-email')
             ->daily()
-            ->appendOutputTo(public_path('files\schedular_log.txt'));
+            ->appendOutputTo(public_path('files\schedular_log.txt'))
+            ->emailOutputOnFailure('sanjidhabib@gmail.com');
 
         //sending notification for tasks
         $schedule->command('command:over-due-notification-for-tasks')
             ->daily()
-            ->appendOutputTo(public_path('files\schedular_log.txt'));
+            ->appendOutputTo(public_path('files\schedular_log.txt'))
+            ->emailOutputOnFailure('sanjidhabib@gmail.com');
     }
 
     /**
