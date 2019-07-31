@@ -18,7 +18,6 @@ class Kernel extends ConsoleKernel
         'App\Console\Commands\SendOverDueTaskNotificationToAssigneeAndWatcher',
         'App\Console\Commands\SendDailyStatusEmail',
     ];
-
     /**
      * Define the application's command schedule.
      *
@@ -42,7 +41,9 @@ class Kernel extends ConsoleKernel
 
         //sending notification for tasks
         $schedule->command('command:over-due-notification-for-tasks')
-            ->hourly()
+            ->hourlyAt(30)
+            ->timezone('Asia/Dhaka')
+            ->between('9:00', '18:00')
             ->appendOutputTo(public_path('files\schedular_log.txt'))
             ->emailOutputOnFailure('sanjidhabib@gmail.com');
     }

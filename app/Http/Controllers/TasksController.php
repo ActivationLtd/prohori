@@ -179,7 +179,7 @@ class TasksController extends ModulebaseController
 
     public static function sendNotificationsForTasksNotCompleted() {
         $timestamp = now('Asia/Dhaka');
-        $tasks = Task::whereNotIn('status', ['Verify', 'Done', 'Closed'])->where('due_date', '<', $timestamp)->get();
+        $tasks = Task::whereNotIn('status', ['Verify', 'Done', 'Closed'])->where('due_date', '<', $timestamp)->remember(cacheTime('medium'))->get();
         foreach ($tasks as $task) {
             //notifying the asignee
             if (isset($task->assignee->id)) {
