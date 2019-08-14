@@ -46,6 +46,12 @@ class Kernel extends ConsoleKernel
             ->between('9:00', '18:00')
             ->appendOutputTo(public_path('files\schedular_log.txt'))
             ->emailOutputOnFailure('sanjidhabib@gmail.com');
+        //cache clear for application
+        $schedule->command('cache:clear')
+            ->twiceDaily(9, 14)
+            ->timezone('Asia/Dhaka')
+            ->appendOutputTo(public_path('files\schedular_log.txt'))
+            ->emailOutputOnFailure('sanjidhabib@gmail.com');
     }
 
     /**
