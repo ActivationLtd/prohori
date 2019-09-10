@@ -479,7 +479,7 @@ class Task extends Basemodule
                 //push notification to assignee
                 $contents = [
                     'title' => 'New task created',
-                    'body' => 'New Task has been assigned to you. (' . $element->assignee->name.')',
+                    'body' => 'New Task has been assigned to you. (' . $element->assignee->name . ')',
                 ];
                 pushNotification($element->assignee, $contents);
             }
@@ -517,7 +517,7 @@ class Task extends Basemodule
             if ($element->getOriginal('status') != $element->status) {
                 $contents = [
                     'title' => 'Task status has changed',
-                    'body' => 'Task id no' . $element->id .' status changed successfully to' . $element->status .' by assigned person Mr.' .$element->assignee->name,
+                    'body' => 'Task id no' . $element->id . ' status changed successfully to' . $element->status . ' by assigned person Mr.' . $element->assignee->name,
                 ];
                 if (isset($element->watchers)) {
                     foreach ($element->watchers as $user_id) {
@@ -543,7 +543,7 @@ class Task extends Basemodule
                     $valid = setMessage("Assignment created");
                     $contents = [
                         'title' => 'Task asignee changed',
-                        'body' => 'Task id no' . $element->id .' has been updated and assigned to person Mr.' .$element->assignee->name,
+                        'body' => 'Task id no' . $element->id . ' has been updated and assigned to person Mr.' . $element->assignee->name,
                     ];
                     if (isset($element->watchers)) {
                         foreach ($element->watchers as $user_id) {
@@ -808,6 +808,10 @@ class Task extends Basemodule
 
     public function assignments() {
         return $this->hasMany(\App\Assignment::class, 'element_id');
+    }
+
+    public function messages() {
+        return $this->hasMany(Message::class, 'element_id')->where('module_id', $this->module()->id)->orderBy('created_at', 'DESC');
     }
 
     public function client() {
