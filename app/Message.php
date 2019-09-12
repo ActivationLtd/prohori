@@ -179,7 +179,7 @@ class Message extends Basemodule
                 'body' => 'A new message has been added to . ' . $element->task->id,
             ];
             if ($element->task->assignee()->exists()) {
-                if (isset($element->task->watchers)) {
+                if (count($element->task->watchers)) {
                     foreach ($element->watchers as $user_id) {
                         $user = User::remember(cacheTime('long'))->find($user_id);
                         /** @noinspection PhpUndefinedMethodInspection */
