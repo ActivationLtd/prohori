@@ -4,6 +4,7 @@ namespace App;
 
 use App\Observers\UploadObserver;
 use App\Traits\IsoModule;
+use ImageOptimizer;
 
 /**
  * Class Upload
@@ -92,6 +93,9 @@ class Upload extends Basemodule
         'element_id',
         'latitude',
         'longitude',
+        'distance',
+        'distance_flag_id',
+        'distacne_flag_name',
         'element_uuid',
         'is_active',
         'created_by',
@@ -114,7 +118,13 @@ class Upload extends Basemodule
      *
      * @var array
      */
-    public static $types = ['Profile photo', 'Logo', 'Task file','Evidence'];
+    public static $types = ['Profile photo', 'Logo', 'Task file', 'Evidence'];
+
+    public static $upload_flags = [
+        '0' => 'Green',
+        '1' => 'Yellow',
+        '2' => 'Red'
+    ];
     /**
      * Disallow from mass assignment. (Black-listed fields)
      *
@@ -137,8 +147,7 @@ class Upload extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
             // 'name' => 'required|between:1,255|unique:uploads,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
             // 'is_active' => 'required|in:1,0',
@@ -173,8 +182,7 @@ class Upload extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
         Upload::observe(UploadObserver::class);
 
@@ -213,10 +221,34 @@ class Upload extends Basemodule
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
+
             if ($valid) {
                 $element->is_active = 1; // Always set as 'Yes'
                 $element->ext = extFrmPath($element->path); // Store file extension separately
             }
+            //calculating distance
+            if ($element->module_id == 29) {
+                $task = Task::find($element->element_id);
+                if (isset($task->clientlocation->longitude, $task->clientlocation->latitude, $element->latitude, $element->longitude)) {
+                    $element->distance = getDistanceBetweenPoints($element->latitude, $element->longitude, $task->clientlocation->longitude, $task->clientlocation->latitude);
+                }
+            }
+            if ($valid) {
+                if ($element->distance > 0 && $element->distance < 200) {
+                    $element->distance_flag_id = 0;
+                    $element->distance_flag_name = 'Green';
+                } else if ($element->distance > 200 && $element->distance < 400) {
+                    $element->distance_flag_id = 1;
+                    $element->distance_flag_name = 'Yellow';
+                } else {
+                    $element->distance_flag_id = 2;
+                    $element->distance_flag_name = 'Red';
+                }
+            }
+            if(file_exists(public_path($element->path))){
+                ImageOptimizer::optimize(public_path($element->path));
+            }
+
             return $valid;
         });
 
@@ -229,8 +261,8 @@ class Upload extends Basemodule
                     ->where('type', $element->type)->where('id', '!=', $element->id)
                     ->delete();
             }
-            if($element->type == 'Profile photo' && $element->module_id == 4){
-                User::where('id',$element->element_id)->update(['profile_pic_url'=>$element->path]);
+            if ($element->type == 'Profile photo' && $element->module_id == 4) {
+                User::where('id', $element->element_id)->update(['profile_pic_url' => $element->path]);
             }
         });
 
@@ -245,11 +277,11 @@ class Upload extends Basemodule
         // Following code block executes - after an element is
         // successfully deleted.
         /************************************************************/
-         static::deleted(function (Upload $element) {
-             if($element->type == 'Profile photo' && $element->module_id == 4){
-                 User::where('id',$element->element_id)->update(['profile_pic_url'=>null]);
-             }
-         });
+        static::deleted(function (Upload $element) {
+            if ($element->type == 'Profile photo' && $element->module_id == 4) {
+                User::where('id', $element->element_id)->update(['profile_pic_url' => null]);
+            }
+        });
 
         /************************************************************/
         // Following code block executes - when an already deleted element
@@ -323,8 +355,7 @@ class Upload extends Basemodule
      * @param $element_id
      * @param $element_uuid
      */
-    public static function linkTemporaryUploads($element_id, $element_uuid)
-    {
+    public static function linkTemporaryUploads($element_id, $element_uuid) {
         Upload::where('element_uuid', $element_uuid)->update([
             'element_id' => $element_id,
         ]);
@@ -336,8 +367,7 @@ class Upload extends Basemodule
      *
      * @return string
      */
-    public function absPath()
-    {
+    public function absPath() {
         return public_path() . $this->path;
     }
 
@@ -346,8 +376,7 @@ class Upload extends Basemodule
      *
      * @return string
      */
-    public function thumbSrc()
-    {
+    public function thumbSrc() {
 
         if ($this->isImage())
             $src = route('get.download', $this->uuid);
@@ -362,8 +391,7 @@ class Upload extends Basemodule
      *
      * @return mixed
      */
-    public function isImage()
-    {
+    public function isImage() {
         if (isImageExtension($this->ext)) {
             return true;
         }
@@ -375,8 +403,7 @@ class Upload extends Basemodule
      *
      * @return string
      */
-    public function extIconPath()
-    {
+    public function extIconPath() {
         $ext = strtolower($this->ext); // get full lower case extension
         $icon_path = 'file_type_icons/' . $ext . '.png';
 
@@ -392,8 +419,7 @@ class Upload extends Basemodule
      * @param bool $auth set false to generate plain url.
      * @return string
      */
-    public function downloadUrl($auth = true)
-    {
+    public function downloadUrl($auth = true) {
         if ($auth) return route('get.download', $this->uuid);
         return asset($this->path);
     }
@@ -557,13 +583,11 @@ class Upload extends Basemodule
      *
      * @return bool
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return asset($this->path);
     }
 
-    public function getDirAttribute()
-    {
+    public function getDirAttribute() {
         return public_path() . $this->path;
     }
 

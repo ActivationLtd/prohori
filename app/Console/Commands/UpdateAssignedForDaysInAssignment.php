@@ -6,14 +6,14 @@ use App\Assignment;
 use App\Task;
 use Illuminate\Console\Command;
 
-class updateAssignedForDaysInAssignment extends Command
+class UpdateAssignedForDaysInAssignment extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:updateAssignedForDaysInAssignment';
+    protected $signature = 'command:update-assigned-for-days-in-assignment';
 
     /**
      * The console command description.

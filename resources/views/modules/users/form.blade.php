@@ -55,24 +55,6 @@
 @include('form.select-model',['var'=>['name'=>'department_id','label'=>'Department','table'=>'departments','container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'employee_id','label'=>'Employee Id','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
-<?php
-$var = [
-    'name' => 'watchers',
-    'label' => 'Watchers',
-    'query' => new \App\User,
-    'container_class' => 'col-md-6',
-];
-?>
-@include('form.select-model-multiple', ['var'=>$var])
-<?php
-$var = [
-    'name' => 'operating_area_ids',
-    'label' => 'Operating Areas',
-    'query' => new \App\Operatingarea(),
-    'container_class' => 'col-md-6',
-];
-?>
-@include('form.select-model-multiple', ['var'=>$var])
 
 <div class="clearfix"></div>
 @if(user()->isSuperUser())
@@ -86,6 +68,24 @@ $var = [
         'query' => new \App\Group,
         'container_class' => 'col-md-3',
         'name_field' => 'title',
+    ];
+    ?>
+    @include('form.select-model-multiple', ['var'=>$var])
+    <?php
+    $var = [
+        'name' => 'watchers',
+        'label' => 'Watchers',
+        'query' => new \App\User,
+        'container_class' => 'col-md-6',
+    ];
+    ?>
+    @include('form.select-model-multiple', ['var'=>$var])
+    <?php
+    $var = [
+        'name' => 'operating_area_ids',
+        'label' => 'Operating Areas',
+        'query' => new \App\Operatingarea(),
+        'container_class' => 'col-md-6',
     ];
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
@@ -171,7 +171,7 @@ $var = [
                     </div>
                     @include('form.input-text',['var'=>['name'=>'auth_token','label'=>'Auth token', 'container_class'=>'col-sm-6']])
                     {{--device_name--}}
-                    @include('form.input-text',['var'=>['name'=>'device_name','label'=>'Device name', 'container_class'=>'col-sm-3']])
+                    @include('form.input-text',['var'=>['name'=>'device_token','label'=>'Device Token', 'container_class'=>'col-sm-3']])
                 </div>
                 <div class="clearfix"></div>
             </div>

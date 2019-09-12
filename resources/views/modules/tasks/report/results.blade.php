@@ -41,7 +41,6 @@
                             @foreach ($show_columns as $col)
                                 <td>
                                     @if(isset($result->$col))
-
                                         <?php echo transformRow($col, $result, $result->$col, $data_source)?>
                                     @endif
                                 </td>

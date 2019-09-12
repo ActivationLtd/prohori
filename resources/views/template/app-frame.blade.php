@@ -29,7 +29,7 @@ $icon_map=[
                                          title="{{setting('app-name')}}"/></span>
             <!-- logo for regular state and mobile devices -->
             <span class="logo-lg">
-                <img style="width: 110px" src="{{asset("prohori/images/logo-white.png")}}" alt="{{setting('app-name')}}"
+                <img style="width: 110px" src="{{asset("prohori/images/prohori-logo-white.png")}}" alt="{{setting('app-name')}}"
                      title="{{setting('app-name')}}"/>
             </span>
         </a>

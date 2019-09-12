@@ -1,7 +1,9 @@
 <?php
 use App\Task;
 
-$tasks = Task::remember(cacheTime('short'))->where('is_active', 1)->orderBy('created_at', 'asc')->get();
+$tasks = Task::with(['assignee','clientlocation','tasktype'])->where('is_active', 1)
+    ->orderBy('created_at', 'asc')
+    ->remember(cacheTime('short'))->get();
 
 $status_map=[
     'To do' => 'todo',

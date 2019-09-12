@@ -2,25 +2,24 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\DailyStatus;
+use App\Http\Controllers\MiscController;
 use Illuminate\Console\Command;
 
-
-class sendDailyStatusEmail extends Command
+class OptimizeUploadFiles extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'command:sendDailyStatusEmail';
+    protected $signature = 'command:optimize-upload-files';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This command will send a email to SuperAdmins about the daily status of the application';
+    protected $description = 'This command will optimize all uploaded files in the system';
 
     /**
      * Create a new command instance.
@@ -39,8 +38,7 @@ class sendDailyStatusEmail extends Command
      */
     public function handle()
     {
-        \Mail::to('sanjidhabib@gmail.com')->send(
-                new DailyStatus()
-            );
+        //
+        MiscController::optimizeImages();
     }
 }

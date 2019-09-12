@@ -56,7 +56,7 @@
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
     {{--status--}}
-    @include('form.select-array',['var'=>['name'=>'status','label'=>Lang::get('messages.Status'), 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-4']])
+    @include('form.select-array',['var'=>['name'=>'status','label'=>Lang::get('messages.Status'), 'options'=>kv(\App\Task::$statuses),'container_class'=>'col-md-6']])
 </div>
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding-l">
@@ -73,7 +73,7 @@
     @include('form.select-ajax',['var'=>['label' => Lang::get('messages.Parent-task'), 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-6',]])
     <div class="clearfix"></div>
     {{--tasktype_id--}}
-    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>Lang::get('messages.Task-type'),'query'=> new \App\Tasktype(),'container_class'=>'col-md-3']])
+    @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>Lang::get('messages.Task-type'),'query'=> new \App\Tasktype,'container_class'=>'col-md-3']])
     {{--priority--}}
     @include('form.select-array',['var'=>['name'=>'priority','label'=>Lang::get('messages.Priority'), 'options'=>\App\Task::$priorities,'container_class'=>'col-md-3']])
     {{--@include('form.input-text',['var'=>['name'=>'due_date','label'=>'Due Date', 'container_class'=>'col-sm-3','params'=>['class'=>'datepicker']]])--}}
@@ -114,25 +114,25 @@
         @include('form.textarea',['var'=>['name'=>'resolve_note','label'=>'Resolve Notes','container_class'=>'col-md-8']])
     </div>
     <div class="clearfix"></div>
-    <div class="col-md-6 no-padding ">
-        {{--is_verified--}}
-        @include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-        {{--verified_by--}}
-        @include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
-        <div class="clearfix"></div>
-        {{--verify_note--}}
-        @include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])
-    </div>
+    {{--<div class="col-md-6 no-padding ">--}}
+    {{--is_verified--}}
+    {{--@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
+    {{--verified_by--}}
+    {{--@include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
+    {{--<div class="clearfix"></div>--}}
+    {{--verify_note--}}
+    {{--@include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])--}}
+    {{--</div>--}}
 
-    <div class="col-md-6 no-padding ">
-        {{--is_closed--}}
-        @include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])
-        {{--closed_by--}}
-        @include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])
-        {{--closing_note--}}
-        <div class="clearfix"></div>
-        @include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])
-    </div>
+    {{--<div class="col-md-6 no-padding ">--}}
+    {{--is_closed--}}
+    {{--@include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
+    {{--closed_by--}}
+    {{--@include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
+    {{--closing_note--}}
+    {{--<div class="clearfix"></div>--}}
+    {{--@include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])--}}
+    {{--</div>--}}
 @endif
 <hr/>
 
@@ -141,23 +141,21 @@
 @section('content-bottom')
     @parent
     <div class="col-md-6 no-padding-l">
+        <h4>Uploads</h4>
         <b>{{Lang::get('messages.Task-files')}}</b>
         <small>Share task related files with assignee.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Task file','limit'=>10]])
-
         <b>{{Lang::get('messages.Evidences')}}</b>
         <small>For assignee to upload image as proof of the task completion.</small>
         {{--<small>Upload one or more files</small>--}}
         @include('modules.base.include.uploads',['var'=>['type'=>'Evidence','limit'=>10]])
 
-        @if(isset($task))
-            <b>Sub-tasks</b>
+        @if(isset($task) && count($task->subtasks))
             @include('modules.tasks.subtasks')
         @endif
         <div class="clearfix"></div>
         @if(isset($task) && count($task->assignments))
-            <b>Task Related Assignments</b>
             @include('modules.tasks.taskassignments')
         @endif
     </div>
@@ -216,6 +214,7 @@
 
         $("select[name=clientlocation_id]").attr('disabled', true);
         $("select[name=client_id]").attr('disabled', true);
+
         /**
          * dynamic selection of client location based on client selection
          */
@@ -258,18 +257,18 @@
                     data: {id: id},
                     success: function (response) {
                         console.log(response.data);
-                        if((response.data)){
+                        if ((response.data)) {
                             //var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
                             //
+                            client_id=$("select[name=client_id]").append("<option value=>Select</option>");
                             $.each(response.data, function (i, obj) {
                                 console.log(obj);
-                                $("select[name=client_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                                client_id.append("<option value=" + obj.id + ">" + obj.name + "</option>");
                             });
                         }
 
                     },
                 });
-
             });
         }
 
@@ -304,9 +303,16 @@
             // your functions go here
             // function1();
             // function2();
-            navigator.geolocation.getCurrentPosition(function (location) {
-                console.log(checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}}));
-            });
+            //navigator.geolocation.getCurrentPosition(function (location) {
+            {{--//    @if(isset($task->clientlocation->latitude,$task->clientlocation->longitude))--}}
+            {{--//    distance=checkdistance(location.coords.latitude, location.coords.longitude,{{$task->clientlocation->latitude}},{{$task->clientlocation->longitude}});--}}
+            //    console.log(distance);
+            //   if(distance>0){
+            //       $('input[name=distance]').val(distance);
+            //   }
+            {{--//   @endif--}}
+
+            //  });
         </script>
     @endif
     <script type="text/javascript">

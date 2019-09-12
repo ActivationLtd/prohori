@@ -20,6 +20,9 @@
 @include('form.input-text',['var'=>['name'=>'order','label'=>'Order', 'container_class'=>'col-sm-2']])
 @include('form.input-text',['var'=>['name'=>'latitude','label'=>'Latitude', 'container_class'=>'col-sm-2']])
 @include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude', 'container_class'=>'col-sm-2']])
+@include('form.input-text',['var'=>['name'=>'distance','label'=>'Distance in Meters', 'container_class'=>'col-sm-2']])
+@include('form.select-array',['var'=>['name'=>'distance_flag_name','label'=>'Distance Flag', 'options'=>kv(\App\Upload::$upload_flags),'container_class'=>'col-md-3','editable'=>false]])
+
 
 @if(isset($upload))
     <div class="clearfix"></div>
@@ -81,6 +84,7 @@
         // function2();
         $('input[name=latitude]').attr('readonly', true);
         $('input[name=longitude]').attr('readonly', true);
+        $('input[name=distance]').attr('readonly', true);
         @endif
 
 

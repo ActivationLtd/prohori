@@ -24,7 +24,7 @@
 
 {{--@include('form.select-array',['var'=>['name'=>'type','label'=>'Type', 'options'=>array_merge([''=>'Select'],kv(App\Report::$types)),'container_class'=>'col-sm-3']])--}}
 @include('form.input-text',['var'=>['name'=>'version','label'=>'Version', 'container_class'=>'col-sm-3']])
-@include('form.input-text',['var'=>['name'=>'module_id','label'=>'Module_id', 'container_class'=>'col-sm-3']])
+@include('form.select-model', ['var'=>['name'=>'module_id','label'=>'Module_id','query'=> new \App\Module,'container_class'=>'col-md-3']])
 @include('form.input-text',['var'=>['name'=>'tags','label'=>'Tags', 'container_class'=>'col-sm-3']])
 @include('form.select-array',['var'=>['name'=>'is_module_default','label'=>'Is Module Default', 'options'=>['0'=>'No','1'=>'Yes'],'container_class'=>'col-sm-3']])
 @include('form.textarea',['var'=>['name'=>'description','label'=>'Description', 'container_class'=>'col-sm-12']])

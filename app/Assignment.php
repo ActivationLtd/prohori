@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Mail\AssignmentCreated;
 use App\Observers\AssignmentObserver;
 use App\Traits\IsoModule;
 
@@ -166,14 +167,18 @@ class Assignment extends Basemodule
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-        // static::saving(function (Assignment $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
+        static::saving(function (Assignment $element) {
+            $valid = true;
+            /************************************************************/
+            // Your validation goes here
+            // if($valid) $valid = $element->isSomethingDoable(true)
+            /************************************************************/
+            if(isset($element->task->id)){
+                $element->task->assignment_id = $element->id;
+            }
+
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - when an element is in process
@@ -188,7 +193,26 @@ class Assignment extends Basemodule
         // Following code block executes - after an element is created
         // for the first time.
         /************************************************************/
-        // static::created(function (Assignment $element) { });
+        static::created(function (Assignment $element) {
+            if ($element->assignee()->exists()) {
+                $emails = [];
+                if (isset($element->task->watchers)) {
+                    foreach ($element->task->watchers as $user_id) {
+                        $emails[] = User::find($user_id)->email;
+                    }
+                }
+                //send mail to the assignee when task is created
+                \Mail::to($element->assignee->email)
+                    ->cc($emails)->send(
+                        new AssignmentCreated($element)
+                    );
+                $contents=[
+                    'title'=>'New Assignment Created',
+                    'body'=>'A new Task has been assigned to you',
+                ];
+                pushNotification($element->assignee,$contents);
+            }
+        });
 
         /************************************************************/
         // Following code block executes - when an already existing
