@@ -176,7 +176,7 @@ class Message extends Basemodule
             //notifications
             $contents = [
                 'title' => 'New message added',
-                'body' => 'A new message has been added to . ' . $element->task->id,
+                'body' => 'A new message has been added to task no : ' . $element->task->id,
             ];
             if ($element->task->assignee()->exists()) {
                 if (isset($element->task->watchers)) {
