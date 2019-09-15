@@ -429,7 +429,6 @@ class User extends Authenticatable implements MustVerifyEmail
         static::saving(function (User $element) {
             $valid = true;
 
-
             // Generate new api token
             if (Request::get('api_token_generate') === 'yes') {
                 $element->api_token = hash('sha256', randomString(10), false);
@@ -451,9 +450,9 @@ class User extends Authenticatable implements MustVerifyEmail
                 $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
                 $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
-            if(isset($element->watchers)){
-                if(in_array($element->id,$element->watchers)){
-                    $valid=setError("Watcher can not be the same user");
+            if (isset($element->watchers)) {
+                if (in_array($element->id, $element->watchers)) {
+                    $valid = setError("Watcher can not be the same user");
                 }
             }
 
@@ -479,9 +478,10 @@ class User extends Authenticatable implements MustVerifyEmail
                 if ($element->is_active && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
                 }
-                if (isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)) {
-                    $element->full_name = $element->first_name . $element->last_name;
+                if (isset($element->first_name, $element->last_name) && !isset($element->full_name)) {
+                    $element->full_name = $element->first_name . " " . $element->last_name;
                 }
+                $element->name = $element->full_name;
                 if (!isset($element->profile_pic_url)) {
                     $element->profile_pic_url = '/files/male.png';
                     if (isset($element->gender)) {
@@ -490,7 +490,6 @@ class User extends Authenticatable implements MustVerifyEmail
                         }
                     }
                 }
-                $element = $element->resolveName();
             }
 
             return $valid;
@@ -719,7 +718,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
             if ($this->id == $user->id) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
