@@ -428,7 +428,7 @@ class User extends Authenticatable implements MustVerifyEmail
         /************************************************************/
         static::saving(function (User $element) {
             $valid = true;
-            $element = $element->resolveName();
+
 
             // Generate new api token
             if (Request::get('api_token_generate') === 'yes') {
@@ -481,7 +481,9 @@ class User extends Authenticatable implements MustVerifyEmail
                 }
                 if (isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)) {
                     $element->full_name = $element->first_name . $element->last_name;
+
                 }
+                $element->name = $element->full_name;
                 if (!isset($element->profile_pic_url)) {
                     $element->profile_pic_url = '/files/male.png';
                     if (isset($element->gender)) {
@@ -490,6 +492,7 @@ class User extends Authenticatable implements MustVerifyEmail
                         }
                     }
                 }
+
             }
 
             return $valid;
@@ -570,7 +573,6 @@ class User extends Authenticatable implements MustVerifyEmail
             $this->name = $this->full_name;
         }
 
-        return $this;
     }
 
     /**
