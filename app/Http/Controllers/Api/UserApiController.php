@@ -285,7 +285,7 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function tasksCreate() {
-        Request::merge(['created_by' => $this->user()->id]);
+        Request::merge(['created_by' => $this->user()->id,'updated_by'=>$this->user()->id]);
         return app(TasksController::class)->store();
     }
 
