@@ -45,7 +45,8 @@
         <?php
         $tasks = \App\Task::with(['assignee', 'clientlocation', 'tasktype'])
             ->whereIn('status', ['To do', 'In progress', 'Verify'])
-            ->remember(cacheTime('short'))->get();
+            ->orderBy('created_at', 'desc')
+            ->remember(cacheTime('short'))->take(20)->get();
         ?>
 
         @foreach($tasks as $task)

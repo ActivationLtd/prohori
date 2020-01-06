@@ -2,7 +2,7 @@
 use App\Task;
 
 $tasks = Task::with(['assignee','clientlocation','tasktype'])->where('is_active', 1)
-    ->orderBy('created_at', 'asc')
+    ->orderBy('created_at', 'desc')
     ->remember(cacheTime('short'))->get();
 
 $status_map=[
