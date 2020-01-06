@@ -177,6 +177,9 @@ class TasksController extends ModulebaseController
             ->with('body', "You don't have permission [ " . $this->module_name . '.report]');
     }
 
+    /**
+     * Send notifications for tasks not completed.
+     */
     public static function sendNotificationsForTasksNotCompleted() {
         $timestamp = now('Asia/Dhaka');
         $tasks = Task::whereNotIn('status', ['Verify', 'Done', 'Closed'])->where('due_date', '<', $timestamp)->remember(cacheTime('medium'))->get();

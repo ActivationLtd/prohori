@@ -71,6 +71,20 @@
 
 @section('content-bottom')
     @parent
+    <div class="col-md-3">
+        @if(isset($$element))
+            <b>{{"Created At : "}}</b>{{$$element->created_at}}
+            <br>
+            <b>{{"Created By : "}}</b>{{$$element->creator->name}}
+            <br>
+    </div>
+    <div class="col-md-3">
+        <b>{{"Updated At : "}}</b>{{$$element->updated_at}}
+        <br>
+        <b>{{"Updated By : "}}</b>{{$$element->updater->name}}
+        @endif
+    </div>
+    <div class="clearfix"></div>
     {{--@if($mod->has_uploads == 'Yes')--}}
     {{--@include('modules.base.include.uploads')--}}
     {{--@endif--}}
