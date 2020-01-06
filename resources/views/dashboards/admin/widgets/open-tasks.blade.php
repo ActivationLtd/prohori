@@ -40,9 +40,13 @@ $status_map=[
             <td>
                 <b><a href="{{route('tasks.edit',$task->id)}}">{{ $task->tasktype->name }}</a></b>
                 <br>
+                @if(isset($task->client->name))
                 <b>{{ $task->client->name }}</b>
+                @endif
                 <br>
+                @if(isset($task->clientlocation_name ))
                 <b>{{ $task->clientlocation_name }}</b>
+                @endif
             </td>
             <td>
                 {{ $task->assignee->full_name }}
