@@ -55,7 +55,7 @@
         <?php
         $tasks = \App\Task::with(['assignee', 'clientlocation', 'tasktype'])
             ->whereIn('status', ['To do', 'In progress', 'Verify'])
-            ->take(20)
+            ->take(15)
             ->where(function ($q) {
                 $q->where('assigned_to', user()->id)
                     ->orWhere('tasks.created_by', user()->id);
