@@ -4,6 +4,7 @@ namespace App;
 
 use App\Observers\UploadObserver;
 use App\Traits\IsoModule;
+use ImageOptimizer;
 
 /**
  * Class Upload
@@ -244,6 +245,10 @@ class Upload extends Basemodule
                     $element->distance_flag_name = 'Red';
                 }
             }
+            if(file_exists(public_path($element->path))){
+                ImageOptimizer::optimize(public_path($element->path));
+            }
+
             return $valid;
         });
 

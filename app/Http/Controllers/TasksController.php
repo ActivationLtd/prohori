@@ -9,6 +9,7 @@ use Request;
 use Redirect;
 use Response;
 use App\Task;
+use App\User;
 
 class TasksController extends ModulebaseController
 {
@@ -22,8 +23,7 @@ class TasksController extends ModulebaseController
      * Define grid SELECT statement and HTML column name.
      * @return array
      */
-    public function gridColumns()
-    {
+    public function gridColumns() {
         return [
             //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
             ["{$this->module_name}.id", "id", Lang::get('messages.Id')],
@@ -45,11 +45,10 @@ class TasksController extends ModulebaseController
      * Construct SELECT statement based
      * @return array
      */
-    public function selectColumns()
-    {
+    public function selectColumns() {
         $select_cols = [];
         foreach ($this->gridColumns() as $col) {
-            $select_cols[] = $col[0].' as '.$col[1];
+            $select_cols[] = $col[0] . ' as ' . $col[1];
         }
 
         return $select_cols;
@@ -59,21 +58,19 @@ class TasksController extends ModulebaseController
      * Define Query for generating results for grid
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function sourceTables()
-    {
+    public function sourceTables() {
         return DB::table($this->module_name)
-            ->leftJoin('users as updater', $this->module_name.'.updated_by', 'updater.id')
-            ->leftJoin('users as assigned', $this->module_name.'.assigned_to', 'assigned.id');
+            ->leftJoin('users as updater', $this->module_name . '.updated_by', 'updater.id')
+            ->leftJoin('users as assigned', $this->module_name . '.assigned_to', 'assigned.id');
     }
 
     /**
      * Define Query for generating results for grid
      * @return $this|mixed
      */
-    public function gridQuery()
-    {
+    public function gridQuery() {
         $query = $this->sourceTables()->select($this->selectColumns());
-        $user  = User();
+        $user = User();
 
         // Inject tenant context in grid query
         if ($tenant_id = inTenantContext($this->module_name)) {
@@ -84,7 +81,7 @@ class TasksController extends ModulebaseController
                 /** @var $q \Illuminate\Database\Query\Builder */
                 $q->where('assigned_to', $user->id)
                     ->orWhere('tasks.created_by', $user->id)
-                    ->orWhere('tasks.watchers','LIKE', '%'.$user->id.'%');
+                    ->orWhere('tasks.watchers', 'LIKE', '%' . $user->id . '%');
             });
         }
 
@@ -92,7 +89,7 @@ class TasksController extends ModulebaseController
         $query = $this->filterQueryConstructor($query);
         // Exclude deleted rows
         /** @var $query \Illuminate\Database\Query\Builder */
-        $query = $query->whereNull($this->module_name.'.deleted_at'); // Skip deleted rows
+        $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
 
         return $query;
     }
@@ -102,14 +99,13 @@ class TasksController extends ModulebaseController
      * @return mixed
      * @var $dt \Yajra\DataTables\DataTableAbstract
      */
-    public function datatableModify($dt)
-    {
+    public function datatableModify($dt) {
         // First set columns for  HTML rendering
         $dt = $dt->rawColumns(['id', 'name', 'is_active']); // HTML can be printed for raw columns
 
         // Next modify each column content
-        $dt = $dt->editColumn('name', '<a href="{{ route(\''.$this->module_name.'.edit\', $id) }}">{{$name}}</a>');
-        $dt = $dt->editColumn('id', '<a href="{{ route(\''.$this->module_name.'.edit\', $id) }}">{{$id}}</a>');
+        $dt = $dt->editColumn('name', '<a href="{{ route(\'' . $this->module_name . '.edit\', $id) }}">{{$name}}</a>');
+        $dt = $dt->editColumn('id', '<a href="{{ route(\'' . $this->module_name . '.edit\', $id) }}">{{$id}}</a>');
         $dt = $dt->editColumn('is_active', '@if($is_active)  Yes @else <span class="text-red">No</span> @endif');
 
         return $dt;
@@ -134,7 +130,7 @@ class TasksController extends ModulebaseController
 
     /**
      * Transform form inputs
-     * @param  array  $inputs
+     * @param  array $inputs
      * @return array
      */
     // public function transformInputs($inputs = [])
@@ -147,8 +143,7 @@ class TasksController extends ModulebaseController
      * Save updated task sequence
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function postSaveSequence()
-    {
+    public function postSaveSequence() {
         if (Request::has('seq') && is_array(Request::get('seq')) && count(Request::get('seq'))) {
             $i = 1;
             foreach (Request::get('seq') as $task_id) {
@@ -171,15 +166,42 @@ class TasksController extends ModulebaseController
     /**
      * Show and render report
      */
-    public function report()
-    {
+    public function report() {
         if (hasModulePermission($this->module_name, 'report')) {
-            $report              = new DefaultModuleReport();
+            $report = new DefaultModuleReport();
             $report->data_source = $this->reportDataSource();
-            $report->base_dir    = $this->reportViewBaseDir();
+            $report->base_dir = $this->reportViewBaseDir();
             return $report->show();
         }
         return view('template.blank')->with('title', 'Permission denied!')
-            ->with('body', "You don't have permission [ ".$this->module_name.'.report]');
+            ->with('body', "You don't have permission [ " . $this->module_name . '.report]');
+    }
+
+    public static function sendNotificationsForTasksNotCompleted() {
+        $timestamp = now('Asia/Dhaka');
+        $tasks = Task::whereNotIn('status', ['Verify', 'Done', 'Closed'])->where('due_date', '<', $timestamp)->remember(cacheTime('medium'))->get();
+        foreach ($tasks as $task) {
+            //notifying the asignee
+            if (isset($task->assignee->id)) {
+                $contents = [
+                    'title' => 'Due date alert',
+                    'body' => 'Task id. ' . $task->id . ' is overdue and has not been done yet',
+                ];
+                pushNotification($task->assignee, $contents);
+            }
+
+            //notifying the watchers
+            if (isset($task->watchers) && count($task->watchers)) {
+                $contents = [
+                    'title' => 'Due date alert',
+                    'body' => 'Task id. ' . $task->id . ' has not been done yet from ' . $task->assignee->name,
+                ];
+                $watchers=$task->getWatcherObjsAttribute();
+                foreach ($watchers as $user) {
+                    pushNotification($user, $contents);
+                }
+            }
+        }
+
     }
 }

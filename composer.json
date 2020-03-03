@@ -23,6 +23,7 @@
     "laravelcollective/html": "~5.0",
     "league/flysystem-aws-s3-v3": "^1.0",
     "phpoffice/phpspreadsheet": "^1.5",
+    "ps/image-optimizer": "^2.0",
     "pusher/pusher-push-notifications": "^1.0",
     "ramsey/uuid": "^3.8",
     "spatie/laravel-image-optimizer": "^1.4",

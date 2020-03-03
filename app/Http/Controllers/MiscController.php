@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use View;
 use App\Mail\DailyStatus;
 use App\Task;
+use App\Upload;
 use Edujugon\PushNotification\PushNotification;
 
 class MiscController extends Controller
@@ -43,6 +44,13 @@ class MiscController extends Controller
     }
     public function privacypolicy() {
         return View::make('modules.base.privacy');
+    }
+    public static function optimizeImages(){
+        $uploads=Upload::all();
+        foreach($uploads as $upload)
+        {
+            $upload->save();
+        }
     }
     public function notifyFcm() {
         $push = new PushNotification('fcm');

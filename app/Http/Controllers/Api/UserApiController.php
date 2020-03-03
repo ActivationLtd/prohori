@@ -118,7 +118,15 @@ class UserApiController extends ApiController
             $tasks = $tasks->where('updated_at', '>=', Request::get('updatedSince'));
         }
         if (Request::has('createdSince')) {
-            $tasks = $tasks->where('created_at', '>=', Request::get('createdSince'));
+            $created_since=Request::get('createdSince'). ' 00:00:00';
+            $tasks = $tasks->where('created_at', '>=', $created_since);
+        }
+        if (Request::has('updatedTill')) {
+            $tasks = $tasks->where('updated_at', '<=', Request::get('updatedTill'));
+        }
+        if (Request::has('createdTill')) {
+            $created_till=Request::get('createdTill'). ' 23:59:59';
+            $tasks = $tasks->where('created_at', '<=', $created_till);
         }
         if (Request::has('dueNow')) {
             if (Request::get('dueNow') == true) {
