@@ -172,7 +172,26 @@ class Message extends Basemodule
         // Following code block executes - after an element is created
         // for the first time.
         /************************************************************/
-        // static::created(function (Message $element) { });
+        static::created(function (Message $element) {
+            //notifications
+            $contents = [
+                'title' => 'New message added',
+                'body' => 'A new message has been added to task no : ' . $element->task->id,
+            ];
+            if ($element->task->assignee()->exists()) {
+                if (isset($element->task->watchers)) {
+                    foreach ($element->task->watchers as $user_id) {
+                        $user = User::remember(cacheTime('long'))->find($user_id);
+                        /** @noinspection PhpUndefinedMethodInspection */
+                        //push notification for watchers
+                        pushNotification($user, $contents);
+                    }
+                }
+                pushNotification($element->task->assignee, $contents);
+                //push notification to assignee
+
+            }
+        });
 
         /************************************************************/
         // Following code block executes - when an already existing
@@ -386,6 +405,10 @@ class Message extends Basemodule
     public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
 
     public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
+
+    public function task() {
+        return $this->belongsTo(\App\Task::class,'element_id' );
+    }
 
     // Write new relationships below this line
 

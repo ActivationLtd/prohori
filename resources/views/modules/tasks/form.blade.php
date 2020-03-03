@@ -41,7 +41,12 @@
  */
 ?>
 {{-- ******************* Form starts ********************* --}}
-
+<div class="col-md-6 no-padding-l">
+@if(isset($task))
+    <a class="btn btn-success" target="_blank" href="{{ route('tasks.create')}}?showMsg=0&name={{$task->name}}&priority={{$task->priority}}&tasktype_id={{$task->tasktype_id}}&due_date={{ $task->due_date }}&description={{ $task->description }}">Replicate Task</a>
+@endif
+</div>
+<div class="clearfix"></div>
 <div class="col-md-6 no-padding-l">
     {{--assigned_to--}}
     @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>Lang::get('messages.Assigned-to'),'query'=> new \App\User,'container_class'=>'']])
@@ -70,8 +75,8 @@
 <div class="clearfix"></div>
 <div class="col-md-12 no-padding-l">
     {{--parent_id--}}
-    @include('form.select-ajax',['var'=>['label' => Lang::get('messages.Parent-task'), 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-6',]])
-    <div class="clearfix"></div>
+    {{--@include('form.select-ajax',['var'=>['label' => Lang::get('messages.Parent-task'), 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name', 'container_class' => 'col-md-6',]])--}}
+    {{--<div class="clearfix"></div>--}}
     {{--tasktype_id--}}
     @include('form.select-model', ['var'=>['name'=>'tasktype_id','label'=>Lang::get('messages.Task-type'),'query'=> new \App\Tasktype,'container_class'=>'col-md-3']])
     {{--priority--}}
@@ -332,7 +337,7 @@
         /*******************************************************************/
         // frontend and Ajax hybrid validation
         /*******************************************************************/
-        //addValidationRulesForSaving(); // Assign validation classes/rules
+        addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         addDateTimePicker();//enabling date time picker
         dynamicClientLocation();

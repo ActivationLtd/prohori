@@ -431,6 +431,11 @@ class Task extends Basemodule
                     }
                 }
             }
+            if (isset($element->due_date)) {
+
+                $element->due_date = convertBengaliDigitToEnglish($element->due_date);
+            }
+
             $element->is_active = 1;
 
             return $valid;

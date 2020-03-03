@@ -2,8 +2,9 @@
 use App\Task;
 
 $tasks = Task::with(['assignee','clientlocation','tasktype'])->where('is_active', 1)
-    ->orderBy('created_at', 'asc')
-    ->remember(cacheTime('short'))->get();
+    ->orderBy('created_at', 'desc')
+    ->whereIn('status', ['To do', 'In progress', 'Verify'])
+    ->remember(cacheTime('medium'))->get();
 
 $status_map=[
     'To do' => 'todo',
@@ -39,6 +40,14 @@ $status_map=[
             </td>
             <td>
                 <b><a href="{{route('tasks.edit',$task->id)}}">{{ $task->tasktype->name }}</a></b>
+                <br>
+                @if(isset($task->client->name))
+                <b>{{ $task->client->name }}</b>
+                @endif
+                <br>
+                @if(isset($task->clientlocation_name ))
+                <b>{{ $task->clientlocation_name }}</b>
+                @endif
             </td>
             <td>
                 {{ $task->assignee->full_name }}
