@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\AssignmentsController;
 use App\Http\Controllers\MessagesController;
+use App\Http\Controllers\UserlocationsController;
 use Request;
 use App\Task;
 use App\User;
@@ -371,5 +372,10 @@ class UserApiController extends ApiController
         $ret = ret('success', "User Client List", compact('data'));
         return Response::json($ret);
 
+    }
+
+    public function getLocations(){
+        Request::merge(['user_id' => $this->user()->id,'with'=>'userGuard']);
+        return app(UserlocationsController::class)->list();
     }
 }

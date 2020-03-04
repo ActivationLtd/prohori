@@ -48,6 +48,7 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 // Profile
                 Route::get('profile', 'Api\UserApiController@getUserProfile')->name('api.user.profile');
                 Route::get('logout', 'Auth\LoginController@logout')->name('api.user.logout');
+                Route::get('locations', 'Api\UserApiController@getLocations')->name('api.user.tasks.locations');
                 Route::post('uploads', 'Api\UserApiController@uploadsStore')->name('api.user.uploads-store');
                 Route::patch('update', 'Api\UserApiController@usersPatch')->name('api.user.usersPatch');
                 Route::delete('uploads/avatar', 'Api\UserApiController@uploadsDeleteAvatar')->name('api.user.uploads-delete-avatar');
@@ -66,6 +67,7 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 //list of items for tasks
                 Route::get('tasks/{id}/uploads', 'Api\UserApiController@getUploads')->name('api.user.tasks.uploads');
                 Route::get('tasks/{id}/subtasks', 'Api\UserApiController@getSubtasks')->name('api.user.tasks.subtasks');
+
                 Route::get('tasks/{id}/assignments', 'Api\UserApiController@getAssignments')->name('api.user.tasks.assignments');
                 Route::get('tasks/{id}/messages', 'Api\UserApiController@getMessages')->name('api.user.tasks.messages');
                 Route::get('tasks/{id}/clientlists', 'Api\UserApiController@getClientsBasedOnUser')->name('api.user.tasks.clientlist');
