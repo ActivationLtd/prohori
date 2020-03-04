@@ -94,7 +94,7 @@
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding">
     {{--name--}}
-    @include('form.input-text',['var'=>['name'=>'name','label'=>Lang::get('messages.Task-title'), 'container_class'=>'col-md-12']])
+    {{--@include('form.input-text',['var'=>['name'=>'name','label'=>Lang::get('messages.Task-title'), 'container_class'=>'col-md-12']])--}}
     {{--description--}}
     @include('form.textarea',['var'=>['name'=>'description','label'=>Lang::get('messages.Task-details'),'container_class'=>'col-md-12']])
 </div>
