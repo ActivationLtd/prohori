@@ -25,8 +25,7 @@ class UsersController extends ModulebaseController
      * Define grid SELECT statement and HTML column name.
      * @return array
      */
-    public function gridColumns()
-    {
+    public function gridColumns() {
         return [
             //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
             ["{$this->module_name}.id", "id", "ID"],
@@ -119,11 +118,10 @@ class UsersController extends ModulebaseController
     /**
      * In Controller store(), update() before filling the model input values are
      * transformed. Usually it is a good approach for converting arrays to json.
-     * @param  array  $inputs
+     * @param  array $inputs
      * @return array
      */
-    public function transformInputs($inputs = [])
-    {
+    public function transformInputs($inputs = []) {
         /*
          * Convert an array input to csv
          ************************************************/
@@ -158,13 +156,12 @@ class UsersController extends ModulebaseController
 
     // ****************** transformInputs functions end ***********************
 
-    public function store()
-    {
+    public function store() {
         /** @var \App\Basemodule $Model */
         /** @var \App\Basemodule $element */
         // init local variables
         $module_name = $this->module_name;
-        $Model       = model($this->module_name);
+        $Model = model($this->module_name);
 
         //$element_name = str_singular($module_name);
         //$ret = ret();
@@ -172,8 +169,8 @@ class UsersController extends ModulebaseController
         # Process store while creation
         # --------------------------------------------------------
         $validator = null;
-        $inputs    = $this->transformInputs(Request::all());
-        $element   = new $Model($inputs);
+        $inputs = $this->transformInputs(Request::all());
+        $element = new $Model($inputs);
         if (hasModulePermission($this->module_name, 'create')) { // check module permission
             $validator = Validator::make(Request::all(), $Model::rules($element), $Model::$custom_validation_messages);
 
@@ -224,14 +221,13 @@ class UsersController extends ModulebaseController
      * @param $id
      * @return $this|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function update($id)
-    {
+    public function update($id) {
         /**
          * @var \App\User $Model
          * @var \App\User $element
          */
         $Model = model($this->module_name);
-        $ret   = ret(); // load default return values
+        $ret = ret(); // load default return values
         # --------------------------------------------------------
         # Process update
         # --------------------------------------------------------
@@ -296,22 +292,30 @@ class UsersController extends ModulebaseController
         return $this->jsonOrRedirect($ret, $validator, $element);
     }
 
-    public function customWatcher()
-    {
+    public function customWatcher() {
         if (Request::has('id')) {
-            $id   = Request::get('id');
+            $id = Request::get('id');
             $user = User::find($id);
             return $user;
         }
     }
-    public function customClient(){
-        if(Request::has('id')){
-            $id=Request::get('id');
-            $assignee=User::find($id);
-            $data=null;
-            if(!is_null($assignee->operating_area_ids) && count($assignee->operating_area_ids)){
-                $clientlocations=Clientlocation::whereIn('operatingarea_id',$assignee->operating_area_ids)->get(['client_id']);
-                $clients=Client::whereIn('id',$clientlocations);
+
+    /**
+     * This function will return a list of client based on assignee operating area
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function customClient() {
+        //id of the user
+        if (Request::has('assignee_id')) {
+            $assignee_id = Request::get('assignee_id');
+            $assignee = User::find($assignee_id);
+            $data = null;
+            if ($assignee->operating_area_ids !== null && count($assignee->operating_area_ids)) {
+                //Taking client location based on user operating area
+                $clientlocations = Clientlocation::whereIn('operatingarea_id', $assignee->operating_area_ids)->get(['client_id']);
+                //taking clients of the searched client locations
+                $clients = Client::whereIn('id', $clientlocations);
+                //finally fetching the data
                 $data = $clients->remember(cacheTime('none'))->get();
             }
             $ret = ret('success', "", compact('data'));
@@ -320,8 +324,25 @@ class UsersController extends ModulebaseController
         }
     }
 
-    public function list()
-    {
+    /**
+     * this fucntion will return client locations based on users operating areas
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function customClientLocation() {
+        $data = null;
+        if (Request::has('client_id') && Request::has('assignee_id')) {
+            $client_id = Request::get('client_id');
+            $assignee_id = Request::get('assignee_id');
+            $assignee = User::find($assignee_id);
+            $clientlocation = Clientlocation::where('client_id', $client_id)->whereIn('operatingarea_id', $assignee->operating_area_ids);
+            $data = $clientlocation->get();
+        }
+        $ret = ret('success', "", compact('data'));
+        return Response::json($ret);
+
+    }
+
+    public function list() {
         /** @var \App\Basemodule $Model */
         /** @var \Illuminate\Database\Eloquent\Builder $q */
         $Model = model($this->module_name);
@@ -335,7 +356,7 @@ class UsersController extends ModulebaseController
         // Eager load
         if (Request::has('with')) {
             $with = Request::get('with');
-            $q    = $q->with(explode(',', $with));
+            $q = $q->with(explode(',', $with));
         }
         // Force is_active = 1
         $q->where('is_active', 1);
@@ -362,7 +383,7 @@ class UsersController extends ModulebaseController
         $offset = 0;
         if (Request::has('offset')) {
             $offset = Request::get('offset');
-            $q      = $q->skip($offset);
+            $q = $q->skip($offset);
         }
 
         //set limit
@@ -381,7 +402,7 @@ class UsersController extends ModulebaseController
 
         // $data = $q->remember(cacheTime('none'))->get();
         $data = $q->get();
-        $ret  = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
+        $ret = ret('success', "{$this->module_name} list", compact('data', 'total', 'offset', 'limit'));
         return Response::json(fillRet($ret));
     }
 }

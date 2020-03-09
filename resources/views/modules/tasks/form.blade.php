@@ -42,9 +42,11 @@
 ?>
 {{-- ******************* Form starts ********************* --}}
 <div class="col-md-6 no-padding-l">
-@if(isset($task))
-    <a class="btn btn-success" target="_blank" href="{{ route('tasks.create')}}?showMsg=0&name={{$task->name}}&priority={{$task->priority}}&tasktype_id={{$task->tasktype_id}}&due_date={{ $task->due_date }}&description={{ $task->description }}">Replicate Task</a>
-@endif
+    @if(isset($task))
+        <a class="btn btn-success" target="_blank"
+           href="{{ route('tasks.create')}}?showMsg=0&name={{$task->name}}&priority={{$task->priority}}&tasktype_id={{$task->tasktype_id}}&due_date={{ $task->due_date }}&description={{ $task->description }}">Replicate
+            Task</a>
+    @endif
 </div>
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding-l">
@@ -68,7 +70,6 @@
     {{--client_id--}}
     @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-6']])
     {{-- clientlocation_id --}}
-    {{-- @include('form.select-ajax',['var'=>['label' => 'Location', 'name' => 'clientlocation_id', 'table' => 'clientlocations', 'name_field' => 'name_ext','container_class'=>'col-md-6']])--}}
     @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
 
 </div>
@@ -93,8 +94,6 @@
 </div>
 <div class="clearfix"></div>
 <div class="col-md-6 no-padding">
-    {{--name--}}
-    {{--@include('form.input-text',['var'=>['name'=>'name','label'=>Lang::get('messages.Task-title'), 'container_class'=>'col-md-12']])--}}
     {{--description--}}
     @include('form.textarea',['var'=>['name'=>'description','label'=>Lang::get('messages.Task-details'),'container_class'=>'col-md-12']])
 </div>
@@ -119,25 +118,6 @@
         @include('form.textarea',['var'=>['name'=>'resolve_note','label'=>'Resolve Notes','container_class'=>'col-md-8']])
     </div>
     <div class="clearfix"></div>
-    {{--<div class="col-md-6 no-padding ">--}}
-    {{--is_verified--}}
-    {{--@include('form.select-array',['var'=>['name'=>'is_verified','label'=>'Is Verifed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
-    {{--verified_by--}}
-    {{--@include('form.select-model', ['var'=> ['name' => 'verified_by', 'label' => 'Verified By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
-    {{--<div class="clearfix"></div>--}}
-    {{--verify_note--}}
-    {{--@include('form.textarea',['var'=>['name'=>'verify_note','label'=>'Verify Notes','container_class'=>'col-md-8']])--}}
-    {{--</div>--}}
-
-    {{--<div class="col-md-6 no-padding ">--}}
-    {{--is_closed--}}
-    {{--@include('form.select-array',['var'=>['name'=>'is_closed','label'=>'Is Closed','options'=>[" "=>" ",'1'=>'Yes','0'=>'No'], 'container_class'=>'col-sm-4']])--}}
-    {{--closed_by--}}
-    {{--@include('form.select-model', ['var'=> ['name' => 'closed_by', 'label' => 'Closed By', 'query' => new \App\User(),'container_class'=>'col-md-4']])--}}
-    {{--closing_note--}}
-    {{--<div class="clearfix"></div>--}}
-    {{--@include('form.textarea',['var'=>['name'=>'closing_note','label'=>'Closing Notes','container_class'=>'col-md-8']])--}}
-    {{--</div>--}}
 @endif
 <hr/>
 
@@ -189,7 +169,7 @@
             $('input[name=due_date]').addClass('validate[required]');
 
         }
-
+        // datetime picker
         function addDateTimePicker() {
             $('#due_date').datetimepicker({
                 format: 'YYYY-MM-DD HH:mm'
@@ -198,7 +178,7 @@
 
         /**
          * function to check distance between two points
-         * */
+         **/
         function checkdistance(lat1, lon1, lat2, lon2) {
             var R = 6371; // Radius of the earth in km
             var dLat = deg2rad(lat2 - lat1);  // deg2rad below
@@ -221,20 +201,49 @@
         $("select[name=client_id]").attr('disabled', true);
 
         /**
+         *  dynamic selection of client based on the assignee
+         */
+        function dynamicClient() {
+            $('select[name=assigned_to]').change(function () { // change function of listbox
+                var assignee_id = $('select[name=assigned_to]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                $("select[name=client_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
+                $.ajax({
+                    type: "get",
+                    datatype: 'json',
+                    url: '{{route('custom.user-client-list')}}',
+                    data: {assignee_id: assignee_id},
+                    success: function (response) {
+                        console.log(response.data);
+                        if ((response.data)) {
+                            //var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
+                            client_id = $("select[name=client_id]").append("<option value=>Select</option>");
+                            $.each(response.data, function (i, obj) {
+                                //console.log(obj);
+                                client_id.append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                            });
+                        }
+                    },
+                });
+            });
+        }
+        /**
          * dynamic selection of client location based on client selection
          */
         function dynamicClientLocation() {
             $('select[name=client_id]').change(function () { // change function of listbox
-                var id = $('select[name=client_id]').select2('val');
+                var client_id = $('select[name=client_id]').select2('val');
+                var assignee_id = $('select[name=assigned_to]').select2('val');
                 //clearing the data , empty the options , enable it with current options
                 $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
-
-                console.log(id);
                 $.ajax({
                     type: "get",
                     datatype: 'json',
-                    url: '{{route('custom.client-location')}}',
-                    data: {id: id},
+                    url: '{{route('custom.user-client-location-list')}}',
+                    data: {
+                        client_id: client_id,
+                        assignee_id: assignee_id,
+                    },
                     success: function (response) {
                         console.log(response.data);
                         $.each(response.data, function (i, obj) {
@@ -243,37 +252,6 @@
                     },
                 });
 
-            });
-        }
-
-        /**
-         *  dynamic selection of client based on the assignee
-         */
-        function dynamicClient() {
-            $('select[name=assigned_to]').change(function () { // change function of listbox
-                var id = $('select[name=assigned_to]').select2('val');
-                //clearing the data , empty the options , enable it with current options
-                $("select[name=client_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
-                console.log(id);
-                $.ajax({
-                    type: "get",
-                    datatype: 'json',
-                    url: '{{route('custom.client-list')}}',
-                    data: {id: id},
-                    success: function (response) {
-                        console.log(response.data);
-                        if ((response.data)) {
-                            //var jsonObject = $.parseJSON(jsonArray); //Only if not already an object
-                            //
-                            client_id=$("select[name=client_id]").append("<option value=>Select</option>");
-                            $.each(response.data, function (i, obj) {
-                                console.log(obj);
-                                client_id.append("<option value=" + obj.id + ">" + obj.name + "</option>");
-                            });
-                        }
-
-                    },
-                });
             });
         }
 

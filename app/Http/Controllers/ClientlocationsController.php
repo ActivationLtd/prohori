@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Clientlocation;
+use App\User;
 use App\Module;
 use DB;
 use Redirect;
@@ -10,7 +11,6 @@ use Request;
 use Response;
 use Validator;
 use View;
-
 
 class ClientlocationsController extends ModulebaseController
 {
@@ -25,8 +25,7 @@ class ClientlocationsController extends ModulebaseController
      *
      * @return array
      */
-    public function gridColumns()
-    {
+    public function gridColumns() {
         return [
             //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
             ["{$this->module_name}.id", "id", "ID"],
@@ -124,16 +123,5 @@ class ClientlocationsController extends ModulebaseController
     // }
 
     // ****************** Grid functions end *********************************
-    public function customClientLocation(){
-        $data=null;
-        if(Request::has('id')){
-            $id=Request::get('id');
-            $clientlocation=Clientlocation::where('client_id',$id);
-            $data= $clientlocation->get();
-        }
-        $ret = ret('success', "", compact('data'));
-        return Response::json($ret);
 
-
-    }
 }

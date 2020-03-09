@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\AssignmentsController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\UserlocationsController;
+use App\Userlocation;
 use Request;
 use App\Task;
 use App\User;
@@ -73,12 +74,12 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function summary() {
-        if($this->user()->isManagerUser()){
+        if ($this->user()->isManagerUser()) {
             $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
             $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
             $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
             $task_due = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereNotIn('status', ['Done', 'Closed'])->where('due_date', '<', now())->count();
-        }else{
+        } else {
             $task_assigned = Task::remember(cacheTime('medium'))->whereIn('status', ['To do', 'In Progress'])->count();
             $task_completed = Task::remember(cacheTime('medium'))->whereIn('status', ['Done', 'Closed'])->count();
             $task_inprogress = Task::remember(cacheTime('medium'))->whereIn('status', ['In Progress'])->count();
@@ -111,7 +112,7 @@ class UserApiController extends ApiController
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
                     ->orWhere('created_by', $this->user()->id)
-                    ->orWhere('tasks.watchers','LIKE', '%'.$this->user()->id.'%');
+                    ->orWhere('tasks.watchers', 'LIKE', '%' . $this->user()->id . '%');
             });
         }
         # Generic API return
@@ -119,14 +120,14 @@ class UserApiController extends ApiController
             $tasks = $tasks->where('updated_at', '>=', Request::get('updatedSince'));
         }
         if (Request::has('createdSince')) {
-            $created_since=Request::get('createdSince'). ' 00:00:00';
+            $created_since = Request::get('createdSince') . ' 00:00:00';
             $tasks = $tasks->where('created_at', '>=', $created_since);
         }
         if (Request::has('updatedTill')) {
             $tasks = $tasks->where('updated_at', '<=', Request::get('updatedTill'));
         }
         if (Request::has('createdTill')) {
-            $created_till=Request::get('createdTill'). ' 23:59:59';
+            $created_till = Request::get('createdTill') . ' 23:59:59';
             $tasks = $tasks->where('created_at', '<=', $created_till);
         }
         if (Request::has('dueNow')) {
@@ -198,7 +199,8 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function dashboardTasks() {
-        $tasks = DB::table('tasks')->where('is_active', 1)->whereNull('deleted_at')->whereIn('status', ['To do', 'In progress', 'Verify']);
+        $tasks = DB::table('tasks')->where('is_active', 1)->whereNull('deleted_at')
+            ->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
         if ($this->user()->isManagerUser()) {
             $tasks = $tasks->where(function ($q) {
@@ -286,7 +288,7 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function tasksCreate() {
-        Request::merge(['created_by' => $this->user()->id,'updated_by'=>$this->user()->id]);
+        Request::merge(['created_by' => $this->user()->id, 'updated_by' => $this->user()->id]);
         return app(TasksController::class)->store();
     }
 
@@ -360,12 +362,18 @@ class UserApiController extends ApiController
 
     /**
      * @param $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function getClientsBasedOnUser($id) {
-        $assignee = User::find($id);
+    public function getClientsBasedOnUser() {
         $data = [];
-        if (!is_null($assignee->operating_area_ids)) {
-            $clientlocations = Clientlocation::whereIn('operatingarea_id', $assignee->operating_area_ids)->get(['client_id']);
+        if (!Request::has('assigned_to')) {
+            $ret = ret('Failure', "Parameter missing assignee_id", compact('data'));
+            return Response::json($ret);
+        }
+        $assignee = User::find(Request::get('assigned_to'));
+        if ($assignee->operating_area_ids !== null && count($assignee->operating_area_ids)) {
+            $clientlocations = Clientlocation::whereIn('operatingarea_id', $assignee->operating_area_ids)
+                ->get(['client_id']);
             $clients = Client::whereIn('id', $clientlocations);
             $data = $clients->remember(cacheTime('very-short'))->get();
         }
@@ -374,8 +382,64 @@ class UserApiController extends ApiController
 
     }
 
-    public function getLocations(){
-        Request::merge(['user_id' => $this->user()->id,'with'=>'userGuard']);
+    /**
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getClientLocationsBasedOnUser() {
+        $data = [];
+        if (!Request::has('client_id') && !Request::has('assigned_to')) {
+            $ret = ret('Failure', "Parameter missing assigned_to and task_id", compact('data'));
+            return Response::json($ret);
+        }
+        $client_id = Request::get('client_id');
+        $assignee = User::find(Request::get('assigned_to'));
+        if ($assignee->operating_area_ids !== null && count($assignee->operating_area_ids)) {
+            $clientlocation = Clientlocation::where('client_id', $client_id)
+                ->whereIn('operatingarea_id', $assignee->operating_area_ids);
+            $data = $clientlocation->remember(cacheTime('very-short'))->get();
+        }
+        $ret = ret('success', "User Client Location List", compact('data'));
+        return Response::json($ret);
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLocations() {
+        Request::merge(['user_id' => $this->user()->id, 'with' => 'userGuard']);
         return app(UserlocationsController::class)->list();
     }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createMultipleEntryForUserLocation() {
+
+        $items = json_decode(request('list'));
+        foreach ($items as $item) {
+            $userlocation=Userlocation::create([
+                'user_id' => $this->user()->id,
+                'longitude' => $item->long,
+                'latitude' => $item->lat,
+                'created_by' => $this->user()->id,
+                'updated_by' => $this->user()->id
+            ]);
+            $data[]=$userlocation->id;
+        }
+        $ret = ret('success', "User location created", compact('data'));
+        return Response::json($ret);
+
+        // dd(json_encode(
+        //     [
+        //         ['long' => 11, 'lat' => 22],
+        //         ['long' => 11, 'lat' => 22],
+        //         ['long' => 11, 'lat' => 22],
+        //         ['long' => 11, 'lat' => 22],
+        //     ]
+        // ));
+
+    }
+
 }
