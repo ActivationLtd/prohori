@@ -1,13 +1,11 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace App;
 
 use App\Observers\ReportObserver;
-use App\Traits\IsoModule;
 
 /**
  * Class Report
- *
  * @package App
  * @property int $id
  * @property string|null $uuid
@@ -66,10 +64,9 @@ use App\Traits\IsoModule;
  */
 class Report extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
-     *
      * @var array
      */
     protected $fillable = [
@@ -92,30 +89,37 @@ class Report extends Basemodule
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
-     *
      * @var array
      */
     // protected $guarded = [];
 
     /**
      * Date fields
-     *
      * @var array
      */
     // protected $dates = ['created_at', 'updated_at', 'deleted_at'];
+    /**
+     * Custom validation messages.
+     * @var array
+     */
+    public static $custom_validation_messages = [
+        //'name.required' => 'Custom message.',
+    ];
+    public static $types = [
+        'Module Generic Report' => 'Module Generic Report',
+    ];
 
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
-     *
      * @param       $element
-     * @param array $merge
+     * @param  array  $merge
      * @return array
      */
     public static function rules($element, $merge = [])
     {
         $rules = [
-            'title' => 'required|between:1,255|unique:reports,title,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            'title' => 'required|between:1,255|unique:reports,title,'.(isset($element->id) ? "$element->id" : 'null').',id,deleted_at,NULL',
             'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
@@ -126,21 +130,7 @@ class Report extends Basemodule
     }
 
     /**
-     * Custom validation messages.
-     *
-     * @var array
-     */
-    public static $custom_validation_messages = [
-        //'name.required' => 'Custom message.',
-    ];
-
-    public static $types = [
-        'Module Generic Report' => 'Module Generic Report',
-    ];
-
-    /**
      * Automatic eager load relation by default (can be expensive)
-     *
      * @var array
      */
     // protected $with = ['relation1', 'relation2'];
@@ -148,6 +138,7 @@ class Report extends Basemodule
     ############################################################################################
     # Model events
     ############################################################################################
+
 
     public static function boot()
     {
@@ -183,15 +174,15 @@ class Report extends Basemodule
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-         static::saving(function (Report $element) {
-            $valid = true;
-            $element->name=$element->title;
+        static::saving(function (Report $element) {
+            $valid         = true;
+            $element->name = $element->title;
             /************************************************************/
             //Your validation goes here
-             // if($valid) $valid = $element->isSomethingDoable(true)
+            // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
             return $valid;
-         });
+        });
 
         /************************************************************/
         // Execute codes after model is successfully saved
@@ -229,7 +220,7 @@ class Report extends Basemodule
     ############################################################################################
 
     /**
-     * @param bool|false $setMsgSession setting it false will not store the message in session
+     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -257,40 +248,42 @@ class Report extends Basemodule
     /**
      * Static functions needs to be called using Model::function($id)
      * Inside static function you may need to query and get the element
-     *
      * @param $id
      */
     // public static function someOtherAction($id) { }
 
     /**
      * Get module default report url.
-     *
      * @param $module_id
      * @return string
      */
     public static function defaultForModule($module_id)
     {
         /** @var \App\Report $default_report */
-        $default_report = Report::where('module_id', $module_id)->where('is_module_default', 1)->remember(cacheTime('long'))->first();
+        $default_report = Report::where('module_id', $module_id)->where('is_module_default', 1)
+            ->remember(cacheTime('long'))->first();
+
         if ($default_report) {
             $report_url = $default_report->url();
         } else {
-            $module = Module::remember(cacheTime('long'))->find($module_id);
-            $report_url = route($module->name . '.report') . "?submit=Run&"
-                . "fields_csv=id%2Cname%2Ccreated_by%2Ccreated_at%2Cupdated_by%2Cupdated_at%2Cis_active"
-                . "&columns_to_show_csv=id%2Cname%2Ccreated_by%2Ccreated_at%2Cupdated_by%2Cupdated_at%2Cis_active"
-                . "&column_aliases_csv=Id%2CName%2CCreated+by%2CCreated+at%2CUpdated+by%2CUpdated+at%2CActive%3F"
-                . "&rows_per_page=100";
+            $module     = Module::remember(cacheTime('long'))->find($module_id);
+            $report_url = route($module->name.'.report')."?submit=Run&"
+                ."select_columns_csv=id%2Cname%2Ccreated_by%2Ccreated_at%2Cupdated_by%2Cupdated_at%2Cis_active"
+                ."&show_columns_csv=id%2Cname%2Ccreated_by%2Ccreated_at%2Cupdated_by%2Cupdated_at%2Cis_active"
+                ."&alias_columns_csv=Id%2CName%2CCreated+by%2CCreated+at%2CUpdated+by%2CUpdated+at%2CActive%3F"
+                ."&rows_per_page=25";
+
         }
         return $report_url;
     }
+
     /**
      * Generates report url from id
-     *
      * @param $id
      * @return string
      */
-    public static function getReportUrlFromId($id) {
+    public static function getReportUrlFromId($id)
+    {
         if ($report = Report::remember(cacheTime('short'))->find($id)) {
             return $report->url();
         }
@@ -299,16 +292,31 @@ class Report extends Basemodule
 
     /**
      * Get report full url
-     *
      * @return string
      */
-    public function url() {
+    public function url()
+    {
         $base_url = route('home');
-        return $base_url . urldecode($this->parameters);
+        return $base_url.urldecode($this->parameters);
 
     }
 
+    public static function dailyStatusReport()
+    {
+        $yesterday            = strtotime("yesterday");
+        $from                 = date("Y-m-d 00:00:00", $yesterday);
+        $to                   = now();
+        $data                 = [];
+        $user_count           = User::where('is_active', 1)->whereNull('deleted_at')->count();
+        $client_count         = Client::where('is_active', 1)->whereNull('deleted_at')->count();
+        $clientlocation_count = Clientlocation::where('is_active', 1)->whereNull('deleted_at')->count();
+        $tasks_count          = Task::where('is_active', 1)->whereNull('deleted_at')->count();
 
+        $user_count_today           = User::where('is_active', 1)->whereNull('deleted_at')->whereBetween('created_at', [$from, $to])->count();
+        $client_count_today         = Client::where('is_active', 1)->whereNull('deleted_at')->whereBetween('created_at', [$from, $to])->count();
+        $clientlocation_count_today = Clientlocation::where('is_active', 1)->whereNull('deleted_at')->whereBetween('created_at', [$from, $to])->count();
+        $tasks_count_today          = Task::where('is_active', 1)->whereNull('deleted_at')->whereBetween('created_at', [$from, $to])->count();
+    }
 
     ############################################################################################
     # Permission functions
@@ -326,8 +334,7 @@ class Report extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isViewable($user_id = null)
@@ -344,8 +351,7 @@ class Report extends Basemodule
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -362,8 +368,7 @@ class Report extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -380,8 +385,7 @@ class Report extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null  $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)

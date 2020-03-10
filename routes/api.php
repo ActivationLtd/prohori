@@ -35,54 +35,66 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                 Route::resource($module, $Controller); // for some reason this resource route needs be placed at the bottom otherwise it does work.
             }
         });
-
         // Settings api
         Route::get('setting/{name}', ['as' => 'api.get.setting', 'uses' => 'SettingsController@getSetting']);
-
         Route::post('register', 'Auth\RegisterController@register')->name('api.register');
         Route::post('login', 'Auth\LoginController@login')->name('api.login');
         Route::post('social-login', 'Auth\LoginController@socialLogin')->name('api.social-login');
-        Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('api.forgot-password');
+        Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')
+            ->name('api.forgot-password');
 
         Route::middleware(['auth.bearer'])->group(function () use ($modules, $modulegroups) {
             Route::prefix('user')->group(function () {
 
-                // Profile + logout
+                // Profile
                 Route::get('profile', 'Api\UserApiController@getUserProfile')->name('api.user.profile');
                 Route::get('logout', 'Auth\LoginController@logout')->name('api.user.logout');
-                Route::post('uploads', 'Api\UserApiController@uplaodsStore')->name('api.user.uploads-store');
-                Route::delete('uploads/avatar', 'Api\UserApiController@uplaodsDeleteAvatar')->name('api.user.uploads-delete-avatar');
+                Route::get('locations', 'Api\UserApiController@getLocations')
+                    ->name('api.user.tasks.locations');
+                Route::post('uploads', 'Api\UserApiController@uploadsStore')
+                    ->name('api.user.uploads-store');
+                Route::patch('update', 'Api\UserApiController@usersPatch')
+                    ->name('api.user.usersPatch');
+                Route::delete('uploads/avatar', 'Api\UserApiController@uploadsDeleteAvatar')
+                    ->name('api.user.uploads-delete-avatar');
 
-                // Update user information in users table
-                Route::get('summary', 'Api\UserApiController@recommenderUserSummary')->name('api.user.summary');
+                // Summary
+                Route::get('summary', 'Api\UserApiController@summary')->name('api.user.summary');
 
-                // Update user information in users table
-                Route::get('activities', 'Api\UserApiController@recommenderUserActivities')->name('api.user.activities');
+                // Tasks
+                Route::get('tasks', 'Api\UserApiController@tasks')->name('api.user.tasks');
+                Route::get('dashboardtasks', 'Api\UserApiController@dashboardTasks')
+                    ->name('api.user.dashboardtasks');
+                Route::post('tasks/create', 'Api\UserApiController@tasksCreate')
+                    ->name('api.user.tasks.create');
+                Route::post('tasks/{id}/replicate', 'Api\UserApiController@tasksReplicate')
+                    ->name('api.user.tasks.replicate');
+                //Route::delete('tasks/{id}/delete', 'Api\UserApiController@tasksDelete')->name('api.user.tasks.delete');
+                Route::patch('tasks/{id}/update', 'Api\UserApiController@tasksUpdate')
+                    ->name('api.user.tasks.update');
+                Route::post('tasks/{id}/upload', 'Api\UserApiController@tasksUpload')
+                    ->name('api.user.tasks.upload');
+                //list of items for tasks
+                Route::get('tasks/{id}/uploads', 'Api\UserApiController@getUploads')
+                    ->name('api.user.tasks.uploads');
+                Route::get('tasks/{id}/subtasks', 'Api\UserApiController@getSubtasks')
+                    ->name('api.user.tasks.subtasks');
 
-                // Update user information in users table
-                Route::patch('/', 'Api\UserApiController@usersPatch')->name('api.user.users-patch');
+                Route::get('tasks/{id}/assignments', 'Api\UserApiController@getAssignments')
+                    ->name('api.user.tasks.assignments');
+                Route::get('tasks/{id}/messages', 'Api\UserApiController@getMessages')
+                    ->name('api.user.tasks.messages');
 
-                // User brands page
-                Route::get('brands', 'Api\UserApiController@brands')->name('api.user.brands');
+                // get client and client location
+                Route::get('tasks/clientslist', 'Api\UserApiController@getClientsListBasedOnUser')
+                    ->name('api.user.tasks.clientlist');
+                Route::get('tasks/clientlocationslist', 'Api\UserApiController@getClientLocationsListBasedOnUser')
+                    ->name('api.user.tasks.clientlocationlist');
+                Route::post('/multipleuserlocation', 'Api\UserApiController@createMultipleEntryForUserLocation')
+                    ->name('api.user.multilocation.create');
 
-                // User charity options
-                Route::get('charities', 'Api\UserApiController@charities')->name('api.user.charities');
-
-                // charity-selections
-                Route::post('charityselections', 'Api\UserApiController@charityselectionsStore')->name('api.user.charityselections-store');
-                Route::get('charityselections', 'Api\UserApiController@charityselectionsList')->name('api.user.charityselections');
-                Route::get('charityselections/latest', 'Api\UserApiController@charityselectionsLatest')->name('api.user.charityselections-latest');
-
-                // aid-declaration
-                Route::post('aiddeclarations', 'Api\UserApiController@aiddeclarationsStore')->name('api.user.aiddeclarations-store');
-                Route::get('aiddeclarations', 'Api\UserApiController@aiddeclarationsList')->name('api.user.aiddeclarations');
-                Route::get('aiddeclarations/latest', 'Api\UserApiController@aiddeclarationsLatest')->name('api.user.aiddeclarations-latest');
-
-                // recommend urls
-                Route::post('recommendurls', 'Api\UserApiController@recommendurlsStore')->name('api.user.recommendurls-store');
-                Route::get('recommendurls', 'Api\UserApiController@recommendurlsList')->name('api.user.recommendurls');
-                //Route::get('aiddeclarations/latest', 'Api\UserApiController@aiddeclarationsLatest')->name('api.user.aiddeclarations-latest');
-
+                //todo must remove after mobile version is released
+                Route::get('tasks/{id}/clientlists', 'Api\UserApiController@getClientsBasedOnUser')->name('api.user.tasks.clientlist');
             });
         });
 
@@ -97,8 +109,9 @@ Route::group(['prefix' => 'public'], function () {
     header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
     header("Access-Control-Allow-Headers: Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization, X-CSRF-Token','X-Auth-Token");
 
-    Route::post('catch', 'Api\PublicApiController@catch')->name('api.public.catch');
-    Route::post('beacons', 'Api\PublicApiController@beaconsStore')->name('api.public.beacons-store');
-    Route::post('apiresponses', 'Api\PublicApiController@apiresponsesStore')->name('api.public.apiresponses-store');
-    Route::get('user-name/{share_code}', 'Api\PublicApiController@getUserNameFromShareCode')->name('api.public.get-user-name-from-share-code');
+    Route::post('catch', 'Api\PublicApiController@catch')->name('api .public.catch');
+    Route::post('beacons', 'Api\PublicApiController@beaconsStore')->name('api .public.beacons - store');
+    Route::post('apiresponses', 'Api\PublicApiController@apiresponsesStore')->name('api .public.apiresponses - store');
+    Route::get('user - name /{
+                    share_code}', 'Api\PublicApiController@getUserNameFromShareCode')->name('api .public.get - user - name - from - share - code');
 });

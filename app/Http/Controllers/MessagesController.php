@@ -2,14 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Module;
-use DB;
-use Redirect;
-use Request;
-use Response;
-use Validator;
-use View;
-
 class MessagesController extends ModulebaseController
 {
 
@@ -116,4 +108,49 @@ class MessagesController extends ModulebaseController
     // }
 
     // ****************** Grid functions end *********************************
+
+    /**
+     * In Controller store(), update() before filling the model input values are
+     * transformed. Usually it is a good approach for converting arrays to json.
+     *
+     *
+     * @param array $inputs
+     * @return array
+     */
+    // public function transformInputs($inputs = [])
+    // {
+    //     /*
+    //      * Convert an array input to csv
+    //      ************************************************/
+    //     // $arr_to_csv_inputs = [
+    //     //     'partnercategory_ids'
+    //     // ];
+    //     //
+    //     // foreach ($arr_to_csv_inputs as $i){
+    //     //     if(isset($inputs[$i]) && is_array($inputs[$i])){
+    //     //         $inputs[$i] = arrayToCsv($inputs[$i]);
+    //     //     }else{
+    //     //         $inputs[$i] = null;
+    //     //     }
+    //     // }
+    //
+    //     /*
+    //      * Convert an array input to json
+    //      ************************************************/
+    //     $arr_to_json_inputs = [
+    //         'field1_ids',
+    //         'field2_ids',
+    //     ];
+    //
+    //     foreach ($arr_to_json_inputs as $i) {
+    //         if (isset($inputs[$i]) && is_array($inputs[$i])) {
+    //             $inputs[$i] = json_encode($inputs[$i]);
+    //         } else {
+    //             $inputs[$i] = null;
+    //         }
+    //     }
+    //
+    //     return $inputs;
+    // }
+    // ****************** transformInputs functions end ***********************
 }

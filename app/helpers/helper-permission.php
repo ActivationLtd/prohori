@@ -103,11 +103,8 @@ function renderModulePermissionTree($tree)
  */
 function user($user_id = false)
 {
-    $user = false;
     if ($user_id) {
-        $user = User::remember(cacheTime('short'))->find($user_id);
-    } else if (Auth::check()) { // for logged in user
-        $user = Auth::user();
+        return User::remember(cacheTime('short'))->find($user_id);
     }
     //    // for API requests find the user based on the param/header values
     //    if(!$user && Request::has('user_id')){ // No logged user. get from user_id in url param or request header
@@ -121,11 +118,18 @@ function user($user_id = false)
      * Resolve user from client_id passed in request header. This is required when API calls are made using
      * X-Auth-Token and client-id.
      */
-    if (!$user && Request::header('client-id')) { // No logged user. get from user_id in url param or request header
-        $user = User::remember(cacheTime('user'))->find(Request::header('client-id'));
+    if (Request::header('client-id') && Request::header('X-Auth-Token')) { // No logged user. get from user_id in url param or request header
+        return User::where('id', Request::header('client-id'))
+            ->where('api_token', Request::header('X-Auth-Token'))
+            ->remember(cacheTime('short'))
+            ->find(Request::header('client-id'));
     }
 
-    return $user;
+    if (Auth::check()) { // for logged in user
+        return Auth::user();
+    }
+
+    return false;
 }
 
 /**
@@ -141,6 +145,7 @@ function hasAccess($permission, $user_id = false)
     //return true;
     $allowed = false;
     $user = user($user_id);
+
     if (isset($user)) {
         if (!Session::has('permissions')) {
             storePermissionsInSession();
@@ -182,6 +187,7 @@ function hasPermission($permission, $user_id = false)
  */
 function hasModulePermission($module_name, $permission, $user_id = false)
 {
+
     return hasAccess("perm-module-$module_name-$permission", $user_id);
 }
 
@@ -232,9 +238,9 @@ function spyrElementViewable($element, $user_id = null, $set_msg = false)
     }
 
     // Check for valid tenant context
-    if ($valid && (inTenantContext($module_name) && !elementBelongsToSameTenant($element))) {
-        $valid = setError("User[" . $user->name . "] does not have view permission on module: $module_name [" . $element->id . "] because the element does not belong to same user", $set_msg);
-    }
+    // if ($valid && (inTenantContext($module_name) && !elementBelongsToSameTenant($element))) {
+    //     $valid = setError("User[" . $user->name . "] does not have view permission on module: $module_name [" . $element->id . "] because the element does not belong to same user", $set_msg);
+    // }
 
     return $valid;
 }

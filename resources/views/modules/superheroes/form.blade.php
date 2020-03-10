@@ -27,7 +27,7 @@
 
 @section('breadcrumb')
     @parent
-@show
+@endsection
 
 @section('content-top')
     @parent
@@ -41,7 +41,46 @@
  */
 ?>
 {{-- ******************* Form starts ********************* --}}
-@include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
+
+{{-- Normal text field --}}
+@include('form.input-text',['var'=>['name'=>'name','label'=>'Name']])
+
+{{-- Model select --}}
+{{--@include('form.select-model',['var'=>['name'=>'parent_id','label'=>'Parent task','table'=>'tasks', 'name_field'=>'name_ext']])--}}
+
+{{-- Ajax based model select --}}
+{{--@include('form.select-ajax',['var'=>['label' => 'Parent task', 'name' => 'parent_id', 'table' => 'tasks', 'name_field' => 'name_ext']])--}}
+
+<?php
+// $var = [
+//     'name' => 'partnercategory_ids',
+//     'label' => 'Partner categories',
+//     'value' => (isset($partner)) ? json_decode($partner->partnercategory_ids) : [],
+//     'query' => new \App\Partnercategory,
+//     'params' => ['multiple', 'id' => 'partnercategory_ids'],
+//     'container_class' => 'col-md-12',
+//     'name_field' => 'name_ext',
+// ];
+?>
+{{--@include('form.select-model', ['var'=>$var])--}}
+
+<?php
+// $var = [
+// 'name' => 'charity_id',
+// 'label' => 'Charity',
+// 'query' => new \App\Charity,
+// ];
+?>
+{{--@include('form.select-model', ['var'=>$var])--}}
+
+{{-- Textarea--}}
+{{--@include('form.textarea',['var'=>['name'=>'live_access','label'=>'Other Access Details']])--}}
+
+{{-- Select array --}}
+{{--@include('form.select-array',['var'=>['name'=>'priority','label'=>'Priority', 'options'=>kv(\App\Task::$priorities),'container_class'=>'col-sm-3']])--}}
+
+{{--@include('form.plain-text',['var'=>['label'=>'Recommender', 'value'=>'test', 'container_class'=>'col-sm-6']])--}}
+
 @include('form.is_active')
 {{-- ******************* Form ends *********************** --}}
 

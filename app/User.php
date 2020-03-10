@@ -1,16 +1,15 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
 
 namespace App;
 
-use App\Observers\UserObserver;
+use Request;
 use App\Traits\IsoModule;
-use App\Traits\IsoUserPermission;
+use App\Observers\UserObserver;
 use App\Traits\ProhoriUserTrait;
-use Hash;
+use App\Traits\IsoUserPermission;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Request;
 
 /**
  * App\User
@@ -183,24 +182,40 @@ use Request;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCharityUuid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerifiedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User wherePartnerUuid($value)
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Aiddeclaration[] $aiddeclarations
- * @property-read \App\Charity|null $charity
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Charityselection[] $charityselctions
  * @property-read \App\Country|null $country
- * @property-read \App\Aiddeclaration $currentAiddeclaration
- * @property-read \App\Charityselection $currentCharityselction
  * @property-read \App\Upload $latestUpload
- * @property-read \App\Partner|null $partner
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereCurrency($value)
  * @property string|null $social_account_id
  * @property string|null $social_account_type
  * @property int|null $gift_aid_checked
- * @property-read \App\Charityselection $currentCharityselection
  * @property-read mixed $avatar
- * @property-read \App\Invoice $lastInvoice
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereGiftAidChecked($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereSocialAccountId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereSocialAccountType($value)
+ * @property string|null $email_verification_code
+ * @property array|null $group_ids
+ * @property int|null $employee_id
+ * @property int|null $designation_id
+ * @property string|null $designation_name
+ * @property int|null $department_id
+ * @property string|null $department_name
+ * @property-read \App\Department|null $department
+ * @property-read \App\Designation|null $designation
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartmentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDepartmentName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDesignationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereDesignationName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmailVerificationCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereEmployeeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereGroupIds($value)
+ * @property array|null $watchers
+ * @property array|null $operating_area_ids
+ * @property string|null $operating_area_names
+ * @property-read mixed $operating_area_ids_objects
+ * @property-read mixed $watcher_objs
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereOperatingAreaIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereOperatingAreaNames($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\User whereWatchers($value)
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -213,7 +228,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * The attributes that are mass assignable.
-     *
      * @var array
      */
     protected $fillable = [
@@ -221,7 +235,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'tenant_id',
         'name',
         'email',
-        //'password',
+        'password',
         'remember_token',
         'email_verification_code',
         'email_verified_at',
@@ -233,8 +247,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'session_secret',
         'tenant_editable',
         'permissions',
+        'group_ids',
         'group_ids_csv',
         'group_titles_csv',
+        'employee_id',
         'name_initial',
         'first_name',
         'last_name',
@@ -257,6 +273,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'social_account_id',
         'social_account_type',
         'is_active',
+        'designation_id',
+        'department_id',
+        'watchers',
+        'operating_area_ids',
         'created_by',
         'updated_by',
         'created_at',
@@ -266,88 +286,102 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     /**
-     * List of appended attribute. This attributes will be loaded in each Model
-     *
+     * The attributes that should be cast to native types.
      * @var array
      */
-    protected $appends = ['avatar'];
+    protected $casts = [
+        'group_ids' => 'array',
+        'watchers' => 'array',
+        'operating_area_ids' => 'array',
+    ];
+
+    /**
+     * List of appended attribute. This attributes will be loaded in each Model
+     * @var array
+     */
+    protected $appends = ['avatar', 'watcher_objs', 'operating_area_ids_objects'];
 
     /**
      * The attributes that should be hidden for arrays.
-     *
      * @var array
      */
     protected $hidden = [
         'password',
         'remember_token',
     ];
+    public static $custom_validation_messages = [
+        //'name.required' => 'Custom message.',
+    ];
+    /**
+     * Allowed permissions values.
+     * Possible options:
+     *   -1 => Deny (adds to array, but denies regardless of user's group).
+     *    0 => Remove.
+     *    1 => Add.
+     * @var array
+     */
+    protected $allowedPermissionsValues = [-1, 0, 1];
+    /**
+     * Automatic eager load relation by default (can be expensive)
+     * @var array
+     */
+    protected $with = ['groups'];
 
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
-     *
      * @param       $element
-     * @param array $merge
+     * @param  array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
         $rules = [
-            // 'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
-            // 'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email' . (isset($element->id) ? ",$element->id" : ''),
-            // 'first_name' => 'required|between:0,128',
-            // 'last_name' => 'required|between:0,128',
-            // 'group_id' => 'required',
+            //'name' => ['required', 'between:3,255', 'unique:users,name' . (isset($element->id) ? ",$element->id" : '')],
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'group_ids' => 'required',
+            'email' => 'required|email|unique:users,email,' . (isset($element->id) ? $element->id : 'null') . ',id,deleted_at,NULL',
+            //'employee_id' =>'integer',
             // 'address1' => 'between:0,512',
             // 'address2' => 'between:0,512',
             // 'city' => 'between:0,64',
             // 'county' => 'between:0,64',
             // 'zip_code' => 'between:0,20',
             // 'phone' => 'between:0,20',
-            // 'mobile' => 'between:0,20',
+            'mobile' => 'between:0,20',
         ];
 
         // While creation/registration of user password and password_confirm both should be available
         // Also if one password is given the other one should be given as well
         // While creation/registration of user password and password_confirm both should be available
-        // if (!isset($element->id) || (Request::has('password') && Request::has('password_confirmation'))) {
-        //     $rules = array_merge($rules, [
-        //         'password' => 'required|digits_between:5,8|numeric|confirmed',
-        //     ]);
-        // }
+        if (!isset($element->id)) {
+            $rules = array_merge($rules, [
+                'password' => 'required|min:6|confirmed',
+            ]);
+        } else {
+            if (Request::get('password')) {
+                $rules = array_merge($rules, [
+                    'password' => 'min:6|confirmed',
+                ]);
+            }
+        }
+        //for manager add this validations
+        if (user()->isManagerUser()) {
+            $rules = array_merge($rules, [
+                'operating_area_ids' => 'required',
+                'watchers' => 'required',
+
+            ]);
+        }
 
         return array_merge($rules, $merge);
     }
 
-    public static $custom_validation_messages = [
-        //'name.required' => 'Custom message.',
-    ];
-
-    /**
-     * Allowed permissions values.
-     *
-     * Possible options:
-     *   -1 => Deny (adds to array, but denies regardless of user's group).
-     *    0 => Remove.
-     *    1 => Add.
-     *
-     * @var array
-     */
-    protected $allowedPermissionsValues = [-1, 0, 1];
-
-    /**
-     * Automatic eager load relation by default (can be expensive)
-     *
-     * @var array
-     */
-    protected $with = ['groups'];
-
     ############################################################################################
     # Model events
     ############################################################################################
-    public static function boot()
-    {
+
+    public static function boot() {
         /**
          * parent::boot() was previously used. However this invocation stops from the other classes
          * of other spyr modules(Models) to override the boot() method. Need to check more.
@@ -394,70 +428,67 @@ class User extends Authenticatable implements MustVerifyEmail
         /************************************************************/
         static::saving(function (User $element) {
             $valid = true;
-            $element = $element->resolveName();
-
             // Generate new api token
             if (Request::get('api_token_generate') === 'yes') {
                 $element->api_token = hash('sha256', randomString(10), false);
             }
 
-            // Create new hashed password
-            if (Request::has('password') && Request::has('password_confirmation')) {
-                $new_password = Request::get('password');
-                $new_password_confirmation = Request::get('password_confirmation');
-                if (strlen($new_password) && strlen($new_password_confirmation)) {
-                    if ($new_password == $new_password_confirmation) {
-                        $element->password = Hash::make(Request::get('password'));
-                    } else {
-                        $valid = setError('Password does not match');
-                    }
-                }
+            if (is_array($element->group_ids)) {
+                $group_ids = $element->group_ids;
+                $element->group_ids = json_encode($element->group_ids);
+            } else {
+                $group_ids = json_decode($element->group_ids);
             }
 
             // Set group selection limit
             $max_groups = 1;
-            if (inputIsArray('group_id') && count(Request::get('group_id')) > $max_groups) {
+            if (is_array($group_ids) && (count($group_ids) > $max_groups)) {
                 $valid = setError("You can assign only {$max_groups} group.");
             }
-
-            // Make invalid if superuser is assigned to any specific tenant.
-            $tenant_idf = tenantIdField();
-            $superuser_group_id = Group::where('name', 'superuser')->remember(cacheTime('long'))->first()->id;
-            if ($valid && inputIsArray('group_id') && in_array($superuser_group_id, Request::get('group_id', [])) && $element->$tenant_idf > 0) {
-                $valid = setError("Superuser can not belong to any tenant/customer.");
+            if (is_array($group_ids) && count($group_ids)) {
+                $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
+                $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
-            if ($valid && Request::has('group_id')) {
-
-                // Fill group_ids_csv based on group selection
-                $element->group_ids_csv = $element->group_titles_csv = null;
-
-                //$element->group_ids_csv = commaWrap(implode(',', Request::get('group_id', []))); // Comma wrap is not necessary for single group assignment.
-
-                $element->group_ids_csv = Request::get('group_id');
-                if (is_array($element->group_ids_csv)) {
-                    $element->group_ids_csv = implode(',', $element->group_ids_csv);
+            if(isset($element->watchers)){
+                if(in_array($element->id,$element->watchers)){
+                    $valid=setError("Watcher can not be the same user");
                 }
-                $group_ids = explode(',', $element->group_ids_csv);
-                $group_titles = [];
-                foreach ($group_ids as $group_id) {
-                    if ($group = Group::remember(cacheTime('long'))->find($group_id)) {
-                        array_push($group_titles, $group->title);
-                    }
-                }
-                //$element->group_titles_csv = commaWrap(implode(',', $group_titles)); // Comma wrap is not necessary for single group assignment.
-                $element->group_titles_csv = implode(',', $group_titles);
             }
 
             // fill common fields, null-fill, trim blanks from Request
             if ($valid) {
+
                 if ($element->country()->exists()) {
                     $element->country_name = $element->country->name;
                     $element->currency = $element->country->currency();
                 }
 
-                $element->is_active = $element->is_active ?? 0;
-                if ($element->is_active == 1 && $element->email_verified_at === null) {
+                if ($element->designation()->exists()) {
+                    $element->designation_name = $element->designation->name;
+                }
+                if ($element->department()->exists()) {
+                    $element->department_name = $element->department->name;
+                }
+
+                if (!isset($element->is_active)) {
+                    $element->is_active = ($element->email_confirmed == 1) ? 1 : 0;
+                }
+
+                if ($element->is_active && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
+                }
+                if (isset($element->first_name,$element->last_name) && !isset($element->full_name)) {
+                    $element->full_name = $element->first_name . " " . $element->last_name;
+                }
+                $element->name=$element->full_name;
+
+                if (!isset($element->profile_pic_url)) {
+                    $element->profile_pic_url = '/files/male.png';
+                    if (isset($element->gender)) {
+                        if ($element->gender === "female") {
+                            $element->profile_pic_url = '/files/female.png';
+                        }
+                    }
                 }
             }
 
@@ -468,7 +499,9 @@ class User extends Authenticatable implements MustVerifyEmail
         // Execute codes after model is successfully saved
         /************************************************************/
         static::saved(function (User $element) {
-            $element->updateGroups($element->group_ids_csv);
+            // Sync partner_category table
+            $element->groups()->sync($element->group_ids);
+
         });
 
         /************************************************************/
@@ -502,7 +535,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ############################################################################################
 
     /**
-     * @param bool|false $setMsgSession setting it false will not store the message in session
+     * @param  bool|false $setMsgSession setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -530,34 +563,30 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Resolve name based on given input.
      */
-    public function resolveName()
-    {
+    public function resolveName() {
         // No 'name' field is
         if (!isset($this->name)) {
             $this->full_name = $this->first_name . " " . $this->last_name;
             $this->name = $this->full_name;
         }
 
-        return $this;
     }
 
     /**
      * Get the last uploaded avatar
      */
-    public function avatar()
-    {
-        if ($this->uploads()->exists())
+    public function avatar() {
+        if ($this->uploads()->exists()) {
             return $this->uploads->where('type', 'Avatar')->first();
+        }
         return null;
     }
 
     /**
      * Construct address
-     *
      * @return string
      */
-    public function address()
-    {
+    public function address() {
         $str = '';
 
         $fields = [
@@ -580,12 +609,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Find user based on bearer token(auth_token)
-     *
      * @param $bearer_token
      * @return mixed|null
      */
-    public static function ofBearer($bearer_token)
-    {
+    public static function ofBearer($bearer_token) {
         // $user = null;
         // // Try to find the user.
         // if (\Cache::has('user' . $bearer_token)) {
@@ -606,48 +633,40 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Generates auth_token (bearer token) for this user.
-     *
      * @return bool|string
      */
-    public function generateAuthToken()
-    {
+    public function generateAuthToken() {
         return substr(bcrypt($this->email . '|' . $this->password . '|' . date("Y-m-d H:i:s")), 10, 32);
     }
 
     /**
      * Email notification sent to user when he logs in for the first time.
      */
-    public function sendRegistrationWithVerificationNotification()
-    {
+    public function sendRegistrationWithVerificationNotification() {
         userRegistrationWithVerificationNotification($this);
     }
 
     /**
      * Email notification sent to user when he logs in for the first time.
      */
-    public function firstLoginNotification()
-    {
+    public function firstLoginNotification() {
         userFirstLoginNotification($this);
     }
 
     /**
      * Send the email verification notification.
-     *
      * @return void
      */
-    public function sendEmailVerificationNotification()
-    {
+    public function sendEmailVerificationNotification() {
         emailVerificationNotification($this);
         //$this->notify(new Notifications\VerifyEmail);
     }
 
     /**
      * Send the password reset notification.
-     *
      * @param  string $token
      */
-    public function sendPasswordResetNotification($token)
-    {
+    public function sendPasswordResetNotification($token) {
         //$this->notify(new ResetPasswordNotification($token));
         resetPasswordNotification($this, $token);
     }
@@ -667,11 +686,9 @@ class User extends Authenticatable implements MustVerifyEmail
      * Checks if user belongs to super admin group.
      * This function is created with an idea so that some more admin groups i.e. LB-admin, LB-accounts
      * etc can be covered/included in this same group.
-     *
      * @return bool
      */
-    public function ofSuperadminGroup()
-    {
+    public function ofSuperadminGroup() {
         return $this->inGroupIds(Group::superadminGroupIds());
     }
 
@@ -680,21 +697,29 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
-     * @param bool $set_msg
+     * @param  null $user_id
+     * @param  bool $set_msg
      * @return bool
      */
-    public function isViewable($user_id = null, $set_msg = false)
-    {
+    public function isViewable($user_id = null, $set_msg = false) {
         /** @var \App\User $user */
         $user = user($user_id);
+
         if (!spyrElementViewable($this, $user_id, $set_msg)) {
             return false;
         }
         // Allow super user
         if ($user->isSuperUser()) {
+
             return true;
+        }
+        if ($user->isManagerUser()) {
+
+            if ($this->id == $user->id) {
+                return true;
+            }else{
+                return false;
+            }
         }
         return false;
     }
@@ -704,8 +729,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -722,8 +746,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -740,8 +763,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     *
-     * @param null $user_id
+     * @param  null $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)
@@ -803,12 +825,22 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function groups() { return $this->belongsToMany(Group::class, 'user_group'); }
+    public function groups() { return $this->belongsToMany(Group::class, 'user_group')->remember(cacheTime('very-short')); }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function country() { return $this->belongsTo(Country::class); }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function designation() { return $this->belongsTo(Designation::class); }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function department() { return $this->belongsTo(Department::class); }
 
 
     // Write new relationships below this line
@@ -828,12 +860,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Mutator for giving permissions.
-     *
      * @param  mixed $permissions
      * @return array  $_permissions
      */
-    public function getPermissionsAttribute($permissions)
-    {
+    public function getPermissionsAttribute($permissions) {
         if (!$permissions) {
             return [];
         }
@@ -851,12 +881,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     /**
      * Mutator for taking permissions.
-     *
      * @param  array $permissions
      * @return string
      */
-    public function setPermissionsAttribute(array $permissions)
-    {
+    public function setPermissionsAttribute(array $permissions) {
         // Merge permissions
         $permissions = array_merge($this->permissions, $permissions);
 
@@ -878,9 +906,81 @@ class User extends Authenticatable implements MustVerifyEmail
 
     // Write accessors and mutators here.
 
-    public function getAvatarAttribute()
-    {
-        if ($this->avatar()) return $this->avatar()->url;
+    public function getAvatarAttribute() {
+        if ($this->avatar()) {
+            return $this->avatar()->url;
+        }
         return null;
     }
+
+    /**
+     * Set partnercategory ids to array
+     * @param  array $value
+     * @return void
+     */
+    public function setGroupIdsAttribute($value) {
+        // Original default value
+        $this->attributes['group_ids'] = $value;
+
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['group_ids'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
+    }
+
+    /**
+     * Set partnercategory ids to array
+     * @param  array $value
+     * @return void
+     */
+    public function setWatchersAttribute($value) {
+        // Original default value
+        $this->attributes['watchers'] = $value;
+
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['watchers'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWatcherObjsAttribute() {
+        if (isset($this->watchers))
+            return User::whereIn('id', $this->watchers)->remember(cacheTime('long'))->get();
+        return null;
+    }
+
+    public function setOperatingAreaIdsAttribute($value) {
+        // Original default value
+        $this->attributes['operating_area_ids'] = $value;
+
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['operating_area_ids'] = json_encode(cleanArray($value));
+        }
+        //2 .If the original value is CSV converts array to json
+        // if (isCsv($value)) {
+        //     $this->attributes['included_country_ids'] = json_encode(csvToArray($value));
+        // }
+
+    }
+
+    public function getOperatingAreaIdsObjectsAttribute() {
+        if (isset($this->operating_area_ids))
+            return Operatingarea::whereIn('id', $this->operating_area_ids)->remember(cacheTime('long'))->get();
+        return null;
+    }
+
 }

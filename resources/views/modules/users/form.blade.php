@@ -13,6 +13,7 @@
  * @var $element_editable      boolean
  * @var $uuid                  string '1709c091-8114-4ba4-8fd8-91f0ba0b63e8'
  */
+
 ?>
 
 @section('head')
@@ -49,27 +50,46 @@
     @include('form.input-text',['var'=>['name'=>'password','type'=>'password','label'=>'Password', 'container_class'=>'col-sm-3','value'=>'']])
     @include('form.input-text',['var'=>['name'=>'password_confirmation','type'=>'password','label'=>'Confirm password', 'container_class'=>'col-sm-3']])
 @endif
-
+<div class="clearfix"></div>
+@include('form.select-model',['var'=>['name'=>'designation_id','label'=>'Designation','table'=>'designations','container_class'=>'col-sm-3']])
+@include('form.select-model',['var'=>['name'=>'department_id','label'=>'Department','table'=>'departments','container_class'=>'col-sm-3']])
+@include('form.input-text',['var'=>['name'=>'employee_id','label'=>'Employee Id','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
 
 <div class="clearfix"></div>
 @if(user()->isSuperUser())
-    @include('form.select-array',['var'=>['name'=>'email_confirmed','label'=>'Email confirmed', 'options'=>['1'=>'Yes',''=>'No'],'container_class'=>'col-sm-3']])
     @include('form.input-text',['var'=>['name'=>'email_verified_at','label'=>'Email verified at', 'container_class'=>'col-sm-3']])
     @include('form.select-array',['var'=>['name'=>'is_active','label'=>'Active', 'options'=>['1'=>'Yes',''=>'No'],'container_class'=>'col-sm-3']])
     <div class="clearfix"></div>
     <?php
     $var = [
-        'name' => 'group_id',
-        'label' => 'Group',
-        'value' => (isset($user)) ? $user->groupIds() : [],
+        'name' => 'group_ids',
+        'label' => 'Groups',
         'query' => new \App\Group,
+        'container_class' => 'col-md-3',
         'name_field' => 'title',
-        'params' => ['multiple', 'id' => 'groups'],
     ];
     ?>
-    @include('form.select-model', ['var'=>$var])
-    
+    @include('form.select-model-multiple', ['var'=>$var])
+    <?php
+    $var = [
+        'name' => 'watchers',
+        'label' => 'Watchers',
+        'query' => new \App\User,
+        'container_class' => 'col-md-6',
+    ];
+    ?>
+    @include('form.select-model-multiple', ['var'=>$var])
+    <?php
+    $var = [
+        'name' => 'operating_area_ids',
+        'label' => 'Operating Areas',
+        'query' => new \App\Operatingarea(),
+        'container_class' => 'col-md-6',
+    ];
+    ?>
+    @include('form.select-model-multiple', ['var'=>$var])
+
 @endif
 
 <div class="clearfix"></div>
@@ -97,7 +117,7 @@
                 {{--city--}}
                 @include('form.input-text',['var'=>['name'=>'city','label'=>'City', 'container_class'=>'col-sm-3']])
                 {{--county--}}
-                @include('form.input-text',['var'=>['name'=>'county','label'=>'County', 'container_class'=>'col-sm-3']])
+                {{--@include('form.input-text',['var'=>['name'=>'county','label'=>'County', 'container_class'=>'col-sm-3']])--}}
                 {{--country_id--}}
                 @include('form.select-model',['var'=>['name'=>'country_id','label'=>'Country','table'=>'countries', 'container_class'=>'col-sm-3']])
                 {{--zip_code--}}
@@ -106,6 +126,8 @@
                 @include('form.input-text',['var'=>['name'=>'phone','label'=>'Phone', 'container_class'=>'col-sm-3']])
                 {{--mobile--}}
                 @include('form.input-text',['var'=>['name'=>'mobile','label'=>'Mobile', 'container_class'=>'col-sm-3']])
+                {{--gender--}}
+                @include('form.select-array',['var'=>['name'=>'gender','label'=>'Gender','options'=>[" "=>" ",'male'=>'Male','female'=>'Female'], 'container_class'=>'col-sm-3']])
             </div>
             <div class="clearfix"></div>
         </div>
@@ -149,7 +171,7 @@
                     </div>
                     @include('form.input-text',['var'=>['name'=>'auth_token','label'=>'Auth token', 'container_class'=>'col-sm-6']])
                     {{--device_name--}}
-                    @include('form.input-text',['var'=>['name'=>'device_name','label'=>'Device name', 'container_class'=>'col-sm-3']])
+                    @include('form.input-text',['var'=>['name'=>'device_token','label'=>'Device Token', 'container_class'=>'col-sm-3']])
                 </div>
                 <div class="clearfix"></div>
             </div>
@@ -160,7 +182,13 @@
 
 @section('content-bottom')
     @parent
-
+    @if(isset($user))
+        <div class="col-md-6 no-padding-l">
+            <h4>Profile Photo (*Required Field)</h4>
+            {{--<small>Upload one or more files</small>--}}
+            @include('modules.base.include.uploads',['var'=>['type'=>'Profile photo','limit'=>1]])
+        </div>
+    @endif
 
     @if(isset($user) && user()->isSuperUser())
         <div class="col-md-6 no-padding">
@@ -180,6 +208,17 @@
 @section('js')
     @parent
     <script type="text/javascript">
+        /*******************************************************************/
+        // List of functions
+        /*******************************************************************/
+        // Assigns validation rules during saving (both creating and updating)
+        function addValidationRulesForSaving() {
+            //$("input[name=name]").addClass('validate[required]');
+           // $('input[name=due_date]').addClass('validate[required]');
+
+        }
+    </script>
+    <script type="text/javascript">
         @if(!isset($user))
         /*******************************************************************/
         // Creating :
@@ -192,6 +231,7 @@
         // your functions go here
         // function1();
         // function2();
+
         @elseif(isset($user))
         /*******************************************************************/
         // Updating :

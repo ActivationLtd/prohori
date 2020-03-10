@@ -6,13 +6,13 @@
  */
 
 /** Common view parameters for form elements */
-$var['container_class'] = (isset($var['container_class'])) ? $var['container_class'] : '';
-$var['name'] = (isset($var['name'])) ? $var['name'] : 'NO_NAME';
-$var['params'] = (isset($var['params'])) ? $var['params'] : [];
+$var['container_class'] = $var['container_class'] ?? 'col-md-6';
+$var['name'] = $var['name'] ?? 'NO_NAME';
+$var['params'] = $var['params'] ?? [];
 $var['params']['class'] = (isset($var['params']['class'])) ? $var['params']['class'] . " form-control " : ' form-control ';
-$var['value'] = (isset($var['value'])) ? $var['value'] : '';
-$var['label'] = (isset($var['label'])) ? $var['label'] : '';
-$var['label_class'] = (isset($var['label_class'])) ? $var['label_class'] : '';
+$var['value'] = $var['value'] ?? '';
+$var['label'] = $var['label'] ?? '';
+$var['label_class'] = $var['label_class'] ?? '';
 $var['old_input'] = oldInputValue($var['name'], $var['value']);
 if (!isset($var['editable'])) {
     $var['editable'] = (isset($element_editable) && $element_editable == false) ? false : true;
@@ -30,10 +30,15 @@ $var['params']['id'] = (isset($var['params']['id'])) ? $var['params']['id'] : $v
     @endif
     @if($var['editable'])
         {{ Form::textarea($var['name'], $var['old_input'], $var['params']) }}
-        {{ $errors->first($var['name'], '<span class="help-block">:message</span>') }}
+        {!!  $errors->first($var['name'], '<span class="help-block">:message</span>') !!}
     @else
 
-        <span class="{{$var['params']['class']}} readonly">{{$var['old_input']}} &nbsp;</span>
+        <?php $tmp_name = $var['name']?>
+        <span class="{{$var['params']['class']}} readonly">
+            @if(isset($$element))
+                {{$$element->$tmp_name}}
+            @endif
+        </span>
     @endif
 </div>
 

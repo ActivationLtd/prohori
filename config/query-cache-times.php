@@ -2,16 +2,17 @@
 return [
 
     /*
-    |--------------------------------------------------------------------------
-    | Query cache times(minutes)
-    |--------------------------------------------------------------------------
-    | Following values are used in remember() function where queries are executed.
-    |
-    |*/
-    'none'       => -1,
-    'very-long'  => 3600,
-    'long'       => 1440,
-    'medium'     => 60,
-    'short'      => 5,
-    'very-short' => 1,
+     |--------------------------------------------------------------------------
+     | Query cache times(seconds)
+     |--------------------------------------------------------------------------
+     | Following values are used in remember() function where queries are executed.
+     |
+     |*/
+    'forever' => -1,
+    'none' => null,
+    'very-long' => 144000,
+    'long' => 7200,
+    'medium' => 1800,
+    'short' => 300,
+    'very-short' => 60,
 ];

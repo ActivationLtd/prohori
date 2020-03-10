@@ -10,6 +10,12 @@
     @show
     @include('template.css')
 </head>
+<?php
+$icon_map=[
+    'en'=>"flag-icon flag-icon-us",
+    'bn'=>"flag-icon flag-icon-bd"
+]
+?>
 <body class="hold-transition skin-blue-light sidebar-mini fixed">
 <!-- Site wrapper -->
 <div id="root" class="wrapper">
@@ -18,10 +24,14 @@
         <a href="{{route('home')}}" class="logo">
             <!-- mini logo for sidebar mini 50x50 pixels -->
 
-            <span class="logo-mini"><img style="height: 60%" src="{{asset("prohori/images/logo.png")}}" alt="{{setting('app-name')}}"
+            <span class="logo-mini"><img style="width: 50%" src="{{asset("prohori/images/logo-small.png")}}"
+                                         alt="{{setting('app-name')}}"
                                          title="{{setting('app-name')}}"/></span>
             <!-- logo for regular state and mobile devices -->
-            <span class="logo-lg">Prohori</span>
+            <span class="logo-lg">
+                <img style="width: 110px" src="{{asset("prohori/images/prohori-logo-white.png")}}" alt="{{setting('app-name')}}"
+                     title="{{setting('app-name')}}"/>
+            </span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">
@@ -37,6 +47,20 @@
                     {{--@include('template.include.top-menu.message-menu')--}}
                     {{--@include('template.include.top-menu.message-menu')--}}
                     {{--@include('template.include.top-menu.task-menu')--}}
+                    <li class="dropdown" style="list-style: none">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <span class="{{$icon_map[App::getLocale()]}}"></span> {{ Config::get('languages')[App::getLocale()] }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            @foreach (Config::get('languages') as $lang => $language)
+                                @if ($lang != App::getLocale())
+                                    <li>
+                                        <a href="{{ route('lang.switch', $lang) }}">{{$language}}</a>
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
+                    </li>
                     @if(user())
                         <li class="dropdown user user-menu">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">

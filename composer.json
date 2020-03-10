@@ -9,30 +9,36 @@
   "type": "project",
   "require": {
     "php": "~7.2.0",
+    "barryvdh/laravel-cors": "^0.11.2",
     "barryvdh/laravel-ide-helper": "^2.4",
+    "benwilkins/laravel-fcm-notification": "^3.0",
+    "brozot/laravel-fcm": "^1.2",
     "doctrine/dbal": "~2.3",
+    "edujugon/push-notification": "^3.0",
     "fideloper/proxy": "^4.0",
     "guzzlehttp/guzzle": "6.*",
-    "laravel/framework": "5.7.*",
-    "laravel/telescope": "^1.0",
+    "laravel/framework": "5.8.*",
+    "laravel/telescope": "^2.0",
     "laravel/tinker": "^1.0",
     "laravelcollective/html": "~5.0",
     "league/flysystem-aws-s3-v3": "^1.0",
     "phpoffice/phpspreadsheet": "^1.5",
+    "ps/image-optimizer": "^2.0",
     "pusher/pusher-push-notifications": "^1.0",
     "ramsey/uuid": "^3.8",
+    "spatie/laravel-image-optimizer": "^1.4",
     "watson/rememberable": "^2.0",
     "webpatser/laravel-uuid": "^3.0",
-    "yajra/laravel-datatables-oracle": "~8.0",
-    "drawmyattention/xerolaravel": "1.0.*"
+    "yajra/laravel-datatables-oracle": "~9.0"
   },
   "require-dev": {
     "barryvdh/laravel-debugbar": "^3.2",
+    "beyondcode/laravel-dump-server": "^1.0",
     "filp/whoops": "^2.0",
     "fzaninotto/faker": "^1.4",
     "mockery/mockery": "^1.0",
     "nunomaduro/collision": "^2.0",
-    "phpunit/phpunit": "^7.0"
+    "phpunit/phpunit": "^7.5"
   },
   "autoload": {
     "classmap": [

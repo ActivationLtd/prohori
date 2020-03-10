@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Dhaka',
 
     /*
     |--------------------------------------------------------------------------
@@ -168,6 +168,11 @@ return [
         //Barryvdh\Debugbar\ServiceProvider::class,
         Yajra\DataTables\DataTablesServiceProvider::class,
         'Collective\Html\HtmlServiceProvider',
+        //Laravel FCM (Firebase Cloud Messaging) Notification Channel
+        //Benwilkins\FCM\FcmNotificationServiceProvider::class,
+        //https://shivaywebsolution.com/blog/frameworks/laravel-push-notification-to-android-and-ios/
+        Edujugon\PushNotification\Providers\PushNotificationServiceProvider::class,
+        Spatie\LaravelImageOptimizer\ImageOptimizerServiceProvider::class
 
     ],
 
@@ -220,5 +225,6 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'Form' => 'Collective\Html\FormFacade',
         'Html' => 'Collective\Html\HtmlFacade',
+        'ImageOptimizer' => Spatie\LaravelImageOptimizer\ImageOptimizerFacade::class,
     ],
 ];

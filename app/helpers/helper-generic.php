@@ -415,6 +415,23 @@ function pad($str, $count = 6, $char = '0')
 }
 
 /**
+ * Checks if an input is CSV
+ *
+ * @param $input
+ * @return bool|int
+ */
+function isCsv($input)
+{
+    if (is_array($input)) {
+        return false;
+    }
+    if (strlen($input) && strpos($input, ',') !== false) {
+        return strlen(cleanCsv($input));
+    }
+    return false;
+}
+
+/**
  * cleans a string and returns as csv
  *
  * @param $str
@@ -429,14 +446,25 @@ function cleanCsv($str)
 
 /**
  * returns array from csv
+ * @param $csv
+ * @return array
+ */
+function csvToArray($csv){
+    return cleanArray(explode(',',cleanCsv($csv)));
+}
+
+/**
+ * Alias function of csvToArray
  *
  * @param $csv
  * @return array
  */
 function arrayFromCsv($csv)
 {
-    return explode(',', $csv);
+    return csvToArray($csv);
 }
+
+
 
 /**
  * Converts an One-dimentional array into CSV.
@@ -633,3 +661,66 @@ function removeEmptyVals($array = [])
     return $temp;
 }
 
+/**
+ * Alias function for removeEmptyVals()
+ *
+ * @param array $array
+ * @return array
+ */
+function cleanArray($array = [])
+{
+    return removeEmptyVals($array);
+}
+
+/**
+ * Create a one dimensional array to be used in Eloquent whereIn
+ *
+ * @param $val
+ * @return array
+ */
+function arrayForWhereIn($val)
+{
+    $items = [];
+    if (is_array($val) && count($val)) {
+        $items = removeEmptyVals($val);
+    } else if (strlen($val) && strstr($val, ',')) {
+        $items = explode(',', $val);
+    } else if (strlen($val)) {
+        $items[] = (int)$val;
+    }
+    return $items;
+}
+
+/**
+ * create a letter range with arbitrary length
+ *
+ * @param int $length
+ * @return array
+ */
+function createLetterRange($length)
+{
+    $range = array();
+    $letters = range('A', 'Z');
+    for ($i = 0; $i < $length; $i++) {
+        $position = $i * 26;
+        foreach ($letters as $ii => $letter) {
+            $position++;
+            if ($position <= $length)
+                $range[] = ($position > 26 ? $range[$i - 1] : '') . $letter;
+        }
+    }
+    return $range;
+}
+
+/**
+ * Converts english digits to bengali character
+ *
+ * @param $input
+ * @return mixed
+ */
+function convertBengaliDigitToEnglish($input = '') {
+    $bn_digits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    $output = str_replace($bn_digits, range(0, 9), $input);
+
+    return $output;
+}

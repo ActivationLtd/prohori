@@ -34,13 +34,22 @@ use App\Traits\IsoModule;
  */
 class Superhero extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
      *
      * @var array
      */
     protected $fillable = ['uuid', 'name', 'tenant_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    // protected $casts = [
+    //     'some_ids' => 'array',
+    // ];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
@@ -212,7 +221,7 @@ class Superhero extends Basemodule
     ############################################################################################
     # Permission functions
     # ---------------------------------------------------------------------------------------- #
-    /*
+    /**
      * This is a place holder to write the functions that resolve permission to a specific model.
      * In the parent class there are the follow functions that checks whether a user has
      * permission to perform the following on an element. Rewrite these functions
@@ -295,7 +304,7 @@ class Superhero extends Basemodule
     ############################################################################################
     # Query scopes
     # ---------------------------------------------------------------------------------------- #
-    /*
+    /**
      * Scopes allow you to easily re-use query logic in your models. To define a scope, simply
      * prefix a model method with scope:
      */
@@ -312,7 +321,7 @@ class Superhero extends Basemodule
     ############################################################################################
     # Dynamic scopes
     # ---------------------------------------------------------------------------------------- #
-    /*
+    /**
      * Scopes allow you to easily re-use query logic in your models. To define a scope, simply
      * prefix a model method with scope:
      */
@@ -328,7 +337,7 @@ class Superhero extends Basemodule
     ############################################################################################
     # Model relationships
     # ---------------------------------------------------------------------------------------- #
-    /*
+    /**
      * This is a place holder to write model relationships. In the parent class there are
      * In the parent class there are the follow two relations creator(), updater() are
      * already defined.
@@ -336,15 +345,16 @@ class Superhero extends Basemodule
     ############################################################################################
 
     # Default relationships already available in base Class 'Basemodule'
-    //public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
-    //public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
+    public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
+
+    public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
 
     // Write new relationships below this line
 
     ############################################################################################
     # Accessors & Mutators
     # ---------------------------------------------------------------------------------------- #
-    /*
+    /**
      * Eloquent provides a convenient way to transform your model attributes when getting or setting them. Simply
      * define a getFooAttribute method on your model to declare an accessor. Keep in mind that the methods
      * should follow camel-casing, even though your database columns are snake-case:
@@ -353,6 +363,27 @@ class Superhero extends Basemodule
     // public function getFirstNameAttribute($value) { return ucfirst($value); }
     // public function setFirstNameAttribute($value) { $this->attributes['first_name'] = strtolower($value); }
     ############################################################################################
+
+    /**
+     * Set some ids that comes as csv/array as input
+     *
+     * @param  array $value
+     * @return void
+     */
+    // public function setSomeIdsAttribute($value)
+    // {
+    //     // Original default value
+    //     $this->attributes['some_ids'] = $value;
+    //
+    //     // 1. If the value is originally array converts array to json
+    //     if (is_array($value)) {
+    //         $this->attributes['some_ids'] = json_encode(cleanArray($value));
+    //     }
+    //     // 2 .If the original value is CSV converts array to json
+    //     // if (isCsv($value)) {
+    //     //     $this->attributes['some_ids'] = json_encode(csvToArray($value));
+    //     // }
+    // }
 
     // Write accessors and mutators here.
 

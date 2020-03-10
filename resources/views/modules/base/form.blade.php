@@ -6,7 +6,7 @@
  * @var $module_name           string 'superheroes'
  * @var $mod                   Module
  * @var $element               string 'superhero'
- * @var $element_editable boolean
+ * @var $element_editable      boolean
  * @var $uuid                  string '1709c091-8114-4ba4-8fd8-91f0ba0b63e8'
  */
 ?>
@@ -14,6 +14,7 @@
 @section('title')
     @parent
     {{str_singular($mod->title)}}
+    {{--{{Lang::get('messages.'.$mod->title)}}--}}
     @if(hasModulePermission($module_name,"create"))
         <a class="btn btn-xs" href="{{route("$module_name.create")}}" data-toggle="tooltip"
            title="Create a new {{lcfirst(str_singular($mod->title))}}"><i class="fa fa-plus"></i></a>
@@ -70,6 +71,20 @@
 
 @section('content-bottom')
     @parent
+    <div class="col-md-3">
+        @if(isset($$element))
+            <b>{{"Created At : "}}</b>{{$$element->created_at}}
+            <br>
+            <b>{{"Created By : "}}</b>{{$$element->creator->name}}
+            <br>
+    </div>
+    <div class="col-md-3">
+        <b>{{"Updated At : "}}</b>{{$$element->updated_at}}
+        <br>
+        <b>{{"Updated By : "}}</b>{{$$element->updater->name}}
+        @endif
+    </div>
+    <div class="clearfix"></div>
     {{--@if($mod->has_uploads == 'Yes')--}}
     {{--@include('modules.base.include.uploads')--}}
     {{--@endif--}}
@@ -80,11 +95,15 @@
     <?php
     // during creation #new indicates that user should be redirected to the newly created item.
     // during update this value indicates that user is redirect back to same item after successful update
+
     $redirect_success = '#new';
-    $redirect_fail = URL::full();
     if (isset($$element)) {
         $redirect_success = URL::full();
     }
+    if (Request::has('redirect_success')) {
+        $redirect_success = Request::get('redirect_success');
+    }
+    $redirect_fail = URL::full();
     ?>
     <script>
         $('form[name={{$module_name}}] input[name=redirect_success]').val('{{$redirect_success}}');

@@ -66,7 +66,7 @@ use App\Observers\ApiresponseObserver;
  */
 class Apiresponse extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
      *

@@ -1,16 +1,19 @@
 /* Global font type and size*/
-/*.h1, .h2, .h3, .h4, .h5, .h6, body, h1, h2, h3, h4, h5, h6, .cke_editable {*/
-    /*!*font-family: 'Roboto', 'Ubuntu', sans-serif;*!*/
+.h1, .h2, .h3, .h4, .h5, .h6, body, h1, h2, h3, h4, h5, h6, .cke_editable {
+    /*font-family: 'Roboto', 'Ubuntu', sans-serif;*/
     /*font-family: 'Ubuntu', sans-serif;*/
-/*!important;*/
-/*}*/
+    /*font-family: 'Arvo', serif;;*/
+    /*font-family: 'Ruda', sans-serif;*/
+    /*font-family: 'Montserrat', sans-serif;*/
+
+}
 
 /*.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6,*/
 /*.content-header h4,*/
-/*.main-header .logo, .logo-mini, .logo-lg {*/
-    /*font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;*/
-/*!important;*/
-/*}*/
+.main-header .logo, .logo-mini, .logo-lg {
+    font-family: 'Comfortaa', 'Ubuntu', sans-serif, cursive;
+!important
+}
 
 .lb-font {
     font-family: 'Baumans', cursive;
@@ -18,7 +21,7 @@
 
 body, html,
 .sidebar-menu .treeview-menu > li > a {
-    font-size: 14px;
+    font-size: 15px;
     color: #333333;
 
 }
@@ -86,4 +89,23 @@ body, html,
 .module-base-form label {
     font-weight: bold;
     margin-bottom: 0;
+}
+
+.login-logo, .register-logo {
+    margin-bottom: 0;
+}
+.status-todo{
+    background-color: #ffcccc;
+}
+.status-inprogress{
+    background-color: #ffff99;
+}
+.status-verify{
+    background-color: #E6E6E6;
+}
+.status-done{
+    background-color: #ccff99;
+}
+.status-closed{
+    background-color: #ccff99;
 }

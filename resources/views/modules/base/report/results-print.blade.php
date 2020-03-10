@@ -1,59 +1,48 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?php
+/**
+ * @var $data_source   string Table/DB view name (i.e. v_users, users)
+ * @var $results       \Illuminate\Pagination\LengthAwarePaginator
+ * @var $total         integer Total number of rows returned
+ * @var $base_dir      string
+ */
+?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-US">
 <head>
-    @include('modules.base.report.init-functions')
+    @include($base_dir.'.init-functions')
     <link rel="stylesheet" href="{{ asset('assets/css/printreport.css') }}" type="text/css"/>
     <meta charset="UTF-8"/>
 </head>
 <body lang=EN-US>
-<div style="width: 150px;float: right;">
+<div style="width: 150px;float: left; font-size: 14px">
     <input id="printpagebutton" type="button" value="Print this page" onclick="printpage()"/>
 </div>
-@if(Request::get('submit')=='Run' && count($results))
-    <table class="table table-bordered table-mailbox table-condensed table-hover" id="report-table">
-        <thead>
-        <tr>
-            <th>S/L</th>
-            @foreach (arrayFromCsv(Request::get('column_aliases_csv')) as $column_alias)
-                <th>{{$column_alias}}</th>
-            @endforeach
-            @if (Request::has('group_by') && strlen(cleanCsv(Request::get('group_by'))))
-                <th>Total<br/> Facilities</th>
-            @endif
-        </tr>
-        </thead>
-        <tbody>
-        <?php $i = 1; ?>
-        @foreach ($results as $result)
+@section('content')
+    @if(count($results))
+        <table class="table table-condensed" id="report-table">
+            <thead>
             <tr>
-                <td>{{$i++}}</td>
-                @foreach (arrayFromCsv(Request::get('columns_to_show_csv')) as $column)
-                    <td>@if(isset($result->$column))<?php echo transformRow($column,$result,$result->$column,$module_name)?>@endif</td>
+                @foreach ($alias_columns as $col)
+                    <th>{{$col}}</th>
                 @endforeach
-                @if (Request::has('group_by') && strlen(Request::get('group_by')))
-                    <td>{{number_format($result->total)}}</td>
-                @endif
             </tr>
-        @endforeach
-        {{-- Add a row in the bottom to show the total--}}
-        <tr>
-            @if (Request::has('group_by') && strlen(cleanCsv(Request::get('group_by'))))
-                <td></td>
-                @foreach (arrayFromCsv(Request::get('columns_to_show_csv')) as $column)
-                    <td></td>
-                @endforeach
-                <td></td>
-                {{-- if 'SQL GROUP is set then show additional row showing total counts in the last column '--}}
-                @if (Request::has('group_by') && strlen(cleanCsv(Request::get('group_by'))))
-                    <td><b>Total {{number_format($total)}}</b></td>
-                @endif
-            @endif
-        </tr>
-        </tbody>
-    </table>
-@endif
+            </thead>
+            <tbody>
+            @foreach ($results as $result)
+                <tr>
+                    @foreach ($show_columns as $col)
+                        <td>
+                            @if(isset($result->$col))
+                                {!! transformRow($col, $result, $result->$col, $data_source) !!}
+                            @endif
+                        </td>
+                    @endforeach
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    @endif
+@show
 </body>
-
 {{-- JS --}}
 <script type="text/javascript">
     function printpage() {
@@ -68,5 +57,4 @@
         printButton.style.visibility = 'visible';
     }
 </script>
-
 </html>

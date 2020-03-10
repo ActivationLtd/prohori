@@ -1,6 +1,11 @@
 <ul class="sidebar-menu">
     @if(user())
-        <li><a href="{{route("home")}}"><i class="fa fa-desktop"></i> <span>Dashboard</span></a></li>
+        <li><a href="{{route("tasks.create")}}" class="bg-green"><i class="fa fa-plus"></i><span>{{Lang::get('messages.Create-New-Task')}}</span></a>
+        </li>
+        <li><a href="{{route("home")}}"><i
+                        class="fa fa-desktop"></i><span>{{Lang::get('messages.Dashboard')}}</span></a></li>
+
+
         @if(user()->isSuperUser())
             {{--<li class="header">MENU</li>--}}
             <?php
@@ -15,11 +20,37 @@
                 $current_module_name = $mod->name;
                 $breadcrumbs = breadcrumb($mod);
             }
-            renderMenuTree(\App\Modulegroup::tree(), $current_module_name, $breadcrumbs);
+            renderMenuTree(\App\Modulegroup::tree(),$current_module_name,$breadcrumbs);
             ?>
-
-         @else
+            {{--<li class="header">LABELS</li>--}}
+            {{--<li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>--}}
+            {{--<li><a href="#"><i class="fa fa-circle-o text-yellow"></i> <span>Warning</span></a></li>--}}
+            {{--<li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>--}}
+        @else
+            {{--if user is manager--}}
+            @if(user()->inGroupId(5))
+                <?php
+                $module_names = [
+                    'tasks',
+                    'users',
+                    //'clients',
+                    'uploads',
+                    'messages',
+                ];
+                ?>
+                @foreach($module_names as $name)
+                    <?php
+                    /** @var \App\Module $module */
+                    $module = \App\Module::where('name', $name)->remember(cacheTime('long'))->first()?>
+                    <li><a href="{{route("{$module->name}.index")}}"><i
+                                    class="{{$module->icon_css}}"></i>{{Lang::get('messages.'.$module->title)}}</a>
+                    </li>
+                @endforeach
+            @endif
 
         @endif
     @endif
 </ul>
+
+
+

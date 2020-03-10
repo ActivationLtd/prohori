@@ -1,10 +1,11 @@
 <?php
 
+use App\Module;
+use App\Report;
 use App\Setting;
 
 /**
  * create uuid
- *
  * @return string
  * @throws Exception
  */
@@ -21,7 +22,6 @@ function uuid()
  * However this value is over-ridden if there an explicit GET or POST with
  * that parameter/input name. This value gets further overridden if a
  * value is passed as parameter to the view partial
- *
  * @param string $name
  * @param string|array $value
  * @return mixed
@@ -38,6 +38,7 @@ function oldInputValue($name = '', $value = null)
     if (isset($value) && (is_array($value) || strlen(trim($value)))) {
         $val = $value;
     }
+
     return $val;
 }
 
@@ -46,9 +47,8 @@ function oldInputValue($name = '', $value = null)
  * inputs and set the empty strings to null. Also for all cases we need to set the creator/updater/deleter
  * with timestamp of that event.
  * This function is generally used in Model saving() event
- *
- * @param \App\Basemodule $element                     Eloquent model object
- * @param array $except                                If any field should be ignored from auto filling then should be
+ * @param \App\Basemodule $element Eloquent model object
+ * @param array $except If any field should be ignored from auto filling then should be
  *                                                     defined in this array
  * @return mixed : Eloquent model object with filled and cleaned values
  * @throws Exception
@@ -62,18 +62,18 @@ function fillModel($element, $except = [])
     }
 
     // created_by & created_at
-    $created_by = 1;
-    $created_by = (isset($element->created_by)) ? $element->created_by : $created_by;
-    $created_by = (!isset($element->created_by) && user()) ? user()->id : $created_by;
-    $created_by = (!isset($element->created_by) && Request::has('created_by')) ? Request::get('created_by') : $created_by;
+    $created_by          = 1;
+    $created_by          = (isset($element->created_by)) ? $element->created_by : $created_by;
+    $created_by          = (!isset($element->created_by) && user()) ? user()->id : $created_by;
+    $created_by          = (!isset($element->created_by) && Request::has('created_by')) ? Request::get('created_by') : $created_by;
     $element->created_by = $created_by;
     $element->created_at = (!isset($element->created_at)) ? now() : $element->created_at;
 
     // updated_by & updated_at
-    $updated_by = 1;
-    $updated_by = (isset($element->updated_by)) ? $element->updated_by : $updated_by;
-    $updated_by = (!isset($element->updated_by) && user()) ? user()->id : $updated_by;
-    $updated_by = (!isset($element->created_by) && Request::has('updated_by')) ? Request::get('updated_by') : $updated_by;
+    $updated_by          = 1;
+    $updated_by          = (isset($element->updated_by)) ? $element->updated_by : $updated_by;
+    $updated_by          = (!isset($element->updated_by) && user()) ? user()->id : $updated_by;
+    $updated_by          = (!isset($element->created_by) && Request::has('updated_by')) ? Request::get('updated_by') : $updated_by;
     $element->updated_by = $updated_by;
     $element->updated_at = now();
 
@@ -93,8 +93,7 @@ function fillModel($element, $except = [])
 
 /**
  * returns the table/module name(without prefix) from a model class name
- *
- * @param  string $class Class name with first letter in uppercase. i.e. Foo
+ * @param string $class Class name with first letter in uppercase. i.e. Foo
  * @return string
  */
 function moduleName($class)
@@ -105,7 +104,6 @@ function moduleName($class)
 /**
  * Returns model name with Uppercase first letter and singular.
  * If there is tenant specific models then full class path is returned
- *
  * @param $module : plural, lowercase first letter
  * @return string
  */
@@ -116,7 +114,6 @@ function model($module)
 
 /**
  * Returns controller name with Uppercase first letter and singular.
- *
  * @param $module
  * @return string
  */
@@ -127,7 +124,6 @@ function controller($module)
 
 /**
  * Derive the module name from controller class name
- *
  * @param $controller_class
  * @return string
  */
@@ -138,7 +134,6 @@ function controllerModule($controller_class)
 
 /**
  * Derive module name from an eloquent model element
- *
  * @param $element \App\Basemodule
  * @return string
  * @internal param $element_object
@@ -150,7 +145,6 @@ function elementModule($element)
 
 /**
  * This function pushes an error string to 'error' array of session.
- *
  * @param string $str
  * @param bool $ret
  * @param bool $set_msg
@@ -158,13 +152,16 @@ function elementModule($element)
  */
 function setError($str = '', $set_msg = true, $ret = false)
 {
-    if ($set_msg && strlen($str)) Session::push('error', $str);
+    if ($set_msg && strlen($str)) {
+        if (!in_array($str, Session::get('error', []))) {
+            Session::push('error', $str);
+        }
+    }
     return $ret;
 }
 
 /**
  * This function pushes an error string to 'message' array of session.
- *
  * @param string $str
  * @param bool $ret
  * @param bool $set_msg
@@ -172,13 +169,16 @@ function setError($str = '', $set_msg = true, $ret = false)
  */
 function setMessage($str = '', $set_msg = true, $ret = true)
 {
-    if ($set_msg && strlen($str)) Session::push('message', $str);
+    if ($set_msg && strlen($str)) {
+        if (!in_array($str, Session::get('message', []))) {
+            Session::push('message', $str);
+        }
+    };
     return $ret;
 }
 
 /**
  * This function pushes an error string to 'success' array of session.
- *
  * @param string $str
  * @param bool $ret
  * @param bool $set_msg
@@ -186,7 +186,11 @@ function setMessage($str = '', $set_msg = true, $ret = true)
  */
 function setSuccess($str = '', $set_msg = true, $ret = true)
 {
-    if ($set_msg && strlen($str)) Session::push('success', $str);
+    if ($set_msg && strlen($str)) {
+        if (!in_array($str, Session::get('success', []))) {
+            Session::push('success', $str);
+        }
+    }
     return $ret;
 }
 
@@ -206,7 +210,6 @@ function setDebug($str = '', $set_msg = true, $ret = true)
  * Prepares the return array for Controller post operations (store, update, delete, restore).
  * This array contains the value that will be returned as json as a consequence of
  * CRUD operation.
- *
  * @param string $status
  * @param string $msg
  * @param array $merge : contains additional data that needs to be returned as json
@@ -219,8 +222,8 @@ function ret($status = '', $msg = '', $merge = [])
     else setMessage($msg);
 
     $ret = [
-        'status' => $status,
-        'message' => $msg,
+        'status'            => $status,
+        'message'           => $msg,
         'validation_errors' => [],
     ];
 
@@ -229,7 +232,6 @@ function ret($status = '', $msg = '', $merge = [])
 
 /**
  * This function fills ajax return values with saved information from session and then cleans up the session.
- *
  * @param $ret
  * @return mixed
  */
@@ -249,7 +251,7 @@ function fillFromSession($ret)
     }
 
     //This part is added
-    if (count($ret['validation_errors'])) {
+    if (is_array($ret['validation_errors']) && count($ret['validation_errors'])) {
         if (Session::has('validation_errors')) {
             $ret['validation_errors'] = array_merge(Session::get('validation_errors'), $ret['validation_errors']);
         }
@@ -264,7 +266,6 @@ function fillFromSession($ret)
 /**
  * Fill the $ret variable with redirect and session information.
  * This function is used ModulebaseController to build the return JSON
- *
  * @param $ret
  * @return mixed
  */
@@ -284,7 +285,6 @@ function fillRet($ret)
 
 /**
  * Get the redirect url from input parameter redirect_success, redirect_fail
- *
  * @param $ret
  * @return mixed
  */
@@ -326,7 +326,6 @@ function deleteBtn($route, $redirect_success = '', $redirect_fail = '', $class =
 
 /**
  * Shorthand function for fetching configuration
- *
  * @param string $key
  * @return mixed|null
  */
@@ -340,15 +339,14 @@ function conf($key = '')
 
 /**
  * Function to return the cache time defined in
- *
  * @param $key
  * @return mixed
  */
 function cacheTime($key)
 {
-    // if (Request::get('no_cache') !== 'true') {
-    //     return Config::get('query-cache-times.' . $key);
-    // }
+    if (env('QUERY_CACHE_ENABLED') == true && Request::get('no_cache') !== 'true') {
+        return Config::get('query-cache-times.' . $key);
+    }
 }
 
 /**
@@ -356,7 +354,6 @@ function cacheTime($key)
  * These settings are stored in Global Settings(gsettings) module. Some of
  * these settings can be over-ridden by tenant. Those tenant specific settings
  * are stored in Tenant Settings(tsettings) module.
- *
  * @param $name
  * @return bool|mixed|string
  */
@@ -383,7 +380,6 @@ function setting($name)
 
 /**
  * Renders the left menu of the application and makes the current item active based on breadcrumb
- *
  * @param        $tree
  * @param string $current_module_name
  * @param array $breadcrumbs
@@ -410,7 +406,7 @@ function renderMenuTree($tree, $current_module_name = '', $breadcrumbs = [])
                 $url = '#';
                 if (in_array($leaf['type'], ['module', 'modulegroup'])) {
                     $route = $leaf['item']->name . ".index";
-                    $url = route($route);
+                    $url   = route($route);
                 }
 
                 // matching current breadcrumb of the application set an item as active
@@ -442,7 +438,6 @@ function renderMenuTree($tree, $current_module_name = '', $breadcrumbs = [])
 
 /**
  * Returns an array with module/modulegroup name as key
- *
  * @param Module|null $module
  * @return array
  */
@@ -453,10 +448,10 @@ function breadcrumb(\App\Module $module = null)
         $items = $module->modulegroupTree();
         foreach ($items as $item) {
             $breadcrumbs[$item->name] = [
-                'name' => $item->name,
+                'name'  => $item->name,
                 'title' => $item->title,
                 'route' => "$item->name.index",
-                'url' => route("$item->name.index"),
+                'url'   => route("$item->name.index"),
             ];
         }
     }
@@ -465,7 +460,6 @@ function breadcrumb(\App\Module $module = null)
 
 /**
  * returns absolute path from a relative path
- *
  * @param $relative_path
  * @return string
  */
@@ -476,7 +470,6 @@ function absPath($relative_path)
 
 /**
  * Show the default error page
- *
  * @param string $title
  * @param string $body
  * @return $this
@@ -488,7 +481,6 @@ function renderStaticPage($title = '', $body = '')
 
 /**
  * Show the permission error page
- *
  * @param string $body
  * @return $this
  */
@@ -499,7 +491,6 @@ function showPermissionErrorPage($body = '')
 
 /**
  * Show generic error page
- *
  * @param string $body
  * @return $this
  */
@@ -513,7 +504,6 @@ function showGenericErrorPage($body = '')
  * with link to module details page related to the error.
  * Example:
  * <a href="http://{root}/public/moveinrequests/1/edit" target="_blank">Move in request[#1]</a>
- *
  * @param module|string $module_name module name
  * @param null $id
  * @param               $link_text
@@ -523,7 +513,7 @@ function mlink($module_name = '', $id = null, $link_text = null)
 {
 
     //$model = model($module_name);
-    if ($module = Module::remember(cacheTime('long'))->whereName($module_name)->first()) {
+    if ($module = Module::remember(cacheTime('very-long'))->whereName($module_name)->first()) {
         if ($id) {
             $link_text = $link_text ? $link_text . "[#$id]" : $module->title . "[#$id]";
             return "<a href='" . route($module_name . '.edit', $id) . "' target='_blank' >$link_text</a> ";
@@ -537,7 +527,6 @@ function mlink($module_name = '', $id = null, $link_text = null)
 /**
  * Get an element from module_id and element_id, This function is helpful in modules where it relates
  * to multiple other modules. ie. uploads, messages etc.
- *
  * @param $module_id
  * @param $element_id
  * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|static
@@ -545,13 +534,12 @@ function mlink($module_name = '', $id = null, $link_text = null)
 function element($module_id, $element_id)
 {
     $Model = model(Module::where('id', $module_id)->pluck('name'));
-    /** @var $Model Superhero */
+    /** @var $Model \App\Superhero */
     return $Model::find($element_id);
 }
 
 /**
  * Get Model name From module id
- *
  * @param $module_id
  * @return string
  */
@@ -562,18 +550,18 @@ function modelNameFromModuleId($module_id)
 
 /**
  * Returns module name from id.
- *
  * @param $module_id
  * @return mixed|string
  */
 function moduleNameFromId($module_id)
 {
-    return Module::remember(cacheTime('long'))->find($module_id)->name;
+    if ($module = Module::remember(cacheTime('very-long'))->find($module_id)) {
+        return $module->name;
+    }
 }
 
 /**
  * Generates report URL for the RUN button in reports module
- *
  * @param type $id
  * @return string
  */
@@ -594,7 +582,6 @@ function getReportApiUrlFromId($id)
 
 /**
  * Creates an API url from browser inputs/url
- *
  * @return mixed
  */
 function reportApiUrl()
@@ -608,7 +595,6 @@ function reportApiUrl()
  * Generate an API url based on the current complete url of a generic report.
  * This route is only accessible for based on X-Auth-Token based authentication.
  * General logged in users do not have access to this url.
- *
  * @return string
  */
 function genericReportApiUrl()
@@ -622,7 +608,6 @@ function genericReportApiUrl()
 /**
  * Generates an URL that returns JSON response. Any logged in user can access this URL to
  * get a JSON output of filtered data from a module table.
- *
  * @return string
  */
 function genericReportJsonUrl()
@@ -634,14 +619,13 @@ function genericReportJsonUrl()
 
 /**
  * returns table/view field names as CSV ['field1','field2',...] format.
- *
  * @param $view
  * @return string
  */
 function tagsForView($view)
 {
     $fields = columsOfTable($view);
-    $tags = "";
+    $tags   = "";
     foreach ($fields as $field) {
         $tags .= "'$field',";
     }
@@ -652,7 +636,7 @@ function tagsForView($view)
 }
 
 /**
- * @param $query
+ * @param $query \Illuminate\Database\Query\Builder
  * @param $minutes
  * @return mixed
  */

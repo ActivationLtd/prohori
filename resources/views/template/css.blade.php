@@ -13,6 +13,8 @@ $script_paths = [
     'templates/admin-lte/plugins/iCheck/all.css',
     'templates/admin-lte/plugins/iCheck/square/blue.css',
     'templates/admin-lte/plugins/datepicker/datepicker3.css',
+    'templates/admin-lte/plugins/datetimepicker/bootstrap-datetimepicker.css',
+    'templates/admin-lte/plugins/datetimepicker/bootstrap-datetimepicker.min.css',
     'templates/admin-lte/css/custom.css',
     'prohori/css/prohori.css',
 ]
@@ -25,10 +27,15 @@ $script_paths = [
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
 <link href="https://fonts.googleapis.com/css?family=Roboto|Ubuntu|Comfortaa" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Arvo|Montserrat|Ruda" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Baumans" rel="stylesheet">
+
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
       integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.3.0/css/flag-icon.css" rel="stylesheet">
+
 
 
 @section('css')

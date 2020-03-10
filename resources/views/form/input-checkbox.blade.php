@@ -43,7 +43,7 @@ $var['disabled'] = ($var['editable'] == false) ? 'disabled' : '';   //Flag to st
         </label>
     @endif
     {{ Form::hidden($var['name'], $var['old_input'], $var['params']) }}
-    {{ $errors->first($var['name'], '<span class="help-block">:message</span>') }}
+    {!! $errors->first($var['name'], '<span class="help-block">:message</span>') !!}
 </div>
 
 {{-- Unset the local variable used in this view. --}}

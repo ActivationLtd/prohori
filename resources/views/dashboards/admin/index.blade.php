@@ -1,24 +1,38 @@
 @extends('template.app-frame')
 
+
+@section('css')
+    @parent
+    <style>
+        .content-header {
+            padding: 0;
+        }
+
+        .content {
+            padding-top: 0;
+        }
+    </style>
+@stop
+
 @section('content')
     @if(Auth::check())
         <div class="row">
-            <div id="area-1" class="col-md-6 pull-left no-padding-r">
+            <div id="area-1" class="col-md-6 pull-left ">
                 {{-- Widget area one --}}
                 @include('dashboards.admin.widgets.count-cards')
                 <div class="clearfix"></div>
-                <div id="area-2" class="col-md-6 pull-left no-padding-l">
-                    area-2
-                </div>
-                <div id="area-3" class="col-md-6 pull-left no-padding-l">
-                    area-3
-                </div>
+
+                @include('dashboards.admin.widgets.map')
+                @include('dashboards.admin.widgets.guard_map')
+
             </div>
-            <div id="area-4" class="col-md-3 pull-left no-padding-l">
-                area-4
+
+            <div id="area-3" class="col-md-6 pull-left">
+                @include('dashboards.admin.widgets.open-tasks')
+                {{--                @include('dashboards.admin.widgets.google-bar-chart')--}}
             </div>
-            <div id="area-5" class="col-md-3 pull-left no-padding-l">
-                area-5
+            <div id="area-4" class="col-md-6 pull-left">
+
             </div>
         </div>
     @endif

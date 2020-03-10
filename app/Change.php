@@ -66,7 +66,7 @@ use App\Observers\ChangeObserver;
  */
 class Change extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
      *
@@ -388,8 +388,8 @@ class Change extends Basemodule
                     "module_name" => $module->name,
                     "element_id" => $element->id,
                     "element_uuid" => $element->uuid,
-                    "event" => "Create",
-                    "details" => $details,
+                    //"event" => "Create",
+                    // "details" => $details,
                     "created_by" => $element->updated_by,
                     "updated_by" => $element->updated_by,
                 ]);

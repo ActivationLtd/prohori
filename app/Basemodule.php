@@ -4,8 +4,6 @@ namespace App;
 
 use App\Traits\IsoModule;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Watson\Rememberable\Rememberable;
 
 /**
  * Class Basemodule

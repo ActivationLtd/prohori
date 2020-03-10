@@ -53,7 +53,7 @@ use App\Observers\GroupObserver;
  */
 class Group extends Basemodule
 {
-    use IsoModule;
+    //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
      *

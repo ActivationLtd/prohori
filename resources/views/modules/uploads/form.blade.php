@@ -18,6 +18,11 @@
 @include('form.input-text',['var'=>['name'=>'name','label'=>'Name', 'container_class'=>'col-sm-6']])
 {{--@include('form.select-model',['var'=>['name'=>'uploadtype_id','label'=>'Type', 'table'=>'uploadtypes', 'container_class'=>'col-sm-3']])--}}
 @include('form.input-text',['var'=>['name'=>'order','label'=>'Order', 'container_class'=>'col-sm-2']])
+@include('form.input-text',['var'=>['name'=>'latitude','label'=>'Latitude', 'container_class'=>'col-sm-2']])
+@include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude', 'container_class'=>'col-sm-2']])
+@include('form.input-text',['var'=>['name'=>'distance','label'=>'Distance in Meters', 'container_class'=>'col-sm-2']])
+@include('form.select-array',['var'=>['name'=>'distance_flag_name','label'=>'Distance Flag', 'options'=>kv(\App\Upload::$upload_flags),'container_class'=>'col-md-3','editable'=>false]])
+
 
 @if(isset($upload))
     <div class="clearfix"></div>
@@ -30,6 +35,7 @@
 
     </div>
 @endif
+<p id="demo"></p>
 <div class="clearfix"></div>
 @include('form.textarea',['var'=>['name'=>'desc','label'=>'Description', 'container_class'=>'col-sm-6']])
 {{--@include('form.is_active')--}}
@@ -60,6 +66,8 @@
         // your functions go here
         // function1();
         // function2();
+        //get a go location when creating a new entry
+        getLocation();
         @elseif(isset($$element))
         /*******************************************************************/
         // Updating :
@@ -74,6 +82,9 @@
         // your functions go here
         // function1();
         // function2();
+        $('input[name=latitude]').attr('readonly', true);
+        $('input[name=longitude]').attr('readonly', true);
+        $('input[name=distance]').attr('readonly', true);
         @endif
 
 
@@ -95,6 +106,20 @@
         /*******************************************************************/
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
+
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                $('input[name=latitude]').val("Geolocation is not supported by this browser.");
+                $('input[name=longitude]').val("Geolocation is not supported by this browser.");
+            }
+        }
+        function showPosition(position) {
+            $('input[name=latitude]').val(position.coords.latitude).attr('readonly', true);
+            $('input[name=longitude]').val(position.coords.longitude).attr('readonly', true);
+        }
 
         /*******************************************************************/
         // List of functions

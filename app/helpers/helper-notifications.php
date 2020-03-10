@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Edujugon\PushNotification\PushNotification;
 
 /**
  * Function to render a HTML that is wrapped with a default blade template.
@@ -193,5 +194,33 @@ function emailVerificationNotification($user)
         $mail->subject('prohori | Verify email');
         $mail->to($user->email);
     });
+}
+function pushNotification($user,$content){
+        if(isset($user->device_token)){
+            $push = new PushNotification('fcm');
+            $push->setMessage([
+                'notification' => [
+                    'title'=>$content['title'],
+                    'body'=>$content['body'],
+                    'sound' => 'default',
+                    'click_action' => 'OPEN_APP',
+                    'badge' => 1
+
+                ],
+                'data' => [
+                    'title'=>$content['title'],
+                    'body'=>$content['body'],
+                    'sound' => 'default',
+                    'click_action' => 'OPEN_APP',
+                    'badge' => 1
+
+                ]
+            ])
+                ->setApiKey('AIzaSyCaARnsVRiPSHTYAxaznNgrHlRjI7aTUC0')
+                ->setDevicesToken($user->device_token)
+                ->send()->getFeedback();
+        }
+
+
 }
 

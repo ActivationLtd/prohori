@@ -30,7 +30,7 @@ function dbTableExists($table)
     // if (count($results)) return true;
     // return false;
 
-    return Cache::remember($table . ".hasTable", cacheTime('short'), function () use ($table) {
+    return Cache::remember($table . ".hasTable", cacheTime('very-long'), function () use ($table) {
         return Schema::hasTable(prefixLess($table));
     });
 
@@ -66,9 +66,7 @@ function columns($table)
     }
 
     foreach ($tables as $table) {
-        $table_columns = Cache::remember($table . ".getColumnListing", cacheTime('short'), function () use ($table) {
-            return Schema::getColumnListing(prefixLess($table));
-        });
+        $table_columns = columsOfTable($table);
 
         $columns = array_merge($columns, $table_columns);
     }
@@ -89,7 +87,11 @@ function columsOfTable($table)
     // foreach ($results as $result) {
     //     array_push($fieldNames, $result->Field);
     // }
-    return Schema::getColumnListing($table);
+
+    return Cache::remember($table . ".columsOfTable", cacheTime('very-long'), function () use ($table) {
+        return Schema::getColumnListing($table);
+    });
+
 }
 
 /**
