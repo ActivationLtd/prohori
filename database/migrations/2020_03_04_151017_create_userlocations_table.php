@@ -22,8 +22,8 @@ class CreateUserlocationsTable extends Migration
             //$table->string('title', 100)->nullable()->default(null);
             //$table->text('somecolumnsname')->nullable()->default(null);
             $table->integer('user_id')->nullable()->default(null);
-            $table->float('longitude')->nullable()->default(null);
-            $table->float('latitude')->nullable()->default(null);
+            $table->double('longitude')->nullable()->default(null);
+            $table->double('latitude')->nullable()->default(null);
             $table->text('data')->nullable()->default(null);
             /*********************************/
 

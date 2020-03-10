@@ -23,6 +23,7 @@
                 <div class="clearfix"></div>
 
                 @include('dashboards.admin.widgets.map')
+                @include('dashboards.admin.widgets.guard_map')
 
             </div>
 
@@ -31,7 +32,7 @@
                 {{--                @include('dashboards.admin.widgets.google-bar-chart')--}}
             </div>
             <div id="area-4" class="col-md-6 pull-left">
-                {{--                @include('dashboards.admin.widgets.google-bar-chart2')--}}
+
             </div>
         </div>
     @endif

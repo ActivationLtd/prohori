@@ -364,7 +364,7 @@ class UserApiController extends ApiController
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getClientsBasedOnUser() {
+    public function getClientsListBasedOnUser() {
         $data = [];
         if (!Request::has('assigned_to')) {
             $ret = ret('Failure', "Parameter missing assignee_id", compact('data'));
@@ -386,7 +386,7 @@ class UserApiController extends ApiController
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getClientLocationsBasedOnUser() {
+    public function getClientLocationsListBasedOnUser() {
         $data = [];
         if (!Request::has('client_id') && !Request::has('assigned_to')) {
             $ret = ret('Failure', "Parameter missing assigned_to and task_id", compact('data'));
@@ -408,7 +408,7 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function getLocations() {
-        Request::merge(['user_id' => $this->user()->id, 'with' => 'userGuard']);
+        Request::merge(['user_id' => $this->user()->id, 'with' => 'guardUser']);
         return app(UserlocationsController::class)->list();
     }
 
@@ -442,4 +442,20 @@ class UserApiController extends ApiController
 
     }
 
+    /**
+     * @param $id
+     */
+    //todo remove after android deployment
+    public function getClientsBasedOnUser($id) {
+        $assignee = User::find($id);
+        $data = [];
+        if (!is_null($assignee->operating_area_ids)) {
+            $clientlocations = Clientlocation::whereIn('operatingarea_id', $assignee->operating_area_ids)->get(['client_id']);
+            $clients = Client::whereIn('id', $clientlocations);
+            $data = $clients->remember(cacheTime('very-short'))->get();
+        }
+        $ret = ret('success', "User Client List", compact('data'));
+        return Response::json($ret);
+
+    }
 }

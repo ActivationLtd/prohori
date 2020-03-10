@@ -135,7 +135,7 @@ class Userlocation extends Basemodule
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
 
-            $element->name=$element->userGuard->full_name. ' at '.$element->created_at;
+            $element->name=$element->guardUser->full_name. ' at '.$element->created_at;
             /************************************************************/
             return $valid;
         });
@@ -366,7 +366,7 @@ class Userlocation extends Basemodule
     ############################################################################################
 
     # Default relationships already available in base Class 'Basemodule'
-    public function userGuard() { return $this->belongsTo(\App\User::class, 'user_id'); }
+    public function guardUser() { return $this->belongsTo(\App\User::class, 'user_id'); }
 
     public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
 

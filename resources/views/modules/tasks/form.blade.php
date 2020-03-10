@@ -43,12 +43,13 @@
 {{-- ******************* Form starts ********************* --}}
 <div class="col-md-6 no-padding-l">
     @if(isset($task))
-        <a class="btn btn-success" target="_blank"
-           href="{{ route('tasks.create')}}?showMsg=0&name={{$task->name}}&priority={{$task->priority}}&tasktype_id={{$task->tasktype_id}}&due_date={{ $task->due_date }}&description={{ $task->description }}">Replicate
+        <a class="btn btn-default" target="_blank"
+           href="{{ route('tasks.create')}}?showMsg=0&name={{$task->name}}&priority={{$task->priority}}&tasktype_id={{$task->tasktype_id}}&due_date={{ $task->due_date }}&description={{ $task->description }}">Copy
             Task</a>
     @endif
 </div>
 <div class="clearfix"></div>
+<br>
 <div class="col-md-6 no-padding-l">
     {{--assigned_to--}}
     @include('form.select-model', ['var'=>['name'=>'assigned_to','label'=>Lang::get('messages.Assigned-to'),'query'=> new \App\User,'container_class'=>'']])
@@ -165,10 +166,12 @@
 
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
-            $("input[name=name]").addClass('validate[required]');
+            //$("input[name=name]").addClass('validate[required]');
             $('input[name=due_date]').addClass('validate[required]');
 
+
         }
+
         // datetime picker
         function addDateTimePicker() {
             $('#due_date').datetimepicker({
@@ -227,6 +230,7 @@
                 });
             });
         }
+
         /**
          * dynamic selection of client location based on client selection
          */

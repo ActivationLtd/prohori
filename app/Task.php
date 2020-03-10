@@ -315,7 +315,7 @@ class Task extends Basemodule
             // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
             //filling name with client name and task type
-            $element->name=$element->client_name." - ".$element->tasktype_name;
+            $element->name=$element->client->name." - ".$element->tasktype->name;
             //checking assignee operating area and client location operating area
             if (isset($element->assignee->operating_area_ids, $element->clientlocation->operatingarea_id)) {
                 if (!in_array($element->clientlocation->operatingarea_id, $element->assignee->operating_area_ids)) {

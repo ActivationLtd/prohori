@@ -86,13 +86,15 @@ Route::prefix('1.0')->middleware(['ret.json'])->group(function () use ($modules,
                     ->name('api.user.tasks.messages');
 
                 // get client and client location
-                Route::get('tasks/clientslist', 'Api\UserApiController@getClientsBasedOnUser')
+                Route::get('tasks/clientslist', 'Api\UserApiController@getClientsListBasedOnUser')
                     ->name('api.user.tasks.clientlist');
-                Route::get('tasks/clientlocationslist', 'Api\UserApiController@getClientLocationsBasedOnUser')
+                Route::get('tasks/clientlocationslist', 'Api\UserApiController@getClientLocationsListBasedOnUser')
                     ->name('api.user.tasks.clientlocationlist');
                 Route::post('/multipleuserlocation', 'Api\UserApiController@createMultipleEntryForUserLocation')
                     ->name('api.user.multilocation.create');
 
+                //todo must remove after mobile version is released
+                Route::get('tasks/{id}/clientlists', 'Api\UserApiController@getClientsBasedOnUser')->name('api.user.tasks.clientlist');
             });
         });
 

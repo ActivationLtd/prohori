@@ -304,7 +304,7 @@ class UsersController extends ModulebaseController
      * This function will return a list of client based on assignee operating area
      * @return \Illuminate\Http\JsonResponse
      */
-    public function customClient() {
+    public function customClientList() {
         //id of the user
         if (Request::has('assignee_id')) {
             $assignee_id = Request::get('assignee_id');
@@ -328,7 +328,7 @@ class UsersController extends ModulebaseController
      * this fucntion will return client locations based on users operating areas
      * @return \Illuminate\Http\JsonResponse
      */
-    public function customClientLocation() {
+    public function customClientLocationList() {
         $data = null;
         if (Request::has('client_id') && Request::has('assignee_id')) {
             $client_id = Request::get('client_id');
