@@ -275,7 +275,7 @@ class Task extends Basemodule
      */
     public static function rules($element, $merge = []) {
         $rules = [
-            'name' => 'required|between:1,255',
+            //'name' => 'required|between:1,255',
             'assigned_to' => 'required|gt:0',
             'priority' => 'required',
             'client_id' => 'required|gt:0',
@@ -314,6 +314,8 @@ class Task extends Basemodule
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
             /************************************************************/
+            //filling name with client name and task type
+            $element->name=$element->client->name." - ".$element->tasktype->name;
             //checking assignee operating area and client location operating area
             if (isset($element->assignee->operating_area_ids, $element->clientlocation->operatingarea_id)) {
                 if (!in_array($element->clientlocation->operatingarea_id, $element->assignee->operating_area_ids)) {
@@ -431,6 +433,11 @@ class Task extends Basemodule
                     }
                 }
             }
+            if (isset($element->due_date)) {
+
+                $element->due_date = convertBengaliDigitToEnglish($element->due_date);
+            }
+
             $element->is_active = 1;
 
             return $valid;

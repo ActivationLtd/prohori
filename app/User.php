@@ -348,7 +348,7 @@ class User extends Authenticatable implements MustVerifyEmail
             // 'county' => 'between:0,64',
             // 'zip_code' => 'between:0,20',
             // 'phone' => 'between:0,20',
-            // 'mobile' => 'between:0,20',
+            'mobile' => 'between:0,20',
         ];
 
         // While creation/registration of user password and password_confirm both should be available
@@ -428,8 +428,6 @@ class User extends Authenticatable implements MustVerifyEmail
         /************************************************************/
         static::saving(function (User $element) {
             $valid = true;
-            $element = $element->resolveName();
-
             // Generate new api token
             if (Request::get('api_token_generate') === 'yes') {
                 $element->api_token = hash('sha256', randomString(10), false);
@@ -479,9 +477,11 @@ class User extends Authenticatable implements MustVerifyEmail
                 if ($element->is_active && $element->email_verified_at === null) {
                     $element->email_verified_at = now();
                 }
-                if (isset($element->first_name) && isset($element->last_name) && !isset($element->full_name)) {
-                    $element->full_name = $element->first_name . $element->last_name;
+                if (isset($element->first_name,$element->last_name) && !isset($element->full_name)) {
+                    $element->full_name = $element->first_name . " " . $element->last_name;
                 }
+                $element->name=$element->full_name;
+
                 if (!isset($element->profile_pic_url)) {
                     $element->profile_pic_url = '/files/male.png';
                     if (isset($element->gender)) {
@@ -570,7 +570,6 @@ class User extends Authenticatable implements MustVerifyEmail
             $this->name = $this->full_name;
         }
 
-        return $this;
     }
 
     /**

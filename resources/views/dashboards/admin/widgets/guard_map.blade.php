@@ -3,12 +3,13 @@
  * Documentation :
  * https://developers.google.com/chart/interactive/docs/gallery/barchart
  */
-
+use App\User;
+use App\Userlocation;
 ?>
 <div class="row">
     <div class="col-md-12">
-        <h4>See task in map</h4>
-        <div id="mapid" style="width: 100%; height: 400px;"></div>
+        <h4>See Guard Location in map</h4>
+        <div id="guardmapid" style="width: 100%; height: 400px;"></div>
     </div>
 </div>
 @section('css')
@@ -24,9 +25,9 @@
             integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
             crossorigin=""></script>
     <script>
-        var mymap = L.map('mapid').setView([23.7807777,90.3492858], 9);
+        var mymap = L.map('guardmapid').setView([23.7807777, 90.3492858], 12);
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-            maxZoom: 18,
+            maxZoom: 20,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
             '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -42,22 +43,36 @@
         }
 
         mymap.on('click', onMapClick);
+            <?php
+
+            $guardusers = User::where('group_ids_csv', '6')->get();
+            ?>
+        @foreach($guardusers as $guarduser)
+            var latlngs = [];
+            var colors=['red','yellow','green','blue','orange','black','white'];
         <?php
-        $tasks = \App\Task::with(['assignee', 'clientlocation', 'tasktype'])
-            ->whereIn('status', ['To do', 'In progress', 'Verify'])
+        $userlocations =Userlocation::with('guardUser')
+            ->where('user_id', $guarduser->id)
             ->orderBy('created_at', 'desc')
             ->remember(cacheTime('medium'))->get();
         ?>
-
-        @foreach($tasks as $task)
-        @if(isset($task->clientlocation->id,$task->clientlocation->latitude,$task->clientlocation->longitude))
-        L.marker([{{$task->clientlocation->latitude}}, {{$task->clientlocation->longitude}}])
-            .addTo(mymap)
-            .bindPopup("<a href='{{route('tasks.edit',$task->id)}}'><img style='width:50px' src='{{asset($task->assignee->profile_pic_url)}}'/><b>&nbsp{{$task->assignee->name}}&nbsp{{$task->tasktype->name}}&nbsp</b> <br>{{$task->clientlocation->name}}&nbsp<br>{{$task->status}}</a>")
-            .openPopup();
-
+        @foreach($userlocations as $userlocation)
+        @if(isset($userlocation->latitude,$userlocation->longitude))
+                //pushing polyline values in the latings array
+            latlngs.push([{{$userlocation->latitude}},{{$userlocation->longitude}}])
+        //creating marker points using value from table
+        L.marker([{{$userlocation->latitude}}, {{$userlocation->longitude}}])
+        .addTo(mymap)
+        //adding popup , option autoclose and autopan off because the popup should be always open
+        .bindPopup("<a href='{{route('userlocations.edit',$userlocation->id)}}'><img style='width:50px' src='{{asset($userlocation->guardUser->profile_pic_url)}}'/><b>&nbsp{{$userlocation->guardUser->name}}</a>",{autoClose: false, autoPan: false})
+        .openPopup();
         @endif
         @endforeach
+        var randomColor = colors[Math.floor(Math.random() * colors.length)];
 
+            //creating polyline
+        var polyline = L.polyline(latlngs, {color: randomColor});
+        polyline.addTo(mymap);
+        @endforeach
     </script>
 @endsection

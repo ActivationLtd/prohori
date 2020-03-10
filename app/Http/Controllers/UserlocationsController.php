@@ -2,17 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Clientlocation;
-use App\User;
-use App\Module;
 use DB;
-use Redirect;
-use Request;
-use Response;
-use Validator;
-use View;
 
-class ClientlocationsController extends ModulebaseController
+class UserlocationsController extends ModulebaseController
 {
 
     /*********************************************************************
@@ -25,22 +17,17 @@ class ClientlocationsController extends ModulebaseController
      *
      * @return array
      */
-    public function gridColumns() {
-        return [
-            //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
-            ["{$this->module_name}.id", "id", "ID"],
-            ["{$this->module_name}.name", "name", "Name"],
-            ["{$this->module_name}.client_name", "client_name", "Client"],
-            ["{$this->module_name}.division_name", "division_name", "Division"],
-            ["{$this->module_name}.district_name", "district_name", "District"],
-            ["{$this->module_name}.upazila_name", "upazila_name", "Upazila"],
-            ["{$this->module_name}.operatingarea_name", "operatingarea_name", "Operatingarea"],
-            ["{$this->module_name}.clientlocationtype_name", "clientlocationtype_name", "Locationtype"],
-            ["updater.name", "user_name", "Updater"],
-            ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
-            ["{$this->module_name}.is_active", "is_active", "Active"]
-        ];
-    }
+    // public function gridColumns() {
+    //     return [
+    //         //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
+    //         ["{$this->module_name}.id", "id", "ID"],
+    //         ["user.full_name", "user_full_name", "ID"],
+    //         ["{$this->module_name}.latitude", "latitude", "Longitude"],
+    //         ["updater.name", "user_name", "Updater"],
+    //         ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
+    //         ["{$this->module_name}.is_active", "is_active", "Active"]
+    //     ];
+    // }
 
     /**
      * Construct SELECT statement based
@@ -61,11 +48,11 @@ class ClientlocationsController extends ModulebaseController
      *
      * @return \Illuminate\Database\Query\Builder|static
      */
-    // public function sourceTables()
-    // {
-    //     return DB::table($this->module_name)
-    //         ->leftJoin('users as updater', $this->module_name . '.updated_by', 'updater.id');
-    // }
+    public function sourceTables() {
+        return DB::table($this->module_name)
+            ->leftJoin('users as updater', $this->module_name . '.updated_by', 'updater.id')
+            ->leftJoin('users as user', $this->module_name . '.user_id', 'user.id');
+    }
 
     /**
      * Define Query for generating results for grid
@@ -124,4 +111,48 @@ class ClientlocationsController extends ModulebaseController
 
     // ****************** Grid functions end *********************************
 
+    /**
+     * In Controller store(), update() before filling the model input values are
+     * transformed. Usually it is a good approach for converting arrays to json.
+     *
+     *
+     * @param array $inputs
+     * @return array
+     */
+    // public function transformInputs($inputs = [])
+    // {
+    //     /*
+    //      * Convert an array input to csv
+    //      ************************************************/
+    //     // $arr_to_csv_inputs = [
+    //     //     'partnercategory_ids'
+    //     // ];
+    //     //
+    //     // foreach ($arr_to_csv_inputs as $i){
+    //     //     if(isset($inputs[$i]) && is_array($inputs[$i])){
+    //     //         $inputs[$i] = arrayToCsv($inputs[$i]);
+    //     //     }else{
+    //     //         $inputs[$i] = null;
+    //     //     }
+    //     // }
+    //
+    //     /*
+    //      * Convert an array input to json
+    //      ************************************************/
+    //     $arr_to_json_inputs = [
+    //         'field1_ids',
+    //         'field2_ids',
+    //     ];
+    //
+    //     foreach ($arr_to_json_inputs as $i) {
+    //         if (isset($inputs[$i]) && is_array($inputs[$i])) {
+    //             $inputs[$i] = json_encode($inputs[$i]);
+    //         } else {
+    //             $inputs[$i] = null;
+    //         }
+    //     }
+    //
+    //     return $inputs;
+    // }
+    // ****************** transformInputs functions end ***********************
 }

@@ -2,11 +2,11 @@
 
 namespace App;
 
-use App\Observers\MessageObserver;
+use App\Observers\UserlocationObserver;
 use App\Traits\IsoModule;
 
 /**
- * Class Message
+ * Class Userlocation
  *
  * @package App
  * @property int $id
@@ -21,44 +21,18 @@ use App\Traits\IsoModule;
  * @property string|null $deleted_at
  * @property int|null $deleted_by
  * @method static bool|null forceDelete()
- * @method static \Illuminate\Database\Query\Builder|\App\Message onlyTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Userlocation onlyTrashed()
  * @method static bool|null restore()
- * @method static \Illuminate\Database\Query\Builder|\App\Message withTrashed()
- * @method static \Illuminate\Database\Query\Builder|\App\Message withoutTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Userlocation withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|\App\Userlocation withoutTrashed()
  * @mixin \Eloquent
  * @property-read \App\User $creator
  * @property-read \App\User $updater
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message query()
- * @property int|null $module_id
- * @property int|null $element_id
- * @property string|null $element_uuid
- * @property string|null $type
- * @property string|null $body
- * @property string|null $recipients
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Change[] $changes
- * @property-read \App\Upload $latestUpload
- * @property-read \Illuminate\Database\Eloquent\Collection|\App\Upload[] $uploads
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereBody($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereCreatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereDeletedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereElementId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereElementUuid($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereModuleId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereRecipients($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereTenantId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereType($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereUpdatedBy($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Message whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Userlocation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Userlocation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Userlocation query()
  */
-class Message extends Basemodule
+class Userlocation extends Basemodule
 {
     //use IsoModule;
     /**
@@ -66,19 +40,19 @@ class Message extends Basemodule
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name', 'tenant_id',
-
-        'tenant_id',
+    protected $fillable = [
+        'uuid',
         'name',
-        'module_id',
-        'element_id',
-        'element_uuid',
-        'type',
-        'body',
-        'recipients',
+        'user_id',
+        'longitude',
+        'latitude',
+        'data',
+        'tenant_id',
         'is_active',
-
-        'is_active', 'created_by', 'updated_by', 'deleted_by'];
+        'created_by',
+        'updated_by',
+        'deleted_by'
+    ];
 
     /**
      * The attributes that should be cast to native types.
@@ -111,10 +85,14 @@ class Message extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = [])
-    {
+    public static function rules($element, $merge = []) {
+
         $rules = [
-            //'name' => 'required|between:1,255|unique:messages,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
+            //'name' => 'between:1,255',
+            'user_id' => 'required|exists:users,id,is_active,1',
+            'longitude' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'data' => 'nullable|json',
             //'is_active' => 'required|in:1,0',
             // 'tenant_id'  => 'required|tenants,id,is_active,1',
             // 'created_by' => 'exists:users,id,is_active,1', // Optimistic validation for created_by,updated_by
@@ -144,53 +122,39 @@ class Message extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot()
-    {
+    public static function boot() {
         parent::boot();
-        Message::observe(MessageObserver::class);
+        Userlocation::observe(UserlocationObserver::class);
 
         /************************************************************/
         // Execute codes during saving (both creating and updating)
         /************************************************************/
-        // static::saving(function (Message $element) {
-        //     $valid = true;
-        //     /************************************************************/
-        //     // Your validation goes here
-        //     // if($valid) $valid = $element->isSomethingDoable(true)
-        //     /************************************************************/
-        //     return $valid;
-        // });
+        static::saving(function (Userlocation $element) {
+            $valid = true;
+            /************************************************************/
+            // Your validation goes here
+            // if($valid) $valid = $element->isSomethingDoable(true)
+
+            $element->name=$element->guardUser->full_name. ' at '.$element->created_at;
+            /************************************************************/
+            return $valid;
+        });
 
         /************************************************************/
         // Following code block executes - when an element is in process
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-        // static::creating(function (Message $element) { });
+        // static::creating(function (Userlocation $element) {
+        //
+        // });
 
         /************************************************************/
         // Following code block executes - after an element is created
         // for the first time.
         /************************************************************/
-        static::created(function (Message $element) {
-            //notifications
-            $contents = [
-                'title' => 'New message added',
-                'body' => 'A new message has been added to task no : ' . $element->task->id,
-            ];
-            if ($element->task->assignee()->exists()) {
-                if (isset($element->task->watchers)) {
-                    foreach ($element->task->watchers as $user_id) {
-                        $user = User::remember(cacheTime('long'))->find($user_id);
-                        /** @noinspection PhpUndefinedMethodInspection */
-                        //push notification for watchers
-                        pushNotification($user, $contents);
-                    }
-                }
-                pushNotification($element->task->assignee, $contents);
-                //push notification to assignee
-
-            }
+        static::created(function (Userlocation $element) {
+            $element->is_active = 1;
         });
 
         /************************************************************/
@@ -198,43 +162,43 @@ class Message extends Basemodule
         // element is in process of being updated but the update is
         // not yet complete.
         /************************************************************/
-        // static::updating(function (Message $element) {});
+        // static::updating(function (Userlocation $element) {});
 
         /************************************************************/
         // Following code block executes - after an element
         // is successfully updated
         /************************************************************/
-        //static::updated(function (Message $element) {});
+        //static::updated(function (Userlocation $element) {});
 
         /************************************************************/
         // Execute codes after model is successfully saved
         /************************************************************/
-        // static::saved(function (Message $element) {});
+        // static::saved(function (Userlocation $element) {});
 
         /************************************************************/
         // Following code block executes - when some element is in
         // the process of being deleted. This is good place to
         // put validations for eligibility of deletion.
         /************************************************************/
-        // static::deleting(function (Message $element) {});
+        // static::deleting(function (Userlocation $element) {});
 
         /************************************************************/
         // Following code block executes - after an element is
         // successfully deleted.
         /************************************************************/
-        // static::deleted(function (Message $element) {});
+        // static::deleted(function (Userlocation $element) {});
 
         /************************************************************/
         // Following code block executes - when an already deleted element
         // is in the process of being restored.
         /************************************************************/
-        // static::restoring(function (Message $element) {});
+        // static::restoring(function (Userlocation $element) {});
 
         /************************************************************/
         // Following code block executes - after an element is
         // successfully restored.
         /************************************************************/
-        //static::restored(function (Message $element) {});
+        //static::restored(function (Userlocation $element) {});
     }
 
     ############################################################################################
@@ -402,13 +366,11 @@ class Message extends Basemodule
     ############################################################################################
 
     # Default relationships already available in base Class 'Basemodule'
+    public function guardUser() { return $this->belongsTo(\App\User::class, 'user_id'); }
+
     public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
 
     public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
-
-    public function task() {
-        return $this->belongsTo(\App\Task::class,'element_id' );
-    }
 
     // Write new relationships below this line
 
@@ -445,6 +407,15 @@ class Message extends Basemodule
     //     //     $this->attributes['some_ids'] = json_encode(csvToArray($value));
     //     // }
     // }
+    public function setDataAttribute($value) {
+        /** @var App\Userlocation\Userlocation $this */
+        $this->attributes['data'] = $value;
+        // 1. If the value is originally array converts array to json
+        if (is_array($value)) {
+            $this->attributes['data'] = json_encode(cleanArray($value));
+        }
+
+    }
 
     // Write accessors and mutators here.
 

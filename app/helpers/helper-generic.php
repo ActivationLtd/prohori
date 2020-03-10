@@ -711,3 +711,16 @@ function createLetterRange($length)
     }
     return $range;
 }
+
+/**
+ * Converts english digits to bengali character
+ *
+ * @param $input
+ * @return mixed
+ */
+function convertBengaliDigitToEnglish($input = '') {
+    $bn_digits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    $output = str_replace($bn_digits, range(0, 9), $input);
+
+    return $output;
+}
