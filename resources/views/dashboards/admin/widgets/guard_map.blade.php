@@ -3,7 +3,8 @@
  * Documentation :
  * https://developers.google.com/chart/interactive/docs/gallery/barchart
  */
-
+use App\User;
+use App\Userlocation;
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -43,14 +44,14 @@
 
         mymap.on('click', onMapClick);
             <?php
-            $guardusers = \APP\User::where('group_ids_csv', '6')->get();
 
+            $guardusers = User::where('group_ids_csv', '6')->get();
             ?>
         @foreach($guardusers as $guarduser)
             var latlngs = [];
             var colors=['red','yellow','green','blue','orange','black','white'];
         <?php
-        $userlocations = \App\UserLocation::with('guardUser')
+        $userlocations =Userlocation::with('guardUser')
             ->where('user_id', $guarduser->id)
             ->orderBy('created_at', 'desc')
             ->remember(cacheTime('medium'))->get();
