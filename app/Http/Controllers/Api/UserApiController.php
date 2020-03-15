@@ -421,8 +421,8 @@ class UserApiController extends ApiController
         foreach ($items as $item) {
             $userlocation=Userlocation::create([
                 'user_id' => $this->user()->id,
-                'longitude' => $item->long,
-                'latitude' => $item->lat,
+                'longitude' => $item->longitude,
+                'latitude' => $item->latitude,
                 'created_by' => $this->user()->id,
                 'updated_by' => $this->user()->id
             ]);
