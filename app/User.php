@@ -251,6 +251,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'group_ids_csv',
         'group_titles_csv',
         'employee_id',
+        'client_id',
+        'clientlocation_id',
         'name_initial',
         'first_name',
         'last_name',
@@ -841,6 +843,15 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function department() { return $this->belongsTo(Department::class); }
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function client() { return $this->belongsTo(Client::class); }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function clientlocation() { return $this->belongsTo(Clientlocation::class); }
 
 
     // Write new relationships below this line

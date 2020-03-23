@@ -93,6 +93,13 @@
 @endif
 
 <div class="clearfix"></div>
+@if(isset($user) && $user->inGroupId(6))
+    {{--client_id--}}
+    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-6']])
+    {{-- clientlocation_id --}}
+    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
+@endif
+<div class="clearfix"></div>
 <div class="panel-group" id="accordion">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -214,8 +221,33 @@
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
             //$("input[name=name]").addClass('validate[required]');
-           // $('input[name=due_date]').addClass('validate[required]');
+            // $('input[name=due_date]').addClass('validate[required]');
 
+        }
+        /**
+         * dynamic selection of client location based on client selection
+         */
+        function dynamicClientLocation() {
+            $('select[name=client_id]').change(function () { // change function of listbox
+                var client_id = $('select[name=client_id]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
+                $.ajax({
+                    type: "get",
+                    datatype: 'json',
+                    url: '{{route('clientlocations.list-json')}}',
+                    data: {
+                        client_id: client_id,
+                    },
+                    success: function (response) {
+                        console.log(response.data);
+                        $.each(response.data, function (i, obj) {
+                            $("select[name=clientlocation_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                        });
+                    },
+                });
+
+            });
         }
     </script>
     <script type="text/javascript">
@@ -268,6 +300,8 @@
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         /*******************************************************************/
+        $("select[name=clientlocation_id]").attr('disabled', true);
+        dynamicClientLocation();
 
     </script>
 @endsection
