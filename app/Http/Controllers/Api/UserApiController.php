@@ -408,7 +408,7 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function getLocations() {
-        Request::merge(['user_id' => $this->user()->id, 'with' => 'guardUser']);
+        Request::merge(['user_id' => $this->user()->id, 'with' => 'user']);
         return app(UserlocationsController::class)->list();
     }
 
@@ -416,8 +416,8 @@ class UserApiController extends ApiController
      * @return \Illuminate\Http\JsonResponse
      */
     public function createMultipleEntryForUserLocation() {
-        $data=[];
-        if ($this->user()->inGroupId('6')) {
+        $data = [];
+        if ($this->user()->inGroupId('6') || (isset($this->user()->designation_id) && in_array($this->user()->designation_id, ['7', '8', '10', '5', '18', '9', '12', '14', '13', '19', '15', '16', '17']))) {
             $items = json_decode(request('list'));
             foreach ($items as $item) {
                 $userlocation = Userlocation::create([

@@ -9,7 +9,7 @@ use App\Userlocation;
 <div class="row">
     <div class="col-md-12">
         <h4>See Guard Location in map</h4>
-        <div id="guardmapid" style="width: 100%; height: 400px;"></div>
+        <div id="userlocationmapid" style="width: 100%; height: 400px;"></div>
     </div>
 </div>
 @section('css')
@@ -25,34 +25,34 @@ use App\Userlocation;
             integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
             crossorigin=""></script>
     <script>
-        var myguardmap = L.map('guardmapid').setView([23.7807777, 90.3492858], 12);
+        var userlocationmap = L.map('userlocationmapid').setView([23.7807777, 90.3492858], 12);
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 20,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
             '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
             'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             id: 'mapbox.streets'
-        }).addTo(myguardmap);
+        }).addTo(userlocationmap);
         var popup = L.popup();
 
         function onGuardMapClick(e) {
             popup
                 .setLatLng(e.latlng)
                 .setContent("You clicked the map at " + e.latlng.toString())
-                .openOn(myguardmap);
+                .openOn(userlocationmap);
         }
 
 //        myguardmap.on('click', onGuardMapClick);
             <?php
 
-            $guardusers = User::where('group_ids_csv', '6')->get();
+            $users = User::where('group_ids_csv', '6')->whereIn('designation_id',['7','8','10','5','18','9','12','14','13','19','15','16','17'])->get();
             ?>
-        @foreach($guardusers as $guarduser)
+        @foreach($users as $user)
         var latlngs = [];
         var colors = ['red', 'yellow', 'green', 'blue', 'orange', 'black', 'white'];
         <?php
-        $userlocations = Userlocation::with('guardUser')
-            ->where('user_id', $guarduser->id)
+        $userlocations = Userlocation::with('user')
+            ->where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->remember(cacheTime('medium'))->get();
         ?>
@@ -62,9 +62,9 @@ use App\Userlocation;
         latlngs.push([{{$userlocation->latitude}},{{$userlocation->longitude}}])
         //creating marker points using value from table
         L.marker([{{$userlocation->latitude}}, {{$userlocation->longitude}}])
-            .addTo(myguardmap)
+            .addTo(userlocationmap)
             //adding popup , option autoclose and autopan off because the popup should be always open
-            .bindPopup("<a href='{{route('userlocations.edit',$userlocation->id)}}'><img style='width:50px' src='{{asset($userlocation->guardUser->profile_pic_url)}}'/><b>&nbsp{{$userlocation->guardUser->name}}</a>", {
+            .bindPopup("<a href='{{route('userlocations.edit',$userlocation->id)}}'><img style='width:50px' src='{{asset($userlocation->user->profile_pic_url)}}'/><b>&nbsp{{$userlocation->user->name}}</a>", {
                 autoClose: false,
                 autoPan: false
             })
@@ -74,7 +74,7 @@ use App\Userlocation;
         var randomColor = colors[Math.floor(Math.random() * colors.length)];
         //creating polyline
         var polyline = L.polyline(latlngs, {color: randomColor});
-        polyline.addTo(myguardmap);
+        polyline.addTo(userlocationmap);
         @endforeach
     </script>
 @endsection
