@@ -9,10 +9,13 @@ $tomorrow=date("Y-m-d",strtotime("tomorrow"));
  */
 use App\User;
 use App\Userlocation;
+$userfirstlocation = Userlocation::where('user_id', $user->id)->whereNotNull('longitude')->whereNotNull('latitude')
+    ->orderBy('created_at', 'desc')
+    ->remember(cacheTime('medium'))->first();
 ?>
 <div class="row">
     <div class="col-md-12">
-        <h4>See Guard Location in map</h4>
+        <h4>See User Location in map</h4>
         <div id="userlocationmapid" style="width: 100%; height: 400px;"></div>
     </div>
 </div>
@@ -29,7 +32,12 @@ use App\Userlocation;
             integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
             crossorigin=""></script>
     <script>
+
+    @if(isset($userfirstlocation->latitude,$userfirstlocation->longitude))
+        var userlocationmap = L.map('userlocationmapid').setView([{{$userfirstlocation->latitude}}, {{$userfirstlocation->longitude}}], 12);
+    @else
         var userlocationmap = L.map('userlocationmapid').setView([23.7807777, 90.3492858], 12);
+    @endif
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 20,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -47,19 +55,13 @@ use App\Userlocation;
         }
 
 //        myguardmap.on('click', onGuardMapClick);
-            <?php
 
-            $users = User::where('group_ids_csv', '6')->get();
-            ?>
-        @foreach($users as $user)
         var latlngs = [];
         var colors = ['red', 'yellow', 'green', 'blue', 'orange', 'black', 'white'];
 
         <?php
         $userlocations = Userlocation::with('user')
             ->where('user_id', $user->id)
-            ->where('created_at','>=',$today)
-            ->where('created_at','<=',$tomorrow)
             ->orderBy('created_at', 'desc')
             ->remember(cacheTime('medium'))->get();
         ?>
@@ -82,6 +84,5 @@ use App\Userlocation;
         //creating polyline
         var polyline = L.polyline(latlngs, {color: randomColor});
         polyline.addTo(userlocationmap);
-        @endforeach
     </script>
 @endsection

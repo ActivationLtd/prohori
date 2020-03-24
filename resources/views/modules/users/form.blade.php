@@ -55,7 +55,6 @@
 @include('form.select-model',['var'=>['name'=>'department_id','label'=>'Department','table'=>'departments','container_class'=>'col-sm-3']])
 @include('form.input-text',['var'=>['name'=>'employee_id','label'=>'Employee Id','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
-
 <div class="clearfix"></div>
 @if(user()->isSuperUser())
     @include('form.input-text',['var'=>['name'=>'email_verified_at','label'=>'Email verified at', 'container_class'=>'col-sm-3']])
@@ -90,14 +89,6 @@
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
 
-@endif
-
-<div class="clearfix"></div>
-@if(isset($user) && $user->inGroupId(6))
-    {{--client_id--}}
-    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-6']])
-    {{-- clientlocation_id --}}
-    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-6']])
 @endif
 <div class="clearfix"></div>
 <div class="panel-group" id="accordion">
@@ -140,10 +131,6 @@
         </div>
     </div>
 </div>
-
-
-
-
 
 @if(user()->isSuperUser())
     <div class="clearfix"></div>
@@ -190,6 +177,16 @@
 @section('content-bottom')
     @parent
     @if(isset($user))
+        @if($user->inGroupId(6))
+            <div class="col-md-6 no-padding-l">
+                @include('modules.users.assignedlocations')
+            </div>
+        @endif
+        @if($user->inGroupId(6) || in_array($user->designation_id,['7','8','10','5','18','9','12','14','13','19','15','16','17']))
+            <div class="col-md-6 no-padding-l">
+                @include('modules.users.user_location_map')
+            </div>
+        @endif
         <div class="col-md-6 no-padding-l">
             <h4>Profile Photo (*Required Field)</h4>
             {{--<small>Upload one or more files</small>--}}
@@ -224,14 +221,15 @@
             // $('input[name=due_date]').addClass('validate[required]');
 
         }
+
         /**
          * dynamic selection of client location based on client selection
          */
         function dynamicClientLocation() {
-            $('select[name=client_id]').change(function () { // change function of listbox
-                var client_id = $('select[name=client_id]').select2('val');
+            $('#assignedlocationform select[name=client_id]').change(function () { // change function of listbox
+                var client_id = $('#assignedlocationform select[name=client_id]').select2('val');
                 //clearing the data , empty the options , enable it with current options
-                $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
+                $("#assignedlocationform select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
                 $.ajax({
                     type: "get",
                     datatype: 'json',
@@ -242,11 +240,72 @@
                     success: function (response) {
                         console.log(response.data);
                         $.each(response.data, function (i, obj) {
-                            $("select[name=clientlocation_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                            $("#assignedlocationform select[name=clientlocation_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
                         });
                     },
                 });
 
+            });
+        }
+
+        /**
+         * Vue implementation for patients medication requests
+         */
+        function userAssignedLocationVueImplementation() {
+            /*******************************************************************/
+            //				1. vue js to render table
+            /*******************************************************************/
+            var assignedLocationVue = new Vue({
+                el: '#add-assigned-location-vue',
+                data: {assignedLocations: []},
+                methods: {
+                    makeDeleteUrl: function (id) { // Function returns the POST URL for deleting the entry.
+                        return '{{route('home')}}/assignedlocations/' + id;
+                    },
+                    makeFileEditUrl: function (id) { // Function returns the GET URL for the details page of the entry
+                        return '{{route('home')}}/assignedlocations/' + id;
+                    },
+                },
+                mounted: function () { // Initially when this vue instance is mounted do the following.
+                    axios({ // 1. GET the list of items from from some API/url
+                        url: "{{route('assignedlocations.list-json')}}?user_id={{$user->id}}",
+                        method: 'get'
+                    }).then(function (response) {
+                        //console.log(response.data.data);
+                        // 2. Load the whole data in vue variable.
+                        assignedLocationVue.assignedLocations = response.data.data; // 2. Load the whole data in vue variable.
+                        // 2. Load the whole data in vue variable.
+                    }).catch(function (error) {
+                        console.log(error); // 3. Log any error (Good for debugging).
+
+                    });
+                    /*******************************************************************/
+                },
+                updated: function () { // Trigger following when the list is updated and DOM is populated.
+                    initGenericDeleteBtn(); // Enables the generic delete button in newly added row.
+
+                }
+            });
+            /*******************************************************************/
+            //				 frontend and Ajax hybrid validation
+            /*******************************************************************/
+            // 1. add validation classes/rules
+            //$('form[name=assignedlocationform] input[name=client_id]').addClass('validate[required]');
+            //$('form[name=assignedlocationform] input[name=clientlocation_id]').addClass('validate[required]');
+
+            // 2. instantiate validation function with a handler function which updates the DOM upon successful operation. i.e. add a new row in a table if store is successful.
+            enableValidation('assignedlocationform', storeAssignedlocationsSuccessHandler);
+
+            // 3. specific handler function. Name should be unique
+            function storeAssignedlocationsSuccessHandler(ret) {
+                assignedLocationVue.assignedLocations.push(ret.data); // Push the new element into vue array.
+                $('#assignedlocationform').trigger("reset"); // reset the form selection before hiding. This form will be again visible when you add the next item.
+            }
+        }
+
+        function addDateTimePicker() {
+            $('#from,#till').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm'
             });
         }
     </script>
@@ -300,9 +359,10 @@
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         /*******************************************************************/
-        $("select[name=clientlocation_id]").attr('disabled', true);
+        $("#assignedlocationform select[name=clientlocation_id]").attr('disabled', true);
         dynamicClientLocation();
-
+        userAssignedLocationVueImplementation();
+        addDateTimePicker();
     </script>
 @endsection
 {{-- JS ends --}}
