@@ -40,11 +40,8 @@
 
 {{-- Form starts: Form fields are placed here. These will be added inside the spyrframe default form container in
  app/views/spyr/modules/base/form.blade.php --}}
-
-
 <div class="clearfix"></div>
 @include('form.input-text',['var'=>['name'=>'email','label'=>'Email', 'container_class'=>'col-sm-3']])
-
 {{-- show password only for editable--}}
 @if($element_editable)
     @include('form.input-text',['var'=>['name'=>'password','type'=>'password','label'=>'Password', 'container_class'=>'col-sm-3','value'=>'']])
@@ -295,7 +292,6 @@
 
             // 2. instantiate validation function with a handler function which updates the DOM upon successful operation. i.e. add a new row in a table if store is successful.
             enableValidation('assignedlocationform', storeAssignedlocationsSuccessHandler);
-
             // 3. specific handler function. Name should be unique
             function storeAssignedlocationsSuccessHandler(ret) {
                 assignedLocationVue.assignedLocations.push(ret.data); // Push the new element into vue array.
@@ -324,6 +320,7 @@
         // function2();
 
         @elseif(isset($user))
+        userAssignedLocationVueImplementation();
         /*******************************************************************/
         // Updating :
         // this is a place holder to write  the javascript codes that will run
@@ -361,7 +358,6 @@
         /*******************************************************************/
         $("#assignedlocationform select[name=clientlocation_id]").attr('disabled', true);
         dynamicClientLocation();
-        userAssignedLocationVueImplementation();
         addDateTimePicker();
     </script>
 @endsection
