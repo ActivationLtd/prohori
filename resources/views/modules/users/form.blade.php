@@ -245,6 +245,29 @@
             });
         }
 
+
+
+        function addDateTimePicker() {
+            $('#from,#till').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm'
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        @if(!isset($user))
+        /*******************************************************************/
+        // Creating :
+        // this is a place holder to write  the javascript codes
+        // during creation of an element. As this stage $user or $user(module
+        // name singular) is not set, also there is no id is created
+        // Following the convention of spyrframe you are only allowed to call functions
+        /*******************************************************************/
+
+        // your functions go here
+        // function1();
+        // function2();
+
+        @elseif(isset($user))
         /**
          * Vue implementation for patients medication requests
          */
@@ -298,28 +321,6 @@
                 $('#assignedlocationform').trigger("reset"); // reset the form selection before hiding. This form will be again visible when you add the next item.
             }
         }
-
-        function addDateTimePicker() {
-            $('#from,#till').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm'
-            });
-        }
-    </script>
-    <script type="text/javascript">
-        @if(!isset($user))
-        /*******************************************************************/
-        // Creating :
-        // this is a place holder to write  the javascript codes
-        // during creation of an element. As this stage $user or $user(module
-        // name singular) is not set, also there is no id is created
-        // Following the convention of spyrframe you are only allowed to call functions
-        /*******************************************************************/
-
-        // your functions go here
-        // function1();
-        // function2();
-
-        @elseif(isset($user))
         userAssignedLocationVueImplementation();
         /*******************************************************************/
         // Updating :
