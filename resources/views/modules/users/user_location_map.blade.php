@@ -60,8 +60,13 @@ $userfirstlocation = Userlocation::where('user_id', $user->id)->whereNotNull('lo
         var colors = ['red', 'yellow', 'green', 'blue', 'orange', 'black', 'white'];
 
         <?php
+
+        $today = date('Y-m-d');
+        $tomorrow=date("Y-m-d",strtotime("tomorrow"));
         $userlocations = Userlocation::with('user')
             ->where('user_id', $user->id)
+            ->where('created_at','>=',$today)
+            ->where('created_at','<=',$tomorrow)
             ->orderBy('created_at', 'desc')
             ->remember(cacheTime('medium'))->get();
         ?>
