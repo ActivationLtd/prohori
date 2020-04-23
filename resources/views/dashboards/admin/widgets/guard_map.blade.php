@@ -48,7 +48,6 @@ use App\Userlocation;
 
 //        myguardmap.on('click', onGuardMapClick);
             <?php
-
             $users = User::where('group_ids_csv', '6')->get();
             ?>
         @foreach($users as $user)

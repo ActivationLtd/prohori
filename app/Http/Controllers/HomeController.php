@@ -27,9 +27,13 @@ class HomeController extends Controller
         if ($user->isSuperUser()) {
             return view("dashboards.admin.index");
         }
-        if ($user->inGroupId('5')) {
+        if ($user->isManagerUser()) {
 
             return view("dashboards.manager.index");
+        }
+        if ($user->isGuardUser()) {
+
+            return view("dashboards.guard.index");
         }
 
         return view("dashboards.default.index");
