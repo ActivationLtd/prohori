@@ -21,8 +21,9 @@
                 {{-- Widget area one --}}
                 @include('dashboards.admin.widgets.count-cards')
                 <div class="clearfix"></div>
-
+                {{--task location map--}}
                 @include('dashboards.admin.widgets.map')
+                {{--Guard location map--}}
                 @include('dashboards.admin.widgets.guard_map')
 
             </div>

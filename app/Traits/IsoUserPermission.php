@@ -88,6 +88,16 @@ trait IsoUserPermission
         return $this->inGroupId('5');
     }
     /**
+     * Checks if the user is a super user - has
+     * access to everything regardless of permissions.
+     *
+     * @return bool
+     */
+    public function isGuardUser()
+    {
+        return $this->inGroupId('6');
+    }
+    /**
      * Check if user can make api call
      *
      * @return bool

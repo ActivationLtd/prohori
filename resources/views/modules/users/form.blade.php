@@ -40,11 +40,8 @@
 
 {{-- Form starts: Form fields are placed here. These will be added inside the spyrframe default form container in
  app/views/spyr/modules/base/form.blade.php --}}
-
-
 <div class="clearfix"></div>
 @include('form.input-text',['var'=>['name'=>'email','label'=>'Email', 'container_class'=>'col-sm-3']])
-
 {{-- show password only for editable--}}
 @if($element_editable)
     @include('form.input-text',['var'=>['name'=>'password','type'=>'password','label'=>'Password', 'container_class'=>'col-sm-3','value'=>'']])
@@ -248,6 +245,29 @@
             });
         }
 
+
+
+        function addDateTimePicker() {
+            $('#from,#till').datetimepicker({
+                format: 'YYYY-MM-DD HH:mm'
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        @if(!isset($user))
+        /*******************************************************************/
+        // Creating :
+        // this is a place holder to write  the javascript codes
+        // during creation of an element. As this stage $user or $user(module
+        // name singular) is not set, also there is no id is created
+        // Following the convention of spyrframe you are only allowed to call functions
+        /*******************************************************************/
+
+        // your functions go here
+        // function1();
+        // function2();
+
+        @elseif(isset($user))
         /**
          * Vue implementation for patients medication requests
          */
@@ -295,35 +315,13 @@
 
             // 2. instantiate validation function with a handler function which updates the DOM upon successful operation. i.e. add a new row in a table if store is successful.
             enableValidation('assignedlocationform', storeAssignedlocationsSuccessHandler);
-
             // 3. specific handler function. Name should be unique
             function storeAssignedlocationsSuccessHandler(ret) {
                 assignedLocationVue.assignedLocations.push(ret.data); // Push the new element into vue array.
                 $('#assignedlocationform').trigger("reset"); // reset the form selection before hiding. This form will be again visible when you add the next item.
             }
         }
-
-        function addDateTimePicker() {
-            $('#from,#till').datetimepicker({
-                format: 'YYYY-MM-DD HH:mm'
-            });
-        }
-    </script>
-    <script type="text/javascript">
-        @if(!isset($user))
-        /*******************************************************************/
-        // Creating :
-        // this is a place holder to write  the javascript codes
-        // during creation of an element. As this stage $user or $user(module
-        // name singular) is not set, also there is no id is created
-        // Following the convention of spyrframe you are only allowed to call functions
-        /*******************************************************************/
-
-        // your functions go here
-        // function1();
-        // function2();
-
-        @elseif(isset($user))
+        userAssignedLocationVueImplementation();
         /*******************************************************************/
         // Updating :
         // this is a place holder to write  the javascript codes that will run
@@ -361,7 +359,6 @@
         /*******************************************************************/
         $("#assignedlocationform select[name=clientlocation_id]").attr('disabled', true);
         dynamicClientLocation();
-        userAssignedLocationVueImplementation();
         addDateTimePicker();
     </script>
 @endsection

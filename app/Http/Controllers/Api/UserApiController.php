@@ -74,7 +74,7 @@ class UserApiController extends ApiController
      * @return mixed
      */
     public function summary() {
-        if ($this->user()->isManagerUser()) {
+        if ($this->user()->isManagerUser() || $this->user()->isGuardUser()) {
             $task_assigned = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['To do', 'In Progress'])->count();
             $task_completed = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['Done', 'Closed'])->count();
             $task_inprogress = Task::remember(cacheTime('medium'))->where('assigned_to', $this->user()->id)->whereIn('status', ['In Progress'])->count();
@@ -108,7 +108,7 @@ class UserApiController extends ApiController
          * Construct WHERE clauses based on URL/API inputs
          *******************************************************************/
         //checking if user is a manager
-        if ($this->user()->isManagerUser()) {
+        if ($this->user()->isManagerUser() || $this->user()->isGuardUser()) {
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
                     ->orWhere('created_by', $this->user()->id)
@@ -202,7 +202,7 @@ class UserApiController extends ApiController
         $tasks = DB::table('tasks')->where('is_active', 1)->whereNull('deleted_at')
             ->whereIn('status', ['To do', 'In progress', 'Verify']);
         //checking if user is a manager
-        if ($this->user()->isManagerUser()) {
+        if ($this->user()->isManagerUser() || $this->user()->isGuardUser()) {
             $tasks = $tasks->where(function ($q) {
                 $q->where('assigned_to', $this->user()->id)
                     ->orWhere('created_by', $this->user()->id);
