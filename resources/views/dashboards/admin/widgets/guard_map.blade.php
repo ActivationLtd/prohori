@@ -1,14 +1,14 @@
 <?php
-
-$today = date('Y-m-d');
-$tomorrow=date("Y-m-d",strtotime("tomorrow"));
-
 /*
  * Documentation :
  * https://developers.google.com/chart/interactive/docs/gallery/barchart
  */
 use App\User;
 use App\Userlocation;
+$today = date('Y-m-d');
+$tomorrow = date("Y-m-d", strtotime("tomorrow"));
+$users = User::where('group_ids_csv', '6')->get();
+
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -46,19 +46,17 @@ use App\Userlocation;
                 .openOn(userlocationmap);
         }
 
-//        myguardmap.on('click', onGuardMapClick);
-            <?php
-            $users = User::where('group_ids_csv', '6')->get();
-            ?>
-        @foreach($users as $user)
+        //        myguardmap.on('click', onGuardMapClick);
+
+                @foreach($users as $user)
         var latlngs = [];
         var colors = ['red', 'yellow', 'green', 'blue', 'orange', 'black', 'white'];
 
         <?php
         $userlocations = Userlocation::with('user')
             ->where('user_id', $user->id)
-            ->where('created_at','>=',$today)
-            ->where('created_at','<=',$tomorrow)
+            ->where('created_at', '>=', $today)
+            ->where('created_at', '<=', $tomorrow)
             ->orderBy('created_at', 'desc')
             ->remember(cacheTime('medium'))->get();
         ?>
@@ -75,8 +73,8 @@ use App\Userlocation;
                 autoPan: false
             })
             .openPopup();
-        @endif
-        @endforeach
+                @endif
+                @endforeach
         var randomColor = colors[Math.floor(Math.random() * colors.length)];
         //creating polyline
         var polyline = L.polyline(latlngs, {color: randomColor});
