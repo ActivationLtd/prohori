@@ -1,17 +1,30 @@
 <?php
 
-$today = date('Y-m-d');
-$tomorrow=date("Y-m-d",strtotime("tomorrow"));
-
 /*
  * Documentation :
  * https://developers.google.com/chart/interactive/docs/gallery/barchart
  */
+
 use App\User;
 use App\Userlocation;
+
+$today = date('Y-m-d');
+$tomorrow = date("Y-m-d", strtotime("tomorrow"));
+/**
+ * Getting the first location to initialize the map
+ */
 $userfirstlocation = Userlocation::where('user_id', $user->id)->whereNotNull('longitude')->whereNotNull('latitude')
     ->orderBy('created_at', 'desc')
     ->remember(cacheTime('medium'))->first();
+/**
+ * User location for the user for the particular date
+ */
+$userlocations = Userlocation::with('user')
+    ->where('user_id', $user->id)
+    ->where('created_at', '>=', $today)
+    ->where('created_at', '<=', $tomorrow)
+    ->orderBy('created_at', 'desc')
+    ->remember(cacheTime('medium'))->get();
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -33,11 +46,11 @@ $userfirstlocation = Userlocation::where('user_id', $user->id)->whereNotNull('lo
             crossorigin=""></script>
     <script>
 
-    @if(isset($userfirstlocation->latitude,$userfirstlocation->longitude))
+                @if(isset($userfirstlocation->latitude,$userfirstlocation->longitude))
         var userlocationmap = L.map('userlocationmapid').setView([{{$userfirstlocation->latitude}}, {{$userfirstlocation->longitude}}], 12);
-    @else
+                @else
         var userlocationmap = L.map('userlocationmapid').setView([23.7807777, 90.3492858], 12);
-    @endif
+        @endif
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 20,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
@@ -54,22 +67,11 @@ $userfirstlocation = Userlocation::where('user_id', $user->id)->whereNotNull('lo
                 .openOn(userlocationmap);
         }
 
-//        myguardmap.on('click', onGuardMapClick);
+        //        myguardmap.on('click', onGuardMapClick);
 
         var latlngs = [];
         var colors = ['red', 'yellow', 'green', 'blue', 'orange', 'black', 'white'];
 
-        <?php
-
-        $today = date('Y-m-d');
-        $tomorrow=date("Y-m-d",strtotime("tomorrow"));
-        $userlocations = Userlocation::with('user')
-            ->where('user_id', $user->id)
-            ->where('created_at','>=',$today)
-            ->where('created_at','<=',$tomorrow)
-            ->orderBy('created_at', 'desc')
-            ->remember(cacheTime('medium'))->get();
-        ?>
         @foreach($userlocations as $userlocation)
         @if(isset($userlocation->latitude,$userlocation->longitude))
         //pushing polyline values in the latings array
@@ -83,8 +85,8 @@ $userfirstlocation = Userlocation::where('user_id', $user->id)->whereNotNull('lo
                 autoPan: false
             })
             .openPopup();
-        @endif
-        @endforeach
+                @endif
+                @endforeach
         var randomColor = colors[Math.floor(Math.random() * colors.length)];
         //creating polyline
         var polyline = L.polyline(latlngs, {color: randomColor});
