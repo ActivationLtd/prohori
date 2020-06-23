@@ -1,7 +1,9 @@
 <ul class="sidebar-menu">
     @if(user())
-        <li><a href="{{route("tasks.create")}}" class="bg-green"><i class="fa fa-plus"></i><span>{{Lang::get('messages.Create-New-Task')}}</span></a>
-        </li>
+        @if(user()->isManagerUser())
+            <li><a href="{{route("tasks.create")}}" class="bg-green"><i class="fa fa-plus"></i><span>{{Lang::get('messages.Create-New-Task')}}</span></a>
+            </li>
+        @endif
         <li><a href="{{route("home")}}"><i
                         class="fa fa-desktop"></i><span>{{Lang::get('messages.Dashboard')}}</span></a></li>
 
@@ -20,7 +22,7 @@
                 $current_module_name = $mod->name;
                 $breadcrumbs = breadcrumb($mod);
             }
-            renderMenuTree(\App\Modulegroup::tree(),$current_module_name,$breadcrumbs);
+            renderMenuTree(\App\Modulegroup::tree(), $current_module_name, $breadcrumbs);
             ?>
             {{--<li class="header">LABELS</li>--}}
             {{--<li><a href="#"><i class="fa fa-circle-o text-red"></i> <span>Important</span></a></li>--}}
@@ -28,7 +30,7 @@
             {{--<li><a href="#"><i class="fa fa-circle-o text-aqua"></i> <span>Information</span></a></li>--}}
         @else
             {{--if user is manager--}}
-            @if(user()->inGroupId(5))
+            @if(user()->isManagerUser())
                 <?php
                 $module_names = [
                     'tasks',
@@ -36,6 +38,24 @@
                     //'clients',
                     'uploads',
                     'messages',
+                ];
+                ?>
+                @foreach($module_names as $name)
+                    <?php
+                    /** @var \App\Module $module */
+                    $module = \App\Module::where('name', $name)->remember(cacheTime('long'))->first()?>
+                    <li><a href="{{route("{$module->name}.index")}}"><i
+                                    class="{{$module->icon_css}}"></i>{{Lang::get('messages.'.$module->title)}}</a>
+                    </li>
+                @endforeach
+            @endif
+            @if(user()->isClientUser())
+                <?php
+                $module_names = [
+                    'users',
+                    'clients',
+                    'clientlocations',
+
                 ];
                 ?>
                 @foreach($module_names as $name)

@@ -54,7 +54,8 @@
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
 <div class="clearfix"></div>
 @if(user()->isSuperUser())
-    @include('form.input-text',['var'=>['name'=>'email_verified_at','label'=>'Email verified at', 'container_class'=>'col-sm-3']])
+    @include('form.input-text',['var'=>['name'=>'email_verified_at','label'=>'Email verified at', 'container_class'=>'col-sm-3'
+    ,'params'=>['id' => 'email_verified_at']]])
     @include('form.select-array',['var'=>['name'=>'is_active','label'=>'Active', 'options'=>['1'=>'Yes',''=>'No'],'container_class'=>'col-sm-3']])
     <div class="clearfix"></div>
     <?php
@@ -63,6 +64,7 @@
         'label' => 'Groups',
         'query' => new \App\Group,
         'container_class' => 'col-md-3',
+        'params' => ['id' => 'groups'],
         'name_field' => 'title',
     ];
     ?>
@@ -76,6 +78,7 @@
     ];
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
+
     <?php
     $var = [
         'name' => 'operating_area_ids',
@@ -86,7 +89,15 @@
     ?>
     @include('form.select-model-multiple', ['var'=>$var])
 
+    <div class="clearfix"></div>
+    <div class="opt_6">
+        {{--client_id--}}
+        @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client').'(Only Applicable for Guard and Client Users)','query'=> new \App\Client,'container_class'=>'col-md-4']])
+        {{-- clientlocation_id --}}
+        @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location').'(Only Applicable for Guard and Client Users)','query'=> new \App\Clientlocation,'container_class'=>'col-md-4']])
+    </div>
 @endif
+
 <div class="clearfix"></div>
 <div class="panel-group" id="accordion">
     <div class="panel panel-default">
@@ -144,7 +155,6 @@
             <div id="other_info" class="panel-collapse collapse" style="margin:15px 0;">
                 <div class="col-md-12">
                     {{--auth_token--}}
-
                     <div class="col-md-12 no-padding">
                         @if(isset($user) && $user->api_token != null)
                             <b>Current API token (X-Auth-Token):</b> <code class="">{{$user->api_token}}</code>
@@ -219,14 +229,36 @@
 
         }
 
+        function showFieldsBasedOnGroups() {
+            $('.opt_6').hide();
+            var group_ids = getMultiSelectAsArray('select#groups');
+            console.log(group_ids);
+            //showing div based on selected groups
+            $.each(group_ids, function (key, value) {
+                if (value == 6 || value == 7) {
+                    $(".opt_6").show();
+                    //$("select[name=vendor_id]").addClass('validate[required]');
+                    //$("select[name=reseller_id]").removeClass('validate[required]');
+                }
+            });
+            //clearing the value of vendor if not selected
+            if (!group_ids.includes('6') && !group_ids.includes('7')) {
+                $('select[name=client_id]').val(null);
+                $('select[name=clientlocation_id]').val(null);
+            }
+            $('select#groups').change(function () {
+                showFieldsBasedOnGroups();
+            });
+        }
+
         /**
          * dynamic selection of client location based on client selection
          */
         function dynamicClientLocation() {
-            $('#assignedlocationform select[name=client_id]').change(function () { // change function of listbox
-                var client_id = $('#assignedlocationform select[name=client_id]').select2('val');
+            $('select[name=client_id]').change(function () { // change function of listbox
+                var client_id = $('select[name=client_id]').select2('val');
                 //clearing the data , empty the options , enable it with current options
-                $("#assignedlocationform select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
+                $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
                 $.ajax({
                     type: "get",
                     datatype: 'json',
@@ -235,9 +267,9 @@
                         client_id: client_id,
                     },
                     success: function (response) {
-                        console.log(response.data);
+                        //console.log(response.data);
                         $.each(response.data, function (i, obj) {
-                            $("#assignedlocationform select[name=clientlocation_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                            $("select[name=clientlocation_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
                         });
                     },
                 });
@@ -246,9 +278,8 @@
         }
 
 
-
         function addDateTimePicker() {
-            $('#from,#till').datetimepicker({
+            $('#email_verified_at #from #till').datetimepicker({
                 format: 'YYYY-MM-DD HH:mm'
             });
         }
@@ -315,12 +346,14 @@
 
             // 2. instantiate validation function with a handler function which updates the DOM upon successful operation. i.e. add a new row in a table if store is successful.
             enableValidation('assignedlocationform', storeAssignedlocationsSuccessHandler);
+
             // 3. specific handler function. Name should be unique
             function storeAssignedlocationsSuccessHandler(ret) {
                 assignedLocationVue.assignedLocations.push(ret.data); // Push the new element into vue array.
                 $('#assignedlocationform').trigger("reset"); // reset the form selection before hiding. This form will be again visible when you add the next item.
             }
         }
+
         userAssignedLocationVueImplementation();
         /*******************************************************************/
         // Updating :
@@ -357,7 +390,8 @@
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         /*******************************************************************/
-        $("#assignedlocationform select[name=clientlocation_id]").attr('disabled', true);
+        //showFieldsBasedOnGroups(); //todo not working have to check with raihan bhai
+        $("select[name=clientlocation_id]").attr('disabled', true);
         dynamicClientLocation();
         addDateTimePicker();
     </script>

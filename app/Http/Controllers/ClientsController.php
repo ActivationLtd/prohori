@@ -63,20 +63,20 @@ class ClientsController extends ModulebaseController
      *
      * @return $this|mixed
      */
-    // public function gridQuery()
-    // {
-    //     $query = $this->sourceTables()->select($this->selectColumns());
-    //
-    //     // Inject tenant context in grid query
-    //     if ($tenant_id = inTenantContext($this->module_name)) {
-    //         $query = injectTenantIdInModelQuery($this->module_name, $query);
-    //     }
-    //
-    //     // Exclude deleted rows
-    //     $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
-    //
-    //     return $query;
-    // }
+    public function gridQuery()
+    {
+        $query = $this->sourceTables()->select($this->selectColumns());
+
+        // Inject tenant context in grid query
+        if (user()->inGroupId(7)) {
+            $query = $query->where($this->module_name.'.id', user()->client_id);
+        }
+
+        // Exclude deleted rows
+        $query = $query->whereNull($this->module_name.'.deleted_at'); // Skip deleted rows
+
+        return $query;
+    }
 
     /**
      * Modify datatable values

@@ -10,6 +10,23 @@ $tomorrow = date("Y-m-d", strtotime("tomorrow"));
 $users = User::where('group_ids_csv', '6')->get();
 
 ?>
+<!--todo add filter for guard map-->
+{{--<div class="row">--}}
+    {{--<div class="col-md-12">--}}
+        {{--<form  method="POST" id="mapfilters" name="mapfilter" action="{{route('custom.guard-location-filter')}}">--}}
+            {{--@csrf--}}
+            {{--@include('form.select-model',['var'=>['name'=>'client_id','label'=>'Client','table'=>'clients', 'container_class'=>'col-sm-4']])--}}
+
+            {{--@include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','table'=>'clientlocationtypes', 'container_class'=>'col-sm-4']])--}}
+            {{--<div class="clearfix"></div>--}}
+            {{--@include('form.select-model',['var'=>['name'=>'division_id','label'=>'Division','table'=>'divisions', 'container_class'=>'col-sm-3']])--}}
+            {{--@include('form.select-model',['var'=>['name'=>'district_id','label'=>'District','table'=>'districts', 'container_class'=>'col-sm-3']])--}}
+            {{--@include('form.select-model',['var'=>['name'=>'upazila_id','label'=>'Upazila','table'=>'upazilas', 'container_class'=>'col-sm-3']])--}}
+            {{--<div class="clearfix"></div>--}}
+            {{--<button class="btn-light" type="submit" id="mapfiltersubmit">Filter</button>--}}
+        {{--</form>--}}
+    {{--</div>--}}
+{{--</div>--}}
 <div class="row">
     <div class="col-md-12">
         <h4>See Guard Location in map</h4>

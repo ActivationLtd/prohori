@@ -66,6 +66,7 @@ Route::middleware(['auth'])->group(function () use ($modules, $modulegroups) {
     #route for custom list
     Route::get('user-client-list-ajax',['as'=>'custom.user-client-list','uses'=>'UsersController@customClientList']);
     Route::get('user-client-location-list-ajax',['as'=>'custom.user-client-location-list','uses'=>'UsersController@customClientLocationList']);
+    Route::post('guard-location-filter',['as'=>'custom.guard-location-filter','uses'=>'UserlocationsController@guardLocationFilter']);
 });
 
 Route::get('test', 'MiscController@test')->name('misc.test');

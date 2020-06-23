@@ -88,7 +88,10 @@ class Clientlocation extends Basemodule
      *
      * @var array
      */
-    protected $fillable = ['uuid', 'name','tenant_id', 'division_id', 'district_id', 'upazila_id', 'latitude', 'longitude', 'client_id', 'operatingarea_id', 'clientlocationtype_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = [
+        'uuid', 'name', 'tenant_id', 'division_id', 'district_id', 'upazila_id', 'latitude', 'longitude', 'client_id', 'operatingarea_id',
+        'clientlocationtype_id', 'is_active', 'created_by', 'updated_by', 'deleted_by'
+    ];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
@@ -112,10 +115,11 @@ class Clientlocation extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = []) {
+    public static function rules($element, $merge = [])
+    {
         $rules = [
-            'name' => 'required|between:1,255|unique:clientlocations,name,' . (isset($element->id) ? "$element->id" : 'null') . ',id,deleted_at,NULL',
-            'operatingarea_id'=>'required|gt:0',
+            'name' => 'required|between:1,255|unique:clientlocations,name,'.(isset($element->id) ? "$element->id" : 'null').',id,deleted_at,NULL',
+            'operatingarea_id' => 'required|gt:0',
             'client_id' => 'required|gt:0',
             'clientlocationtype_id' => 'required|gt:0',
             //'is_active' => 'required|in:1,0',
@@ -147,7 +151,8 @@ class Clientlocation extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
         Clientlocation::observe(ClientlocationObserver::class);
 
@@ -195,7 +200,7 @@ class Clientlocation extends Basemodule
         // for the first time.
         /************************************************************/
         static::created(function (Clientlocation $element) {
-            $element->is_active=1;
+            $element->is_active = 1;
         });
 
         /************************************************************/
@@ -300,14 +305,20 @@ class Clientlocation extends Basemodule
      * @param null $user_id
      * @return bool
      */
-    //    public function isViewable($user_id = null)
-    //    {
-    //        $valid = false;
-    //        if ($valid = spyrElementViewable($this, $user_id)) {
-    //            //if ($valid && somethingElse()) $valid = false;
-    //        }
-    //        return $valid;
-    //    }
+    public function isViewable($user_id = null, $set_msg = false)
+    {
+        $user = user($user_id);
+        $valid = true;
+        if (! spyrElementViewable($this, $user_id, $set_msg)) {
+            return false;
+        }
+        if ($user->isClientUser()) {
+            if ($this->client_id == $user->client_id) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Checks if the $module is editable by current or any user passed as parameter.
@@ -407,7 +418,8 @@ class Clientlocation extends Basemodule
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function division() {
+    public function division()
+    {
         return $this->belongsTo(Division::class);
     }
 
@@ -415,7 +427,8 @@ class Clientlocation extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
 
-    public function district() {
+    public function district()
+    {
         return $this->belongsTo(District::class);
     }
 
@@ -423,7 +436,8 @@ class Clientlocation extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
 
-    public function upazila() {
+    public function upazila()
+    {
         return $this->belongsTo(Upazila::class);
     }
 
@@ -431,7 +445,8 @@ class Clientlocation extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
 
-    public function client() {
+    public function client()
+    {
         return $this->belongsTo(Client::class);
     }
 
@@ -439,7 +454,8 @@ class Clientlocation extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
 
-    public function operatingarea() {
+    public function operatingarea()
+    {
         return $this->belongsTo(Operatingarea::class);
     }
 
@@ -447,7 +463,8 @@ class Clientlocation extends Basemodule
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
 
-    public function clientlocationtype() {
+    public function clientlocationtype()
+    {
         return $this->belongsTo(Clientlocationtype::class);
     }
     ############################################################################################

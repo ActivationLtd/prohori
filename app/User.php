@@ -447,6 +447,10 @@ class User extends Authenticatable implements MustVerifyEmail
             if (is_array($group_ids) && (count($group_ids) > $max_groups)) {
                 $valid = setError("You can assign only {$max_groups} group.");
             }
+            //client id should only be filled for Guard and Client User
+            if (is_array($group_ids) && !in_array($group_ids[0],['6','7']) && isset($element->client_id)) {
+                $valid = setError("You can assign client id only for client user or guard user");
+            }
             if (is_array($group_ids) && count($group_ids)) {
                 $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
                 $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
@@ -719,8 +723,11 @@ class User extends Authenticatable implements MustVerifyEmail
 
             if ($this->id == $user->id) {
                 return true;
-            }else{
-                return false;
+            }
+        }
+        if($user->isClientUser()){
+            if($this->client_id==$user->client_id){
+                return true;
             }
         }
         return false;
