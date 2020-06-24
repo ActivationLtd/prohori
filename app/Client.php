@@ -280,9 +280,11 @@ class Client extends Basemodule
     public function isViewable($user_id = null, $set_msg = false)
     {
         $user = user($user_id);
-        $valid = true;
         if (! spyrElementViewable($this, $user_id, $set_msg)) {
             return false;
+        }
+        if($user->isSuperUser()){
+            return true;
         }
         if ($user->isClientUser()) {
             if ($this->id == $user->client_id) {

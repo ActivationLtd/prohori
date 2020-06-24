@@ -48,8 +48,11 @@
     @include('form.input-text',['var'=>['name'=>'password_confirmation','type'=>'password','label'=>'Confirm password', 'container_class'=>'col-sm-3']])
 @endif
 <div class="clearfix"></div>
+{{--designation field--}}
 @include('form.select-model',['var'=>['name'=>'designation_id','label'=>'Designation','table'=>'designations','container_class'=>'col-sm-3']])
+{{--department field--}}
 @include('form.select-model',['var'=>['name'=>'department_id','label'=>'Department','table'=>'departments','container_class'=>'col-sm-3']])
+{{--employee id field--}}
 @include('form.input-text',['var'=>['name'=>'employee_id','label'=>'Employee Id','container_class'=>'col-sm-3']])
 {{--@include('form.input-text',['var'=>['name'=>'name','label'=>'User name(login name)', 'container_class'=>'col-sm-3']])--}}
 <div class="clearfix"></div>
@@ -224,7 +227,10 @@
         /*******************************************************************/
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
-            //$("input[name=name]").addClass('validate[required]');
+            $("input[name=first_name]").addClass('validate[required]');
+            $("input[name=last_name]").addClass('validate[required]');
+            $("input[name=email]").addClass('validate[required]');
+            $("input[select=group_ids]").addClass('validate[required]');
             // $('input[name=due_date]').addClass('validate[required]');
 
         }
@@ -277,9 +283,11 @@
             });
         }
 
-
+        /**
+         * Time picker function
+         */
         function addDateTimePicker() {
-            $('#email_verified_at #from #till').datetimepicker({
+            $('#email_verified_at#from #till').datetimepicker({
                 format: 'YYYY-MM-DD HH:mm'
             });
         }

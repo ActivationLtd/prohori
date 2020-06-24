@@ -451,10 +451,12 @@ class User extends Authenticatable implements MustVerifyEmail
             if (is_array($group_ids) && !in_array($group_ids[0],['6','7']) && isset($element->client_id)) {
                 $valid = setError("You can assign client id only for client user or guard user");
             }
+            //filling title
             if (is_array($group_ids) && count($group_ids)) {
                 $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
                 $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
+            //watchers can not be same with user
             if(isset($element->watchers)){
                 if(in_array($element->id,$element->watchers)){
                     $valid=setError("Watcher can not be the same user");
@@ -716,7 +718,6 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         // Allow super user
         if ($user->isSuperUser()) {
-
             return true;
         }
         if ($user->isManagerUser()) {
