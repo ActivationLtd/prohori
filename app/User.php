@@ -448,7 +448,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 $valid = setError("You can assign only {$max_groups} group.");
             }
             //client id should only be filled for Guard and Client User
-            if (is_array($group_ids) && !in_array($group_ids[0],['6','7']) && isset($element->client_id)) {
+            if (is_array($group_ids) && in_array($group_ids[0],['6','7']) && $element->client_id == 0) {
                 $valid = setError("You can assign client id only for client user or guard user");
             }
             //filling title
