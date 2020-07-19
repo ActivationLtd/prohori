@@ -268,7 +268,7 @@
                 $.ajax({
                     type: "get",
                     datatype: 'json',
-                    url: '{{route('clientlocations.list-json')}}',
+                    url: '{{route('clientlocations.list-json').'?force_all_data=true'}}',
                     data: {
                         client_id: client_id,
                     },
