@@ -24,7 +24,7 @@ $userlocations = Userlocation::with('user')
     ->where('created_at', '>=', $today)
     ->where('created_at', '<=', $tomorrow)
     ->orderBy('created_at', 'desc')
-    ->remember(cacheTime('medium'))->get();
+    ->remember(cacheTime('medium'))->limit(30)->get();
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -45,11 +45,9 @@ $userlocations = Userlocation::with('user')
             integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
             crossorigin=""></script>
     <script>
-
-                @if(isset($userfirstlocation->latitude,$userfirstlocation->longitude))
-        var userlocationmap = L.map('userlocationmapid').setView([{{$userfirstlocation->latitude}}, {{$userfirstlocation->longitude}}], 12);
-                @else
         var userlocationmap = L.map('userlocationmapid').setView([23.7807777, 90.3492858], 12);
+        @if(isset($userfirstlocation->latitude,$userfirstlocation->longitude))
+            userlocationmap = L.map('userlocationmapid').setView([{{$userfirstlocation->latitude}}, {{$userfirstlocation->longitude}}], 12);
         @endif
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 20,

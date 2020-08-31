@@ -9,7 +9,7 @@
                 @include('dashboards.guard.widgets.count-cards')
                 <div class="clearfix"></div>
                 <div id="area-2" class="col-md-12 pull-left ">
-                    @include('dashboards.guard.widgets.map')
+                    @include('dashboards.guard.widgets.task_map')
                 </div>
             </div>
 

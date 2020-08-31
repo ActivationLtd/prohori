@@ -65,7 +65,7 @@ $users = User::where('group_ids_csv', '6')->get();
 
         //        myguardmap.on('click', onGuardMapClick);
 
-                @foreach($users as $user)
+        @foreach($users as $user)
         var latlngs = [];
         var colors = ['red', 'yellow', 'green', 'blue', 'orange', 'black', 'white'];
 
@@ -75,7 +75,7 @@ $users = User::where('group_ids_csv', '6')->get();
             ->where('created_at', '>=', $today)
             ->where('created_at', '<=', $tomorrow)
             ->orderBy('created_at', 'desc')
-            ->remember(cacheTime('medium'))->get();
+            ->remember(cacheTime('medium'))->limit(20)->get();
         ?>
         @foreach($userlocations as $userlocation)
         @if(isset($userlocation->latitude,$userlocation->longitude))
