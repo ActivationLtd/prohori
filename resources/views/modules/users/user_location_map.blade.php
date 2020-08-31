@@ -45,10 +45,15 @@ $userlocations = Userlocation::with('user')
             integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
             crossorigin=""></script>
     <script>
-        var userlocationmap = L.map('userlocationmapid').setView([23.7807777, 90.3492858], 12);
+        var start_latitude = 23.7807777;
+        var start_longitude = 90.3492858;
         @if(isset($userfirstlocation->latitude,$userfirstlocation->longitude))
-            userlocationmap = L.map('userlocationmapid').setView([{{$userfirstlocation->latitude}}, {{$userfirstlocation->longitude}}], 12);
+            start_latitude = '{{$userfirstlocation->latitude}}';
+            start_longitude = '{{$userfirstlocation->longitude}}';
         @endif
+
+        userlocationmap = L.map('userlocationmapid').setView([start_latitude, start_longitude], 12);
+
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 20,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
