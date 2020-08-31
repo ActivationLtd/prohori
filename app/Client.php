@@ -75,26 +75,30 @@ class Client extends Basemodule
     //use IsoModule;
     /**
      * Mass assignment fields (White-listed fields)
+     *
      * @var array
      */
     protected $fillable = [
-        'uuid', 'name', 'code', 'description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile','is_active', 'created_by',
+        'uuid', 'name', 'code', 'description', 'address1', 'address2', 'city', 'county', 'country_id', 'zip_code', 'phone', 'mobile', 'is_active', 'created_by',
         'updated_by', 'deleted_by'
     ];
 
     /**
      * Disallow from mass assignment. (Black-listed fields)
+     *
      * @var array
      */
     // protected $guarded = [];
 
     /**
      * Date fields
+     *
      * @var array
      */
     // protected $dates = ['created_at', 'updated_at', 'deleted_at'];
     /**
      * Custom validation messages.
+     *
      * @var array
      */
     public static $custom_validation_messages = [
@@ -104,8 +108,9 @@ class Client extends Basemodule
     /**
      * Validation rules. For regular expression validation use array instead of pipe
      * Example: 'name' => ['required', 'Regex:/^[A-Za-z0-9\-! ,\'\"\/@\.:\(\)]+$/']
+     *
      * @param       $element
-     * @param  array  $merge
+     * @param  array $merge
      * @return array
      */
     public static function rules($element, $merge = [])
@@ -126,6 +131,7 @@ class Client extends Basemodule
 
     /**
      * Automatic eager load relation by default (can be expensive)
+     *
      * @var array
      */
     // protected $with = ['relation1', 'relation2'];
@@ -133,7 +139,6 @@ class Client extends Basemodule
     ############################################################################################
     # Model events
     ############################################################################################
-
 
     public static function boot()
     {
@@ -219,7 +224,7 @@ class Client extends Basemodule
     ############################################################################################
 
     /**
-     * @param  bool|false  $setMsgSession  setting it false will not store the message in session
+     * @param  bool|false $setMsgSession setting it false will not store the message in session
      * @return bool
      */
     //    public function isSomethingDoable($setMsgSession = false)
@@ -247,6 +252,7 @@ class Client extends Basemodule
     /**
      * Static functions needs to be called using Model::function($id)
      * Inside static function you may need to query and get the element
+     *
      * @param $id
      */
     // public static function someOtherAction($id) { }
@@ -267,24 +273,34 @@ class Client extends Basemodule
      * spyrElementViewable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     *
+     * @param  null $user_id
      * @return bool
      */
-    //    public function isViewable($user_id = null)
-    //    {
-    //        $valid = false;
-    //        if ($valid = spyrElementViewable($this, $user_id)) {
-    //            //if ($valid && somethingElse()) $valid = false;
-    //        }
-    //        return $valid;
-    //    }
+    public function isViewable($user_id = null, $set_msg = false)
+    {
+        $user = user($user_id);
+        if (! spyrElementViewable($this, $user_id, $set_msg)) {
+            return false;
+        }
+        if($user->isSuperUser()){
+            return true;
+        }
+        if ($user->isClientUser()) {
+            if ($this->id == $user->client_id) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Checks if the $module is editable by current or any user passed as parameter.
      * spyrElementEditable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     *
+     * @param  null $user_id
      * @return bool
      */
     //    public function isEditable($user_id = null)
@@ -301,7 +317,8 @@ class Client extends Basemodule
      * spyrElementDeletable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     *
+     * @param  null $user_id
      * @return bool
      */
     //    public function isDeletable($user_id = null)
@@ -318,7 +335,8 @@ class Client extends Basemodule
      * spyrElementRestorable() is the primary default checker based on permission
      * whether this should be allowed or not. The logic can be further
      * extend to implement more conditions.
-     * @param  null  $user_id
+     *
+     * @param  null $user_id
      * @return bool
      */
     //    public function isRestorable($user_id = null)

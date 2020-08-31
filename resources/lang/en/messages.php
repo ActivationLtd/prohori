@@ -18,6 +18,7 @@ return [
     'Uploads'=>'Uploads',
     'Message'=>'Message',
     'Client'=>'Client',
+    'Client location'=>'Client Location',
     'Task-summary'=>'Task summary',
     'Current-task'=>'Current Task',
     'Assigned'=>'Assigned',

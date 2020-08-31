@@ -35,6 +35,10 @@ class HomeController extends Controller
 
             return view("dashboards.guard.index");
         }
+        if ($user->isClientUser()) {
+
+            return view("dashboards.client.index");
+        }
 
         return view("dashboards.default.index");
     }

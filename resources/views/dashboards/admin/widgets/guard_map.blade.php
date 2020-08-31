@@ -1,15 +1,32 @@
 <?php
-
-$today = date('Y-m-d');
-$tomorrow=date("Y-m-d",strtotime("tomorrow"));
-
 /*
  * Documentation :
  * https://developers.google.com/chart/interactive/docs/gallery/barchart
  */
 use App\User;
 use App\Userlocation;
+$today = date('Y-m-d');
+$tomorrow = date("Y-m-d", strtotime("tomorrow"));
+$users = User::where('group_ids_csv', '6')->get();
+
 ?>
+<!--todo add filter for guard map-->
+{{--<div class="row">--}}
+    {{--<div class="col-md-12">--}}
+        {{--<form  method="POST" id="mapfilters" name="mapfilter" action="{{route('custom.guard-location-filter')}}">--}}
+            {{--@csrf--}}
+            {{--@include('form.select-model',['var'=>['name'=>'client_id','label'=>'Client','table'=>'clients', 'container_class'=>'col-sm-4']])--}}
+
+            {{--@include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','table'=>'clientlocationtypes', 'container_class'=>'col-sm-4']])--}}
+            {{--<div class="clearfix"></div>--}}
+            {{--@include('form.select-model',['var'=>['name'=>'division_id','label'=>'Division','table'=>'divisions', 'container_class'=>'col-sm-3']])--}}
+            {{--@include('form.select-model',['var'=>['name'=>'district_id','label'=>'District','table'=>'districts', 'container_class'=>'col-sm-3']])--}}
+            {{--@include('form.select-model',['var'=>['name'=>'upazila_id','label'=>'Upazila','table'=>'upazilas', 'container_class'=>'col-sm-3']])--}}
+            {{--<div class="clearfix"></div>--}}
+            {{--<button class="btn-light" type="submit" id="mapfiltersubmit">Filter</button>--}}
+        {{--</form>--}}
+    {{--</div>--}}
+{{--</div>--}}
 <div class="row">
     <div class="col-md-12">
         <h4>See Guard Location in map</h4>
@@ -46,10 +63,8 @@ use App\Userlocation;
                 .openOn(userlocationmap);
         }
 
-//        myguardmap.on('click', onGuardMapClick);
-            <?php
-            $users = User::where('group_ids_csv', '6')->get();
-            ?>
+        //        myguardmap.on('click', onGuardMapClick);
+
         @foreach($users as $user)
         var latlngs = [];
         var colors = ['red', 'yellow', 'green', 'blue', 'orange', 'black', 'white'];
@@ -57,10 +72,10 @@ use App\Userlocation;
         <?php
         $userlocations = Userlocation::with('user')
             ->where('user_id', $user->id)
-            ->where('created_at','>=',$today)
-            ->where('created_at','<=',$tomorrow)
+            ->where('created_at', '>=', $today)
+            ->where('created_at', '<=', $tomorrow)
             ->orderBy('created_at', 'desc')
-            ->remember(cacheTime('medium'))->get();
+            ->remember(cacheTime('medium'))->limit(20)->get();
         ?>
         @foreach($userlocations as $userlocation)
         @if(isset($userlocation->latitude,$userlocation->longitude))
@@ -75,8 +90,8 @@ use App\Userlocation;
                 autoPan: false
             })
             .openPopup();
-        @endif
-        @endforeach
+                @endif
+                @endforeach
         var randomColor = colors[Math.floor(Math.random() * colors.length)];
         //creating polyline
         var polyline = L.polyline(latlngs, {color: randomColor});

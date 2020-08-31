@@ -447,10 +447,16 @@ class User extends Authenticatable implements MustVerifyEmail
             if (is_array($group_ids) && (count($group_ids) > $max_groups)) {
                 $valid = setError("You can assign only {$max_groups} group.");
             }
+            //client id should only be filled for Guard and Client User
+            if (is_array($group_ids) && in_array($group_ids[0],['6','7']) && $element->client_id == 0) {
+                $valid = setError("You can assign client id only for client user or guard user");
+            }
+            //filling title
             if (is_array($group_ids) && count($group_ids)) {
                 $element->group_ids_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('id')->toArray());
                 $element->group_titles_csv = implode(',', Group::whereIn('id', $group_ids)->pluck('title')->toArray());
             }
+            //watchers can not be same with user
             if(isset($element->watchers)){
                 if(in_array($element->id,$element->watchers)){
                     $valid=setError("Watcher can not be the same user");
@@ -712,15 +718,17 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         // Allow super user
         if ($user->isSuperUser()) {
-
             return true;
         }
         if ($user->isManagerUser()) {
 
             if ($this->id == $user->id) {
                 return true;
-            }else{
-                return false;
+            }
+        }
+        if($user->isClientUser()){
+            if($this->client_id==$user->client_id){
+                return true;
             }
         }
         return false;

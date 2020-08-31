@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Clientlocation;
+use App\User;
+use App\Userlocation;
 use DB;
-
+use Request;
 class UserlocationsController extends ModulebaseController
 {
 
@@ -59,20 +62,20 @@ class UserlocationsController extends ModulebaseController
      *
      * @return $this|mixed
      */
-    // public function gridQuery()
-    // {
-    //     $query = $this->sourceTables()->select($this->selectColumns());
-    //
-    //     // Inject tenant context in grid query
-    //     if ($tenant_id = inTenantContext($this->module_name)) {
-    //         $query = injectTenantIdInModelQuery($this->module_name, $query);
-    //     }
-    //
-    //     // Exclude deleted rows
-    //     $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
-    //
-    //     return $query;
-    // }
+    public function gridQuery()
+    {
+        $query = $this->sourceTables()->select($this->selectColumns());
+
+        // Inject tenant context in grid query
+        // if (user()->inGroupId(7)) {
+        //     $query = $query->where($this->module_name.'.client_id', user()->client_id);
+        // }
+
+        // Exclude deleted rows
+        $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
+
+        return $query;
+    }
 
     /**
      * Modify datatable values
@@ -155,4 +158,56 @@ class UserlocationsController extends ModulebaseController
     //     return $inputs;
     // }
     // ****************** transformInputs functions end ***********************
+
+    public function guardLocationFilter(){
+
+        $division_id=$district_id=$upazila_id=$client_id=$clientlocationtype_id=null;
+        if(Request::has('division_id'))
+        {
+            $division_id=Request::get('division_id');
+        }
+        if(Request::has('district_id'))
+        {
+            $district_id=Request::get('district_id');
+        }
+        if(Request::has('upazila_id'))
+        {
+            $upazila_id=Request::get('upazila_id');
+        }
+        if(Request::has('client_id'))
+        {
+            $client_id=Request::get('client_id');
+        }
+        if(Request::has('clientlocationtype_id'))
+        {
+            $clientlocationtype_id=Request::get('clientlocationtype_id');
+        }
+        $client_locations=Clientlocation::
+            where('is_active',1)
+            ->whereNull('deleted_at');
+
+        if($division_id != 0){
+            $client_locations=$client_locations->where('division_id',$division_id);
+        }
+        if($district_id != 0){
+            $client_locations=$client_locations->where('district_id',$district_id);
+        }
+        if($upazila_id != 0){
+            $client_locations=$client_locations->where('upazila_id',$upazila_id);
+        }
+        if($client_id != 0){
+            $client_locations=$client_locations->where('client_id',$client_id);
+        }
+        if($clientlocationtype_id != 0){
+            $client_locations=$client_locations->where('clientlocationtype_id',$clientlocationtype_id);
+        }
+        $client_locations=$client_locations->pluck('id');
+        $user_ids=User::whereIn('clientlocation_id',$client_locations)->pluck('id');
+        $user_locations=Userlocation::whereIn('user_id',$user_ids)->get();
+
+
+
+        return $user_locations;
+
+    }
 }

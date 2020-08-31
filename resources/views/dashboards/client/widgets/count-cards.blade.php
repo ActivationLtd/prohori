@@ -1,12 +1,9 @@
 <?php
 use App\Task;
-use App\User;
-
-$user_ids=User::where('client_id',user()->client_id)->pluck('id');
-$task_assigned=Task::remember(cacheTime('medium'))->whereIn('assigned_to',$user_ids)->whereIn('status',['To do','In Progress'])->count();
-$task_completed=Task::remember(cacheTime('medium'))->where('assigned_to',$user_ids)->whereIn('status',['Done','Closed'])->count();
-$task_inprogress=Task::remember(cacheTime('medium'))->where('assigned_to',$user_ids)->whereIn('status',['In Progress'])->count();
-$task_due=Task::remember(cacheTime('medium'))->where('assigned_to',$user_ids)->whereNotIn('status',['Done','Closed'])->where('due_date','<',now())->count();
+$task_assigned=Task::remember(cacheTime('medium'))->where('assigned_to',user()->id)->whereIn('status',['To do','In Progress'])->count();
+$task_completed=Task::remember(cacheTime('medium'))->where('assigned_to',user()->id)->whereIn('status',['Done','Closed'])->count();
+$task_inprogress=Task::remember(cacheTime('medium'))->where('assigned_to',user()->id)->whereIn('status',['In Progress'])->count();
+$task_due=Task::remember(cacheTime('medium'))->where('assigned_to',user()->id)->whereNotIn('status',['Done','Closed'])->where('due_date','<',now())->count();
 ?>
 <div class="row">
     <div class="col-md-12"><b>{{Lang::get('messages.Task-summary')}}</b></div>

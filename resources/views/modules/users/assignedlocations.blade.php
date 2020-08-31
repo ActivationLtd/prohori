@@ -11,10 +11,6 @@
     <input type="hidden" name="user_id" value="{{$user->id}}"/>
     <input type="hidden" name="is_active" value="1"/>
     <input type="hidden" name="ret" value="json"/>
-    {{--client_id--}}
-    @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-4']])
-    {{-- clientlocation_id --}}
-    @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-4']])
     <div class="clearfix"></div>
     @include('form.input-text',['var'=>['name'=>'from','label'=>'From', 'container_class'=>'col-sm-4','params'=>['id'=>'from']]])
     @include('form.input-text',['var'=>['name'=>'till','label'=>'Till', 'container_class'=>'col-sm-4','params'=>['id'=>'till']]])

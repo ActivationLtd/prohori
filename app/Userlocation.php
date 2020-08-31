@@ -259,14 +259,20 @@ class Userlocation extends Basemodule
      * @param null $user_id
      * @return bool
      */
-    //    public function isViewable($user_id = null)
-    //    {
-    //        $valid = false;
-    //        if ($valid = spyrElementViewable($this, $user_id)) {
-    //            //if ($valid && somethingElse()) $valid = false;
-    //        }
-    //        return $valid;
-    //    }
+       public function isViewable($user_id = null, $set_msg = false)
+       {
+           $user = user($user_id);
+           $valid = true;
+           if (!spyrElementViewable($this, $user_id, $set_msg)) {
+               return false;
+           }
+           // if($user->isClientUser()){
+           //     if($this->client_id==$user->client_id){
+           //         return true;
+           //     }
+           // }
+           return false;
+       }
 
     /**
      * Checks if the $module is editable by current or any user passed as parameter.

@@ -4,7 +4,7 @@ use App\Task;
 $tasks = Task::with(['assignee','clientlocation','tasktype'])->where('is_active', 1)
     ->orderBy('created_at', 'desc')
     ->whereIn('status', ['To do', 'In progress', 'Verify'])
-    ->remember(cacheTime('medium'))->get();
+    ->remember(cacheTime('medium'))->limit(300)->get();
 
 $status_map=[
     'To do' => 'todo',
