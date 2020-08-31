@@ -24,7 +24,7 @@ $userlocations = Userlocation::with('user')
     ->where('created_at', '>=', $today)
     ->where('created_at', '<=', $tomorrow)
     ->orderBy('created_at', 'desc')
-    ->remember(cacheTime('medium'))->limit(30)->get();
+    ->remember(cacheTime('medium'))->limit(150)->get();
 ?>
 <div class="row">
     <div class="col-md-12">
