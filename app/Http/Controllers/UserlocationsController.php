@@ -182,8 +182,7 @@ class UserlocationsController extends ModulebaseController
         {
             $clientlocationtype_id=Request::get('clientlocationtype_id');
         }
-        $client_locations=Clientlocation::
-            where('is_active',1)
+        $client_locations=Clientlocation::where('is_active',1)
             ->whereNull('deleted_at');
 
         if($division_id != 0){
@@ -201,9 +200,14 @@ class UserlocationsController extends ModulebaseController
         if($clientlocationtype_id != 0){
             $client_locations=$client_locations->where('clientlocationtype_id',$clientlocationtype_id);
         }
+
+
         $client_locations=$client_locations->pluck('id');
-        $user_ids=User::whereIn('clientlocation_id',$client_locations)->pluck('id');
-        $user_locations=Userlocation::whereIn('user_id',$user_ids)->get();
+        $user_ids=User::whereIn('clientlocation_id',$client_locations)->where('group_ids_csv', '6')->get();
+
+        return view('dashboards.admin.index',['users'=>$user_ids]);
+        return $user_ids;
+        //$user_locations=Userlocation::whereIn('user_id',$user_ids)->get();
 
 
 
