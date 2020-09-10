@@ -1,6 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Clientlocation;
+use Request;
+use Response;
 
 class ClientsController extends ModulebaseController
 {
@@ -114,4 +117,16 @@ class ClientsController extends ModulebaseController
     // }
 
     // ****************** Grid functions end *********************************
+
+    public function clientloacationBasedOnClient() {
+        $data = null;
+        if (Request::has('client_id')) {
+            $client_id = Request::get('client_id');
+            $clientlocations = Clientlocation::where('client_id', $client_id);
+            $data = $clientlocations->get();
+        }
+        $ret = ret('success', "", compact('data'));
+        return Response::json($ret);
+
+    }
 }

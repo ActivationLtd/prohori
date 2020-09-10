@@ -67,6 +67,9 @@ Route::middleware(['auth'])->group(function () use ($modules, $modulegroups) {
     Route::get('user-client-list-ajax',['as'=>'custom.user-client-list','uses'=>'UsersController@customClientList']);
     Route::get('user-client-location-list-ajax',['as'=>'custom.user-client-location-list','uses'=>'UsersController@customClientLocationList']);
     Route::post('guard-location-filter',['as'=>'custom.guard-location-filter','uses'=>'UserlocationsController@guardLocationFilter']);
+    Route::get('district-based-on-division',['as'=>'custom.district-based-on-division','uses'=>'DivisionsController@districtBasedOnDivision']);
+    Route::get('upazila-based-on-district',['as'=>'custom.upazila-based-on-district','uses'=>'DivisionsController@upazilaBasedOnDistrict']);
+    Route::get('clientloacation-based-on-client',['as'=>'custom.clientloacation-based-on-client','uses'=>'ClientsController@clientloacationBasedOnClient']);
 });
 
 Route::get('test', 'MiscController@test')->name('misc.test');

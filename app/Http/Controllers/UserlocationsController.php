@@ -161,7 +161,7 @@ class UserlocationsController extends ModulebaseController
 
     public function guardLocationFilter(){
 
-        $division_id=$district_id=$upazila_id=$client_id=$clientlocationtype_id=null;
+        $division_id=$district_id=$upazila_id=$client_id=$clientlocationtype_id=$clientlocation_id=$guard_user_id=null;
         if(Request::has('division_id'))
         {
             $division_id=Request::get('division_id');
@@ -182,6 +182,14 @@ class UserlocationsController extends ModulebaseController
         {
             $clientlocationtype_id=Request::get('clientlocationtype_id');
         }
+        if(Request::has('clientlocation_id'))
+        {
+            $clientlocation_id=Request::get('clientlocation_id');
+        }
+        if(Request::has('guard_user_id'))
+        {
+            $guard_user_id=Request::get('guard_user_id');
+        }
         $client_locations=Clientlocation::where('is_active',1)
             ->whereNull('deleted_at');
 
@@ -197,21 +205,29 @@ class UserlocationsController extends ModulebaseController
         if($client_id != 0){
             $client_locations=$client_locations->where('client_id',$client_id);
         }
+        if($clientlocation_id != 0){
+            $client_locations=$client_locations->where('id',$clientlocation_id);
+        }
         if($clientlocationtype_id != 0){
             $client_locations=$client_locations->where('clientlocationtype_id',$clientlocationtype_id);
         }
 
 
         $client_locations=$client_locations->pluck('id');
-        $user_ids=User::whereIn('clientlocation_id',$client_locations)->where('group_ids_csv', '6')->get();
+
+        $user_ids=User::whereIn('clientlocation_id',$client_locations)->where('group_ids_csv', '6');
+        if($guard_user_id != 0){
+            $user_ids=$user_ids->where('id',$guard_user_id);
+        }
+        $user_ids=$user_ids->get();
 
         return view('dashboards.admin.index',['users'=>$user_ids]);
-        return $user_ids;
+        //return $user_ids;
         //$user_locations=Userlocation::whereIn('user_id',$user_ids)->get();
 
 
 
-        return $user_locations;
+        //return $user_locations;
 
     }
 }

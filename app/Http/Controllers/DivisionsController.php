@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\District;
 use App\Module;
+use App\Upazila;
 use DB;
 use Redirect;
 use Request;
@@ -116,4 +118,37 @@ class DivisionsController extends ModulebaseController
     // }
 
     // ****************** Grid functions end *********************************
+
+    /**
+     * this fucntion will return client locations based on users operating areas
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function districtBasedOnDivision() {
+        $data = null;
+        if (Request::has('division_id')) {
+            $division_id = Request::get('division_id');
+            $districts = District::where('division_id', $division_id)->get();
+            $data = $districts;
+        }
+        $ret = ret('success', "", compact('data'));
+        return Response::json($ret);
+
+    }
+
+    /**
+     * this fucntion will return client locations based on users operating areas
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function upazilaBasedOnDistrict() {
+        $data = null;
+        if (Request::has('district_id') && Request::has('division_id')) {
+            $district_id = Request::get('district_id');
+            $division_id = Request::get('division_id');
+            $upazillas = Upazila::where('division_id', $division_id)->where('district_id', $district_id);
+            $data = $upazillas->get();
+        }
+        $ret = ret('success', "", compact('data'));
+        return Response::json($ret);
+
+    }
 }
