@@ -221,7 +221,12 @@ class UserlocationsController extends ModulebaseController
         }
         $user_ids=$user_ids->get();
 
-        return view('dashboards.admin.index',['users'=>$user_ids]);
+        if(user()->isSuperUser()){
+            return view('dashboards.admin.index',['users'=>$user_ids]);
+        }
+        return view('dashboards.client.index',['users'=>$user_ids]);
+
+
         //return $user_ids;
         //$user_locations=Userlocation::whereIn('user_id',$user_ids)->get();
 

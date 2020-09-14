@@ -10,26 +10,40 @@ $tomorrow = date("Y-m-d", strtotime("tomorrow"));
 $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)->get();
 
 ?>
-<!--todo add filter for guard map-->
-{{--<div class="row">--}}
-    {{--<div class="col-md-12">--}}
-        {{--<form  method="POST" id="mapfilters" name="mapfilter" action="{{route('custom.guard-location-filter')}}">--}}
-            {{--@csrf--}}
-            {{--@include('form.select-model',['var'=>['name'=>'client_id','label'=>'Client','table'=>'clients', 'container_class'=>'col-sm-4']])--}}
-
-            {{--@include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','table'=>'clientlocationtypes', 'container_class'=>'col-sm-4']])--}}
-            {{--<div class="clearfix"></div>--}}
-            {{--@include('form.select-model',['var'=>['name'=>'division_id','label'=>'Division','table'=>'divisions', 'container_class'=>'col-sm-3']])--}}
-            {{--@include('form.select-model',['var'=>['name'=>'district_id','label'=>'District','table'=>'districts', 'container_class'=>'col-sm-3']])--}}
-            {{--@include('form.select-model',['var'=>['name'=>'upazila_id','label'=>'Upazila','table'=>'upazilas', 'container_class'=>'col-sm-3']])--}}
-            {{--<div class="clearfix"></div>--}}
-            {{--<button class="btn-light" type="submit" id="mapfiltersubmit">Filter</button>--}}
-        {{--</form>--}}
-    {{--</div>--}}
-{{--</div>--}}
 <div class="row">
     <div class="col-md-12">
         <h4>See Guard Location in map</h4>
+        <h5>Guard Map Filters</h5>
+
+        <form  method="POST" id="mapfilters" name="mapfilter" action="{{route('custom.guard-location-filter')}}">
+            @csrf
+
+            <div class="clearfix"></div>
+            @include('form.select-model',['var'=>['name'=>'division_id','label'=>'Division','table'=>'divisions', 'container_class'=>'col-sm-3']])
+            @include('form.select-model',['var'=>['name'=>'district_id','label'=>'District','table'=>'districts', 'container_class'=>'col-sm-3']])
+            @include('form.select-model',['var'=>['name'=>'upazila_id','label'=>'Upazila','table'=>'upazilas', 'container_class'=>'col-sm-3']])
+            <div class="clearfix"></div>
+            <?php
+            if(user()->isClientUser() && isset(user()->client_id)){
+                $var['query']=DB::table('clients')->where('id', user()->client_id);
+                }
+                $var['name']='client_id';
+                $var['label']='Client';
+                $var['table']='clients';
+                $var['container_class']='col-sm-4';
+            ?>
+
+
+            @include('form.select-model',['var'=>$var])
+            @include('form.select-model',['var'=>['name'=>'clientlocation_id','label'=>'ClientLocation','table'=>'clientlocations', 'container_class'=>'col-sm-4']])
+            @include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','table'=>'clientlocationtypes', 'container_class'=>'col-sm-4']])
+            <div class="clearfix"></div>
+
+            @include('form.select-model', ['var'=>['name'=>'guard_user_id','label'=>'user','table'=> 'users','container_class'=>'','query'=>DB::table('users')->where('group_ids_csv', 6)]])
+            <div class="clearfix"></div>
+            <button class="btn-light" type="submit" id="mapfiltersubmit">Filter</button>
+            <a href="{{route('home')}}" class="button-primary">Reset</a>
+        </form>
         <div id="userlocationmapid" style="width: 100%; height: 400px;"></div>
     </div>
 </div>
@@ -97,5 +111,82 @@ $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)
         var polyline = L.polyline(latlngs, {color: randomColor});
         polyline.addTo(userlocationmap);
         @endforeach
+        function dynamicDistrict() {
+            $('select[name=division_id]').change(function () { // change function of listbox
+                var division_id = $('select[name=division_id]').select2('val');
+                //var assignee_id = $('select[name=assigned_to]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                $("select[name=district_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
+                $.ajax({
+                    type: "get",
+                    datatype: 'json',
+                    url: '{{route('custom.district-based-on-division')}}',
+                    data: {
+                        division_id: division_id,
+                    },
+                    success: function (response) {
+                        console.log(response.data);
+                        $.each(response.data, function (i, obj) {
+                            $("select[name=district_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                        });
+                    },
+                });
+
+            });
+        }
+
+        function dynamicUpazilla() {
+            $('select[name=district_id]').change(function () { // change function of listbox
+                var division_id = $('select[name=division_id]').select2('val');
+                var district_id = $('select[name=district_id]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                $("select[name=upazila_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
+                $.ajax({
+                    type: "get",
+                    datatype: 'json',
+                    url: '{{route('custom.upazila-based-on-district')}}',
+                    data: {
+                        division_id: division_id,
+                        district_id: district_id,
+                    },
+                    success: function (response) {
+                        console.log(response.data);
+                        $.each(response.data, function (i, obj) {
+                            $("select[name=upazila_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                        });
+                    },
+                });
+
+            });
+        }
+
+        function dynamicClientLocationBasedOnClient() {
+            $('select[name=client_id]').change(function () { // change function of listbox
+                var client_id = $('select[name=client_id]').select2('val');
+                //var district_id = $('select[name=district_id]').select2('val');
+                //clearing the data , empty the options , enable it with current options
+                $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);// Remove the existing options
+                $.ajax({
+                    type: "get",
+                    datatype: 'json',
+                    url: '{{route('custom.clientloacation-based-on-client')}}',
+                    data: {
+                        client_id: client_id,
+                    },
+                    success: function (response) {
+                        //console.log(response.data);
+                        $.each(response.data, function (i, obj) {
+                            $("select[name=clientlocation_id]").append("<option value=" + obj.id + ">" + obj.name + "</option>");
+                        });
+                    },
+                });
+
+            });
+        }
+
+        dynamicDistrict();
+        dynamicUpazilla();
+        dynamicClientLocationBasedOnClient();
+
     </script>
 @endsection
