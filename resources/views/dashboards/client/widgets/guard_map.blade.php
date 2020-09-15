@@ -7,8 +7,9 @@ use App\User;
 use App\Userlocation;
 $today = date('Y-m-d');
 $tomorrow = date("Y-m-d", strtotime("tomorrow"));
+if(!isset($users)){
 $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)->get();
-
+}
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -39,7 +40,7 @@ $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)
             @include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','table'=>'clientlocationtypes', 'container_class'=>'col-sm-4']])
             <div class="clearfix"></div>
 
-            @include('form.select-model', ['var'=>['name'=>'guard_user_id','label'=>'user','table'=> 'users','container_class'=>'','query'=>DB::table('users')->where('group_ids_csv', 6)]])
+            @include('form.select-model', ['var'=>['name'=>'guard_user_id','label'=>'user','table'=> 'users','container_class'=>'','query'=>DB::table('users')->where('group_ids_csv', 6)->where('client_id',user()->client_id)]])
             <div class="clearfix"></div>
             <button class="btn-light" type="submit" id="mapfiltersubmit">Filter</button>
             <a href="{{route('home')}}" class="button-primary">Reset</a>
