@@ -44,6 +44,6 @@ return [
     'Updater' => 'আপডেটার',
     'Updated-at' => 'আপডেট ',
     'Active' => 'সক্রিয়',
-    'User Location' => 'User Location',
+    'User location' => 'User Location',
 
 ];
