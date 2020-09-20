@@ -42,6 +42,7 @@ return [
     'Evidences'=>'Evidences',
     'Task-details' => 'Task details',
     'Id' => 'Id',
+    'User Location' => 'User Location',
     'Updater' => 'Updater',
     'Updated-at' => 'Updated at ',
     'Active' => 'Active',
