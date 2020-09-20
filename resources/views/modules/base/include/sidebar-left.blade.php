@@ -53,6 +53,7 @@
                 <?php
                 $module_names = [
                     'users',
+                    'userlocations',
                     'clients',
                     'clientlocations',
 
