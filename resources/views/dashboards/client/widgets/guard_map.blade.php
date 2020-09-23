@@ -100,7 +100,7 @@ $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)
         L.marker([{{$userlocation->latitude}}, {{$userlocation->longitude}}])
             .addTo(userlocationmap)
             //adding popup , option autoclose and autopan off because the popup should be always open
-            .bindPopup("<a href='{{route('userlocations.edit',$userlocation->id)}}'><img style='width:50px' src='{{asset($userlocation->user->profile_pic_url)}}'/><b>&nbsp{{$userlocation->user->name}}</a>", {
+            .bindPopup("<a href='{{route('userlocations.edit',$userlocation->id)}}'><img style='width:50px' src='{{asset($userlocation->user->profile_pic_url)}}'/><b>&nbsp{{$userlocation->user->name}}<br>Distance&nbsp{{$userlocation->distance_flag}}</a>", {
                 autoClose: false,
                 autoPan: false
             })

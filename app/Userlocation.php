@@ -47,6 +47,14 @@ class Userlocation extends Basemodule
         'longitude',
         'latitude',
         'data',
+        'client_id',
+        'client_name',
+        'clientlocation_id',
+        'clientlocation_name',
+        'clientlocation_longitude',
+        'clientlocation_latitude',
+        'distance',
+        'distance_flag',
         'tenant_id',
         'is_active',
         'created_by',
@@ -69,7 +77,12 @@ class Userlocation extends Basemodule
      * @var array
      */
     // protected $guarded = [];
+    public static $flags = [
 
+        'Green',
+        'Yellow',
+        'Red',
+    ];
     /**
      * Date fields
      *
@@ -85,7 +98,8 @@ class Userlocation extends Basemodule
      * @param array $merge
      * @return array
      */
-    public static function rules($element, $merge = []) {
+    public static function rules($element, $merge = [])
+    {
 
         $rules = [
             //'name' => 'between:1,255',
@@ -122,7 +136,8 @@ class Userlocation extends Basemodule
     # Model events
     ############################################################################################
 
-    public static function boot() {
+    public static function boot()
+    {
         parent::boot();
         Userlocation::observe(UserlocationObserver::class);
 
@@ -135,7 +150,17 @@ class Userlocation extends Basemodule
             // Your validation goes here
             // if($valid) $valid = $element->isSomethingDoable(true)
 
-            $element->name=$element->user->full_name. ' at '.$element->created_at;
+            $element->name = $element->user->full_name.' at '.$element->created_at;
+
+            if($element->distance<200){
+                $element->distance_flag="Green";
+            }elseif($element->distance>200 && $element->distance<400){
+                $element->distance_flag="Yellow";
+            }else{
+                $element->distance_flag="Red";
+            }
+
+
             /************************************************************/
             return $valid;
         });
@@ -145,9 +170,25 @@ class Userlocation extends Basemodule
         // of creation for the first time but the creation has not
         // completed yet.
         /************************************************************/
-        // static::creating(function (Userlocation $element) {
-        //
-        // });
+        static::creating(function (Userlocation $element) {
+
+            if (isset($element->user->client_id)) {
+                $element->client_id = $element->user->client_id;
+                $element->client_name = $element->user->client->name;
+            }
+            if (isset($element->user->clientlocation_id)) {
+                $element->clientlocation_id = $element->user->clientlocation_id;
+                $element->clientlocation_name = $element->user->clientlocation->name;
+                $element->clientlocation_longitude = isset($element->user->clientlocation->longitude) ? $element->user->clientlocation->longitude : null;
+                $element->clientlocation_latitude = isset($element->user->clientlocation->latitude) ? $element->user->clientlocation->latitude : null;
+            }
+            if($element->clientlocation_longitude!==null && $element->clientlocation_latitude!==null){
+                $element->distance=$element->calculateDistance($element->latitude,$element->longitude,$element->clientlocation_latitude,$element->clientlocation_longitude);
+            }
+
+
+
+        });
 
         /************************************************************/
         // Following code block executes - after an element is created
@@ -259,22 +300,25 @@ class Userlocation extends Basemodule
      * @param null $user_id
      * @return bool
      */
-       public function isViewable($user_id = null, $set_msg = false)
-       {
-           $user = user($user_id);
-           if (spyrElementViewable($this, $user_id, $set_msg)) {
-               return true;
-           }
-           if($user->isSuperUser()){
-               return true;
-           }
-           // if($user->isClientUser()){
-           //     if($this->client_id==$user->client_id){
-           //         return true;
-           //     }
-           // }
-           return false;
-       }
+    public function isViewable($user_id = null, $set_msg = false)
+    {
+        $user = user($user_id);
+        if (spyrElementViewable($this, $user_id, $set_msg)) {
+            return true;
+        }
+        if ($user->isSuperUser()) {
+            return true;
+        }
+        if ($user->isClientUser()) {
+            if (isset($this->user->client_id)) {
+                if ($this->user->client_id == $user->client_id) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
 
     /**
      * Checks if the $module is editable by current or any user passed as parameter.
@@ -376,6 +420,10 @@ class Userlocation extends Basemodule
     # Default relationships already available in base Class 'Basemodule'
     public function user() { return $this->belongsTo(\App\User::class, 'user_id'); }
 
+    public function client() { return $this->belongsTo(\App\Client::class, 'client_id'); }
+
+    public function clientlocation() { return $this->belongsTo(\App\Clientlocation::class, 'clientlocation_id'); }
+
     public function updater() { return $this->belongsTo(\App\User::class, 'updated_by'); }
 
     public function creator() { return $this->belongsTo(\App\User::class, 'created_by'); }
@@ -415,13 +463,31 @@ class Userlocation extends Basemodule
     //     //     $this->attributes['some_ids'] = json_encode(csvToArray($value));
     //     // }
     // }
-    public function setDataAttribute($value) {
+    public function setDataAttribute($value)
+    {
         /** @var App\Userlocation\Userlocation $this */
         $this->attributes['data'] = $value;
         // 1. If the value is originally array converts array to json
         if (is_array($value)) {
             $this->attributes['data'] = json_encode(cleanArray($value));
         }
+
+    }
+    //https://gist.github.com/LucaRosaldi/5676464
+    public function calculateDistance($lat1,$lon1,$lat2,$lon2)
+    {
+        $theta = $lon1 - $lon2;
+        $miles = (sin(deg2rad($lat1)) * sin(deg2rad($lat2))) + (cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta)));
+        $miles = acos($miles);
+        $miles = rad2deg($miles);
+        $miles = $miles * 60 * 1.1515;
+        $feet = $miles * 5280;
+        $yards = $feet / 3;
+        $kilometers = $miles * 1.609344;
+
+        $meters = $kilometers * 1000;
+
+        return $meters;
 
     }
 

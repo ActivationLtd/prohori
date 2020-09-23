@@ -34,6 +34,7 @@
 @endsection
 
 <?php
+use App\Userlocation;
 /**
  * This is the main form that gets submitted to the controller.
  * Form starts: Form fields are placed here. These will be added inside the spyrframe default form container in
@@ -44,6 +45,7 @@ if (isset($userlocation)) {
     if($userlocation->data)
     $var['value'] = json_encode($userlocation->data);
 }
+$flags=kv(array_merge([" "=>" "],Userlocation::$flags));
 ?>
 {{-- ******************* Form starts ********************* --}}
 
@@ -52,8 +54,20 @@ if (isset($userlocation)) {
 
 
 @include('form.select-model',['var'=>['name'=>'user_id','label'=>'User','table'=>'users', 'container_class'=>'col-sm-3']])
+<div class="clearfix"></div>
 @include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude']])
 @include('form.input-text',['var'=>['name'=>'latitude','label'=>'Latitude']])
+<div class="clearfix"></div>
+@include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-3','editable'=>false]])
+{{-- clientlocation_id --}}
+@include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-3','editable'=>false]])
+<div class="clearfix"></div>
+@include('form.input-text',['var'=>['name'=>'clientlocation_longitude','label'=>'Clientlocation Longitude','editable'=>false]])
+@include('form.input-text',['var'=>['name'=>'clientlocation_latitude','label'=>'Clientlocation Latitude','editable'=>false]])
+<div class="clearfix"></div>
+@include('form.input-text',['var'=>['name'=>'distance','label'=>'Distance In Meters','editable'=>false]])
+@include('form.select-array',['var'=>['name'=>'distance_flag','label'=>'Distance Flag','options'=>$flags, 'container_class'=>'col-sm-4','editable'=>false]])
+<div class="clearfix"></div>
 @include('form.textarea',compact('var'))
 
 {{-- Model select --}}
@@ -109,6 +123,26 @@ if (isset($userlocation)) {
         // Assigns validation rules during saving (both creating and updating)
         function addValidationRulesForSaving() {
 //            $("input[name=name]").addClass('validate[required]');
+        }
+        /**
+         * function to check distance between two points
+         **/
+        function checkdistance(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+            var dLon = deg2rad(lon2 - lon1);
+            var a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2)
+            ;
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            var d = R * c * 1000; // Distance in m
+            return d;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180)
         }
     </script>
     @if(!isset($$element))

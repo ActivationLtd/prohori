@@ -66,10 +66,10 @@ class UserlocationsController extends ModulebaseController
     {
         $query = $this->sourceTables()->select($this->selectColumns());
 
-        // Inject tenant context in grid query
-        // if (user()->inGroupId(7)) {
-        //     $query = $query->where($this->module_name.'.client_id', user()->client_id);
-        // }
+        //Inject tenant context in grid query
+        if (user()->inGroupId(7)) {
+            $query = $query->where('user.client_id', user()->client_id);
+        }
 
         // Exclude deleted rows
         $query = $query->whereNull($this->module_name . '.deleted_at'); // Skip deleted rows
