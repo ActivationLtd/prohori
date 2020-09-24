@@ -287,9 +287,10 @@
          * Time picker function
          */
         function addDateTimePicker() {
-            $('#email_verified_at#from #till').datetimepicker({
+            $('#email_verified_at,#from,#till').datetimepicker({
                 format: 'YYYY-MM-DD HH:mm'
             });
+           
         }
     </script>
     <script type="text/javascript">

@@ -430,7 +430,7 @@ class User extends Authenticatable implements MustVerifyEmail
         /************************************************************/
         static::saving(function (User $element) {
             $valid = true;
-            
+
             // Generate new api token
             if (Request::get('api_token_generate') === 'yes') {
                 $element->api_token = hash('sha256', randomString(10), false);
