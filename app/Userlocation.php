@@ -151,15 +151,13 @@ class Userlocation extends Basemodule
             // if($valid) $valid = $element->isSomethingDoable(true)
 
             $element->name = $element->user->full_name.' at '.$element->created_at;
-
-            if($element->distance<200){
+            if(number_format($element->distance) < '100'){
                 $element->distance_flag="Green";
-            }elseif($element->distance>200 && $element->distance<400){
+            }elseif(number_format($element->distance) > '100' && number_format($element->distance) < '200'){
                 $element->distance_flag="Yellow";
             }else{
                 $element->distance_flag="Red";
             }
-
 
             /************************************************************/
             return $valid;

@@ -45,7 +45,7 @@ $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)
             <button class="btn-light" type="submit" id="mapfiltersubmit">Filter</button>
             <a href="{{route('home')}}" class="button-primary">Reset</a>
         </form>
-        <div id="userlocationmapid" style="width: 100%; height: 400px;"></div>
+        <div id="userlocationmapid" style="width: 100%; height: 600px;"></div>
     </div>
 </div>
 @section('css')
@@ -162,6 +162,7 @@ $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)
         }
 
         function dynamicClientLocationBasedOnClient() {
+            $("select[name=clientlocation_id]").select2("val", "").empty().attr('disabled', false);
             $('select[name=client_id]').change(function () { // change function of listbox
                 var client_id = $('select[name=client_id]').select2('val');
                 //var district_id = $('select[name=district_id]').select2('val');

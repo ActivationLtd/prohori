@@ -19,9 +19,9 @@ class AddDistanceClientIdInUserLocation extends Migration
             $table->string('client_name',255)->nullable()->default(null)->after('client_id');
             $table->integer('clientlocation_id')->nullable()->default(null)->after('client_name');
             $table->string('clientlocation_name',255)->nullable()->default(null)->after('clientlocation_id');
-            $table->float('clientlocation_longitude')->nullable()->default(null)->after('clientlocation_name');
-            $table->float('clientlocation_latitude')->nullable()->default(null)->after('clientlocation_longitude');
-            $table->float('distance')->nullable()->default(null)->after('clientlocation_latitude');
+            $table->double('clientlocation_longitude')->nullable()->default(null)->after('clientlocation_name');
+            $table->double('clientlocation_latitude')->nullable()->default(null)->after('clientlocation_longitude');
+            $table->double('distance')->nullable()->default(null)->after('clientlocation_latitude');
             $table->string('distance_flag', 100)->nullable()->default(null)->after('distance');
         });
     }

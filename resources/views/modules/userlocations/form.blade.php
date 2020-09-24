@@ -55,15 +55,17 @@ $flags=kv(array_merge([" "=>" "],Userlocation::$flags));
 
 @include('form.select-model',['var'=>['name'=>'user_id','label'=>'User','table'=>'users', 'container_class'=>'col-sm-3']])
 <div class="clearfix"></div>
-@include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude']])
 @include('form.input-text',['var'=>['name'=>'latitude','label'=>'Latitude']])
+@include('form.input-text',['var'=>['name'=>'longitude','label'=>'Longitude']])
+
 <div class="clearfix"></div>
 @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-3','editable'=>false]])
 {{-- clientlocation_id --}}
 @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-3','editable'=>false]])
 <div class="clearfix"></div>
-@include('form.input-text',['var'=>['name'=>'clientlocation_longitude','label'=>'Clientlocation Longitude','editable'=>false]])
 @include('form.input-text',['var'=>['name'=>'clientlocation_latitude','label'=>'Clientlocation Latitude','editable'=>false]])
+@include('form.input-text',['var'=>['name'=>'clientlocation_longitude','label'=>'Clientlocation Longitude','editable'=>false]])
+
 <div class="clearfix"></div>
 @include('form.input-text',['var'=>['name'=>'distance','label'=>'Distance In Meters','editable'=>false]])
 @include('form.select-array',['var'=>['name'=>'distance_flag','label'=>'Distance Flag','options'=>$flags, 'container_class'=>'col-sm-4','editable'=>false]])

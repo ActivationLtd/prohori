@@ -1,17 +1,16 @@
 @extends('template.app-frame')
-
+@section('title')
+    {{"Client Dashboard"}}
+@show
 @section('content')
     @if(Auth::check())
-
         <div class="row">
-            <div id="area-1" class="col-md-6 pull-left ">
+            <div id="area-1" class="col-md-12 pull-left ">
                 {{-- Widget area one --}}
                 {{--@include('dashboards.guard.widgets.count-cards')--}}
                 @include('dashboards.client.widgets.guard_map')
                 <div class="clearfix"></div>
-                <div id="area-2" class="col-md-12 pull-left ">
 
-                </div>
             </div>
 
             <div id="area-3" class="col-md-6 pull-left">
