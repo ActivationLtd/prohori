@@ -290,7 +290,7 @@
             $('#email_verified_at,#from,#till').datetimepicker({
                 format: 'YYYY-MM-DD HH:mm'
             });
-           
+
         }
     </script>
     <script type="text/javascript">

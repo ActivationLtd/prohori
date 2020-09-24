@@ -151,12 +151,14 @@ class Userlocation extends Basemodule
             // if($valid) $valid = $element->isSomethingDoable(true)
 
             $element->name = $element->user->full_name.' at '.$element->created_at;
-            if(number_format($element->distance) < '100'){
-                $element->distance_flag="Green";
-            }elseif(number_format($element->distance) > '100' && number_format($element->distance) < '200'){
-                $element->distance_flag="Yellow";
-            }else{
-                $element->distance_flag="Red";
+            if ($element->distance != null) {
+                if (number_format($element->distance) < '100') {
+                    $element->distance_flag = "Green";
+                } elseif (number_format($element->distance) > '100' && number_format($element->distance) < '200') {
+                    $element->distance_flag = "Yellow";
+                } else {
+                    $element->distance_flag = "Red";
+                }
             }
 
             /************************************************************/
@@ -180,11 +182,10 @@ class Userlocation extends Basemodule
                 $element->clientlocation_longitude = isset($element->user->clientlocation->longitude) ? $element->user->clientlocation->longitude : null;
                 $element->clientlocation_latitude = isset($element->user->clientlocation->latitude) ? $element->user->clientlocation->latitude : null;
             }
-            if($element->clientlocation_longitude!==null && $element->clientlocation_latitude!==null){
-                $element->distance=$element->calculateDistance($element->latitude,$element->longitude,$element->clientlocation_latitude,$element->clientlocation_longitude);
+            if ($element->clientlocation_longitude !== null && $element->clientlocation_latitude !== null) {
+                $element->distance = $element->calculateDistance($element->latitude, $element->longitude, $element->clientlocation_latitude,
+                    $element->clientlocation_longitude);
             }
-
-
 
         });
 
@@ -471,8 +472,9 @@ class Userlocation extends Basemodule
         }
 
     }
+
     //https://gist.github.com/LucaRosaldi/5676464
-    public function calculateDistance($lat1,$lon1,$lat2,$lon2)
+    public function calculateDistance($lat1, $lon1, $lat2, $lon2)
     {
         $theta = $lon1 - $lon2;
         $miles = (sin(deg2rad($lat1)) * sin(deg2rad($lat2))) + (cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta)));
