@@ -430,6 +430,7 @@ class User extends Authenticatable implements MustVerifyEmail
         /************************************************************/
         static::saving(function (User $element) {
             $valid = true;
+            
             // Generate new api token
             if (Request::get('api_token_generate') === 'yes') {
                 $element->api_token = hash('sha256', randomString(10), false);
@@ -860,6 +861,17 @@ class User extends Authenticatable implements MustVerifyEmail
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function clientlocation() { return $this->belongsTo(Clientlocation::class); }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function assignedLocations(){
+        return $this->hasMany(Assignedlocation::class,'user_id');
+    }
+
+    public function latestAssignedLocation(){
+        return $this->hasMany(Assignedlocation::class,'user_id')->orderBy('created_at','desc')->first();
+    }
 
 
     // Write new relationships below this line
