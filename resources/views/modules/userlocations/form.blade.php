@@ -63,6 +63,8 @@ $flags=kv(array_merge([" "=>" "],Userlocation::$flags));
 @include('form.select-model', ['var'=>['name'=>'client_id','label'=>Lang::get('messages.Client'),'query'=> new \App\Client,'container_class'=>'col-md-4']])
 {{-- clientlocation_id --}}
 @include('form.select-model', ['var'=>['name'=>'clientlocation_id','label'=>Lang::get('messages.Location'),'query'=> new \App\Clientlocation,'container_class'=>'col-md-4']])
+{{-- clientlocationtype_id --}}
+@include('form.select-model', ['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','query'=> new \App\Clientlocation,'container_class'=>'col-md-4']])
 <div class="clearfix"></div>
 @include('form.input-text',['var'=>['name'=>'clientlocation_longitude','label'=>'Clientlocation Longitude','editable'=>false]])
 @include('form.input-text',['var'=>['name'=>'clientlocation_latitude','label'=>'Clientlocation Latitude','editable'=>false]])
@@ -199,6 +201,7 @@ $flags=kv(array_merge([" "=>" "],Userlocation::$flags));
         addValidationRulesForSaving(); // Assign validation classes/rules
         enableValidation('{{$module_name}}'); // Instantiate validation function
         $("select[name=clientlocation_id]").attr('disabled', true);
+        $("select[name=clientlocationtype_id]").attr('disabled', true);
         $("select[name=client_id]").attr('disabled', true);
     </script>
 @endsection

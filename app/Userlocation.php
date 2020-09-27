@@ -51,6 +51,8 @@ class Userlocation extends Basemodule
         'client_name',
         'clientlocation_id',
         'clientlocation_name',
+        'clientlocationtype_id',
+        'clientlocationtype_name',
         'clientlocation_longitude',
         'clientlocation_latitude',
         'distance',
@@ -151,15 +153,6 @@ class Userlocation extends Basemodule
             // if($valid) $valid = $element->isSomethingDoable(true)
 
             $element->name = $element->user->full_name.' at '.$element->created_at;
-            if ($element->distance != null) {
-                if (number_format($element->distance) < '100') {
-                    $element->distance_flag = "Green";
-                } elseif (number_format($element->distance) > '100' && number_format($element->distance) < '200') {
-                    $element->distance_flag = "Yellow";
-                } else {
-                    $element->distance_flag = "Red";
-                }
-            }
 
             /************************************************************/
             return $valid;
@@ -179,12 +172,36 @@ class Userlocation extends Basemodule
             if (isset($element->user->clientlocation_id)) {
                 $element->clientlocation_id = $element->user->clientlocation_id;
                 $element->clientlocation_name = $element->user->clientlocation->name;
+                $element->clientlocationtype_id = $element->user->clientlocation->clientlocationtype->id;
+                $element->clientlocationtype_name = $element->user->clientlocation->clientlocationtype->name;
                 $element->clientlocation_longitude = isset($element->user->clientlocation->longitude) ? $element->user->clientlocation->longitude : null;
                 $element->clientlocation_latitude = isset($element->user->clientlocation->latitude) ? $element->user->clientlocation->latitude : null;
             }
             if ($element->clientlocation_longitude !== null && $element->clientlocation_latitude !== null) {
                 $element->distance = $element->calculateDistance($element->latitude, $element->longitude, $element->clientlocation_latitude,
                     $element->clientlocation_longitude);
+            }
+            // for BTS location
+            if ($element->distance != null && $element->clientlocationtype_id == 11) {
+                $distance = number_format($element->distance);
+                if ($distance < '50') {
+                    $element->distance_flag = "Green";
+                } elseif ($distance > '50' && $distance < '100') {
+                    $element->distance_flag = "Yellow";
+                } else {
+                    $element->distance_flag = "Red";
+                }
+            }
+            //for office location
+            if ($element->distance != null && $element->clientlocationtype_id == 6) {
+                $distance = number_format($element->distance);
+                if ($distance < '100') {
+                    $element->distance_flag = "Green";
+                } elseif ($distance > '100' && $distance < '150') {
+                    $element->distance_flag = "Yellow";
+                } else {
+                    $element->distance_flag = "Red";
+                }
             }
 
         });
