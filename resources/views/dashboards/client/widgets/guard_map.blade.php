@@ -37,7 +37,7 @@ $users = User::where('group_ids_csv', '6')->where('client_id',user()->client_id)
 
             @include('form.select-model',['var'=>$var])
             @include('form.select-model',['var'=>['name'=>'clientlocation_id','label'=>'ClientLocation','table'=>'clientlocations', 'container_class'=>'col-sm-4']])
-            @include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','table'=>'clientlocationtypes', 'container_class'=>'col-sm-4']])
+            @include('form.select-model',['var'=>['name'=>'clientlocationtype_id','label'=>'Clientlocation Type','table'=>'clientlocationtypes','query'=>DB::table('clientlocationtypes')->whereIn('id', ['11','6']), 'container_class'=>'col-sm-4']])
             <div class="clearfix"></div>
 
             @include('form.select-model', ['var'=>['name'=>'guard_user_id','label'=>'user','table'=> 'users','container_class'=>'','query'=>DB::table('users')->where('group_ids_csv', 6)->where('client_id',user()->client_id)]])
