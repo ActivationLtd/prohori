@@ -154,6 +154,10 @@ class Userlocation extends Basemodule
 
             $element->name = $element->user->full_name.' at '.$element->created_at;
 
+
+
+
+
             /************************************************************/
             return $valid;
         });
@@ -164,18 +168,18 @@ class Userlocation extends Basemodule
         // completed yet.
         /************************************************************/
         static::creating(function (Userlocation $element) {
-
-            if (isset($element->user->client_id)) {
-                $element->client_id = $element->user->client_id;
-                $element->client_name = $element->user->client->name;
+            $user=$element->user;
+            if (isset($user->client_id)) {
+                $element->client_id = $user->client_id;
+                $element->client_name = $user->client->name;
             }
-            if (isset($element->user->clientlocation_id)) {
-                $element->clientlocation_id = $element->user->clientlocation_id;
-                $element->clientlocation_name = $element->user->clientlocation->name;
-                $element->clientlocationtype_id = $element->user->clientlocation->clientlocationtype->id;
-                $element->clientlocationtype_name = $element->user->clientlocation->clientlocationtype->name;
-                $element->clientlocation_longitude = isset($element->user->clientlocation->longitude) ? $element->user->clientlocation->longitude : null;
-                $element->clientlocation_latitude = isset($element->user->clientlocation->latitude) ? $element->user->clientlocation->latitude : null;
+            if (isset($user->clientlocation_id)) {
+                $element->clientlocation_id = $user->clientlocation_id;
+                $element->clientlocation_name = $user->clientlocation->name;
+                $element->clientlocationtype_id = $user->clientlocation->clientlocationtype->id;
+                $element->clientlocationtype_name = $user->clientlocation->clientlocationtype->name;
+                $element->clientlocation_longitude = isset($user->clientlocation->longitude) ? $user->clientlocation->longitude : null;
+                $element->clientlocation_latitude = isset($user->clientlocation->latitude) ? $user->clientlocation->latitude : null;
             }
             if ($element->clientlocation_longitude !== null && $element->clientlocation_latitude !== null) {
                 $element->distance = $element->calculateDistance($element->latitude, $element->longitude, $element->clientlocation_latitude,
@@ -183,10 +187,10 @@ class Userlocation extends Basemodule
             }
             // for BTS location
             if ($element->distance != null && $element->clientlocationtype_id == 11) {
-                $distance = number_format($element->distance);
-                if ($distance < '50') {
+                $distance = (int)$element->distance;
+                if ($distance < 50) {
                     $element->distance_flag = "Green";
-                } elseif ($distance > '50' && $distance < '100') {
+                } elseif ($distance > 50 && $distance < 100) {
                     $element->distance_flag = "Yellow";
                 } else {
                     $element->distance_flag = "Red";
@@ -194,15 +198,19 @@ class Userlocation extends Basemodule
             }
             //for office location
             if ($element->distance != null && $element->clientlocationtype_id == 6) {
-                $distance = number_format($element->distance);
-                if ($distance < '100') {
+                $distance = (int)$element->distance;
+
+                if ($distance < 100) {
                     $element->distance_flag = "Green";
-                } elseif ($distance > '100' && $distance < '150') {
+                } elseif ($distance > 100 && $distance < 150) {
                     $element->distance_flag = "Yellow";
                 } else {
                     $element->distance_flag = "Red";
                 }
             }
+
+
+
 
         });
 

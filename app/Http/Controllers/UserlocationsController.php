@@ -20,31 +20,33 @@ class UserlocationsController extends ModulebaseController
      *
      * @return array
      */
-    // public function gridColumns() {
-    //     return [
-    //         //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
-    //         ["{$this->module_name}.id", "id", "ID"],
-    //         ["user.full_name", "user_full_name", "ID"],
-    //         ["{$this->module_name}.latitude", "latitude", "Longitude"],
-    //         ["updater.name", "user_name", "Updater"],
-    //         ["{$this->module_name}.updated_at", "updated_at", "Updated at"],
-    //         ["{$this->module_name}.is_active", "is_active", "Active"]
-    //     ];
-    // }
+    public function gridColumns() {
+        return [
+            //['table.id', 'id', 'ID'], // translates to => table.id as id and the last one ID is grid colum header
+            ["{$this->module_name}.id", "id", "ID"],
+            ["{$this->module_name}.user_id", "user_id", "User Id"],
+            ["user.full_name", "user_full_name", "Username"],
+            ["{$this->module_name}.latitude", "latitude", "Latitude"],
+            ["{$this->module_name}.longitude", "longitude", "Longitude"],
+            ["updater.name", "updater_name", "Updater"],
+            ["{$this->module_name}.created_at", "created_at", "Created at"],
+            ["{$this->module_name}.is_active", "is_active", "Active"]
+        ];
+    }
 
     /**
      * Construct SELECT statement based
      *
      * @return array
      */
-    // public function selectColumns()
-    // {
-    //     $select_cols = [];
-    //     foreach ($this->gridColumns() as $col)
-    //         $select_cols[] = $col[0] . ' as ' . $col[1];
-    //
-    //     return $select_cols;
-    // }
+    public function selectColumns()
+    {
+        $select_cols = [];
+        foreach ($this->gridColumns() as $col)
+            $select_cols[] = $col[0] . ' as ' . $col[1];
+
+        return $select_cols;
+    }
 
     /**
      * Define Query for generating results for grid
@@ -83,18 +85,18 @@ class UserlocationsController extends ModulebaseController
      * @var $dt \Yajra\DataTables\DataTableAbstract
      * @return mixed
      */
-    // public function datatableModify($dt)
-    // {
-    //     // First set columns for  HTML rendering
-    //     $dt = $dt->rawColumns(['id', 'name', 'is_active']); // HTML can be printed for raw columns
-    //
-    //     // Next modify each column content
-    //     $dt = $dt->editColumn('name', '<a href="{{ route(\'' . $this->module_name . '.edit\', $id) }}">{{$name}}</a>');
-    //     $dt = $dt->editColumn('id', '<a href="{{ route(\'' . $this->module_name . '.edit\', $id) }}">{{$id}}</a>');
-    //     $dt = $dt->editColumn('is_active', '@if($is_active)  Yes @else <span class="text-red">No</span> @endif');
-    //
-    //     return $dt;
-    // }
+    public function datatableModify($dt)
+    {
+        // First set columns for  HTML rendering
+        $dt = $dt->rawColumns(['id','user_id','user_full_name', 'is_active']); // HTML can be printed for raw columns
+
+        // Next modify each column content
+        $dt = $dt->editColumn('user_full_name', '<a href="{{ route(\'users.edit\',$user_id) }}">{{$user_full_name}}</a>');
+        $dt = $dt->editColumn('id', '<a href="{{ route(\'' . $this->module_name . '.edit\', $id) }}">{{$id}}</a>');
+        $dt = $dt->editColumn('is_active', '@if($is_active)  Yes @else <span class="text-red">No</span> @endif');
+
+        return $dt;
+    }
 
     /**
      * Returns datatable json for the module index page
