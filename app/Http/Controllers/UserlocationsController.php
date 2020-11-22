@@ -7,6 +7,7 @@ use App\User;
 use App\Userlocation;
 use DB;
 use Request;
+use App\Classes\Reports\DefaultModuleReport;
 class UserlocationsController extends ModulebaseController
 {
 
@@ -236,5 +237,21 @@ class UserlocationsController extends ModulebaseController
 
         //return $user_locations;
 
+    }
+
+
+
+    /**
+     * Show and render report
+     */
+    public function report() {
+        if (hasModulePermission($this->module_name, 'report')) {
+            $report = new DefaultModuleReport();
+            $report->data_source = $this->reportDataSource();
+            $report->base_dir = $this->reportViewBaseDir();
+            return $report->show();
+        }
+        return view('template.blank')->with('title', 'Permission denied!')
+            ->with('body', "You don't have permission [ " . $this->module_name . '.report]');
     }
 }
